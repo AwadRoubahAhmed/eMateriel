@@ -14,6 +14,7 @@ export default function RootLayout() {
 			<body>
 				{/* Outlet : zone remplie par un autre contenu */}
 				<Outlet />
+				{/* <public_layout />  */}
 			</body>
 		</html>
 	);

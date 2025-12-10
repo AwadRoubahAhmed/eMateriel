@@ -1,13 +1,14 @@
 import express from "express";
-import RoleRouterController from "../controller/RoleController";
+import Role_Controller from "../controller/role_controller";
 
-class RoleRouter {
+class Role_router {
 	private router = express.Router();
 
 	public getRoutes = () => {
 		//create a get router it will be only accessible in get method
-		this.router.get("/home", new RoleController().index);
+		this.router.get("/", new Role_Controller().index);
+
 		return this.router;
 	};
 }
-export default RoleRouter;
+export default Role_router;

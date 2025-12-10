@@ -1,6 +1,8 @@
+DROP DATABASE IF EXISTS emateriel_dev;
+
 -- créer la base de données 
 
- CREATE DATABASE emateriel_dev;
+CREATE DATABASE emateriel_dev;
 
 -- Début du création des tables;
 
@@ -22,36 +24,39 @@ CREATE TABLE emateriel_dev.user(
     telephone VARCHAR(20) ,
     adresse_livraison  VARCHAR(150)  NOT NULL,
     adresse_facturation VARCHAR(150) NOT NULL,
-     FOREIGN KEY (id)
+    role_id TINYINT,
+     FOREIGN KEY (role_id)
        REFERENCES role(id)
-) 
+) ;
 
 
 --  paiement
-CREATE TABLE emateriel_dev.payment_metode(
-    id TINYINT AUTO_INCREMENT,
-    PRIMARY KEY(id),
-    --name  VARCHAR(150) NOT NULL
-) 
+CREATE TABLE emateriel_dev.payment_method(
+    id TINYINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+) ;
 
 
 -- category
 CREATE TABLE emateriel_dev.category(
     id TINYINT AUTO_INCREMENT,
     PRIMARY KEY(id),
-    name VARCHAR(150) NOT NULL,
-    description TEXT
-)
+    name VARCHAR(50)  NOT NULL,
+    description TEXT,
+    INDEX(name)
+);
 
 -- product
 CREATE TABLE emateriel_dev.product(
     id TINYINT AUTO_INCREMENT,
     PRIMARY KEY(id),
+    name VARCHAR(50)  NOT NULL,
     image  VARCHAR(150) NOT NULL,
     price SMALLINT NOT NULL,
     description TEXT,
-    stock SMALLINT NOT NULL
-)
+    stock SMALLINT NOT NULL,
+    INDEX(name)
+);
 
 
 -- category_product
@@ -61,23 +66,23 @@ CREATE TABLE emateriel_dev.product(
     FOREIGN KEY (category_id) REFERENCES emateriel_dev.category(id),
     FOREIGN KEY (product_id) REFERENCES emateriel_dev.product(id),
     PRIMARY KEY(category_id, product_id)
-)
+);
 
 
 -- orders
 CREATE TABLE emateriel_dev.orders(
      id TINYINT AUTO_INCREMENT,
      PRIMARY KEY(id),
-     name  VARCHAR(150) NOT NULL,
+     name  VARCHAR(50) NOT NULL,
      image VARCHAR(255) NOT NULL,
-     total TINYINT NOT NULL,
+     total SMALLINT NOT NULL,
      descrption TEXT,
      user_id TINYINT,
-     payment_metod_id TINYINT,
-     FOREIGN KEY (id) REFERENCES user(id),
-     FOREIGN KEY (id) 
-       REFERENCES payment_metode(id)
-)
+     payment_method_id TINYINT,
+     FOREIGN KEY (user_id) REFERENCES user(id),
+     FOREIGN KEY (payment_method_id) 
+       REFERENCES payment_method(id)
+);
 
 
 
@@ -88,21 +93,24 @@ CREATE TABLE emateriel_dev.line_order(
     PRIMARY KEY(id),
     qty  SMALLINT  NOT NULL,
     total  SMALLINT NOT NULL,
-    FOREIGN KEY (id)
-       REFERENCES orders(id),
-     FOREIGN KEY (id)
-       REFERENCES product(id)
-)
+    product_id TINYINT,
+    order_id TINYINT,
+    FOREIGN KEY (product_id)
+       REFERENCES product(id),
+     FOREIGN KEY (order_id)
+       REFERENCES orders(id)
+);
 
 -- notice
 CREATE TABLE emateriel_dev.notice(
     id TINYINT AUTO_INCREMENT,
     PRIMARY KEY(id),
-    FOREIGN KEY (id)
-    REFERENCES product(id)
-)
+    name VARCHAR(50) NOT NULL,
+     product_id TINYINT,
+   FOREIGN KEY (product_id)
+       REFERENCES product(id)
+);
 
 -- Fin de la création de tables;
-
 
 

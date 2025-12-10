@@ -14,14 +14,14 @@ class RouterService {
 					{
 						id: "home",
 						index: true,
-                        path: "",
+						path: "",
 						lazy: () => import("../pages/Home"),
 					},
-					// {
-					//     id: "about",
-					//     path: "about",
-					//     lazy: () => import("./about/route"),
-					// },
+					{
+						id: "contact",
+						path: "/contact",
+						lazy: () => import("../pages/Contact"),
+					},
 				],
 			},
 		] satisfies RSCRouteConfig;

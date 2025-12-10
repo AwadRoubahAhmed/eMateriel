@@ -8,14 +8,16 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "npx tsx watch server/index.ts",
+    "server": "npx tsx watch --env-file .env.dev server/index.ts",
     "start": "npx tsx watch server/index.ts"
   },
   "dependencies": {
     "express": "^5.2.1",
+    "mysql2": "^3.15.3",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "react-router-dom": "^7.10.1"
+    "react-router-dom": "^7.10.1",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.8",

@@ -4,6 +4,6 @@ import Server from "./core/server";
 const server = new Server();
 
 // Start the Server
-const app = server.StartServer();
+const app = server.startServer();
 
 app.listen(process.env.PORT); // TO GET VARIABLES IN .env.dev

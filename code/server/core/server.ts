@@ -1,29 +1,47 @@
-import express from "express";
-import OrdersRouter from "../router/OrdersRouter";
-import ProductsRouter from "../router/ProductsRouter";
-import RoleRouter from "../router/RoleRouter";
+import express, { type Express, type Router } from "express";
+import Category_router from "../router/category_router";
+import Homepage_router from "../router/homepage_router";
+import Line_order_router from "../router/line_order_router";
+import Notice_router from "../router/notice_router";
+import Orders_router from "../router/orders_router";
+import Payment_method_router from "../router/payment_method_router";
+import Product_router from "../router/products_router";
+import Role_router from "../router/role_router";
+import User_router from "../router/user_router";
 
 class Server {
 	//properties
-	private app = express();
-	private router = express.Router();
+	// instancier une application Express
+	private app: Express = express();
+	private router: Router = express.Router();
 
 	//constructor
 	constructor() {
 		//connect router to application
+		// lier l'application Express au routeur
 		this.app.use(this.router);
 
 		//call routers
+		// définir la liste des routeurs
 		this.routerList();
 	}
 	//methods
 
-	//routr list that conatain all lists
+	//router list that conatain all lists
+	// liste des routeurs
 	private routerList = () => {
-		this.router.use("/api", new HomepageRouter().getRoutes());
-		this.router.use("/api", new MachineRouter().getRoutes());
-		this.router.use("/api", new RoleRouter().getRoutes());
-		this.router.use("/api", new SensorRouter().getRoutes());
+		this.router.use("/api", new Homepage_router().getRoutes());
+		this.router.use("/api/category", new Category_router().getRoutes());
+		this.router.use("/api/product", new Product_router().getRoutes());
+		this.router.use("/api/orders", new Orders_router().getRoutes());
+		this.router.use(
+			"/api/payment_method",
+			new Payment_method_router().getRoutes(),
+		);
+		this.router.use("/api/notice", new Notice_router().getRoutes());
+		this.router.use("/api/role", new Role_router().getRoutes());
+		this.router.use("/api/user", new User_router().getRoutes());
+		this.router.use("/api/line_order", new Line_order_router().getRoutes());
 	};
 	//start server
 	public startServer = () => {
