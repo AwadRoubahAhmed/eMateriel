@@ -8,7 +8,7 @@ class User_Repository {
 	public selectAll = async (): Promise<User[] | unknown> => {
 		//connexion au serveur MySQL
 		const connection = await new MySQLService().connect();
-		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
+		//requete SQL "SELECT user.* FROM emateriel_dev.user;"
 		const sql = `
             SELECT ${this.table}.*
             FROM ${process.env.MYSQL_DATABASE}.${this.table};

@@ -1,6 +1,7 @@
 import "../assets/css/reset-css.css";
 import "../assets/css/base.css";
 import { Outlet } from "react-router-dom";
+import "../index.css";
 
 export default function RootLayout() {
 	return (
@@ -13,7 +14,10 @@ export default function RootLayout() {
 			</head>
 			<body>
 				{/* Outlet : zone remplie par un autre contenu */}
-				<Outlet />
+				<div className="container">
+					<Outlet />
+				</div>
+
 				{/* <public_layout />  */}
 			</body>
 		</html>

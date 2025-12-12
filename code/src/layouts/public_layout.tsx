@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
+import Footer from "../components/footer/Footer";
+import Navbar from "../components/navbar/Navbar";
 
-export default function public_layout() {
+function public_layout() {
 	return (
 		<>
 			<Navbar />
@@ -11,3 +11,4 @@ export default function public_layout() {
 		</>
 	);
 }
+export default public_layout;

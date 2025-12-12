@@ -7,6 +7,7 @@ class Line_order_router {
 	public getRoutes = () => {
 		//create a get router it will be only accessible in get method
 		this.router.get("/", new Line_order_Controller().index);
+		this.router.get("/:id", new Line_order_Controller().selectOne);
 
 		return this.router;
 	};

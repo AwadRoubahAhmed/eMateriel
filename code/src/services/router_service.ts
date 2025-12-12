@@ -15,13 +15,52 @@ class RouterService {
 						id: "home",
 						index: true,
 						path: "",
-						lazy: () => import("../pages/Home"),
+						lazy: () => import("../pages/Homepage"),
+					},
+					{
+						id: "products",
+						path: "/products",
+						lazy: () => import("../pages/products/Products"),
 					},
 					{
 						id: "contact",
 						path: "/contact",
-						lazy: () => import("../pages/Contact"),
+						lazy: () => import("../pages/contact/Contact"),
 					},
+					{
+						id: "apropos",
+						path: "/apropos",
+						lazy: () => import("../pages/apropos/Apropos"),
+					},
+					{
+						id: "panier",
+						path: "/panier",
+						lazy: () => import("../pages/panier/Panier"),
+					},
+					{
+						id: "connection",
+						path: "/connection",
+						lazy: () => import("../pages/connection/Connection"),
+					},
+
+					// {
+					// 	id: "public_layaout",
+					// 	path: "/",
+					// 	lazy: () => import("../layouts/public_layout"),
+					// 	children: [
+					// 		{
+					// 			id: "home",
+					// 			index: true,
+					// 			path: "",
+					// 			lazy: () => import("../pages/Homepage"),
+					// 		},
+					// 		{
+					// 			id: "contact",
+					// 			path: "/contact",
+					// 			lazy: () => import("../pages/Contact"),
+					// 		},
+					// 	],
+					// },
 				],
 			},
 		] satisfies RSCRouteConfig;
