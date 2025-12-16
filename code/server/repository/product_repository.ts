@@ -1,5 +1,7 @@
+import type { Category } from "../../models/category";
 import type { Product } from "../../models/product";
 import MySQLService from "../service/mysql_service";
+import Category_Repository from "./category_repository";
 
 class Product_Repository {
 	//NOM DE LA TABLE SQL
@@ -17,6 +19,16 @@ class Product_Repository {
 		try {
 			//execute la requette
 			const [query] = await connection.execute(sql);
+
+			// Boucler sur les resultats pour récupérer les clés étrangères;
+			for (let i = 0; i < (query as Product[]).length; i++) {
+				const result = (query as Product[])[i];
+
+				// Clés étrangères
+				result.category = (await new Category_Repository().selectOne({
+					id: result.category_id,
+				})) as Category;
+			}
 			//Retourner les resultats
 			return query;
 		} catch (error) {
@@ -46,9 +58,15 @@ class Product_Repository {
 			// si la requete possede des variables, utiliser le parametre de la methode
 			const [query] = await connection.execute(sql, data);
 			//recuperer le premier indice d'un array
-			const resultat = (query as Product[]).shift();
+			const result = (query as Product[]).shift() as Product;
+
+			// Clés étrangères
+			result.category = (await new Category_Repository().selectOne({
+				id: result.category_id,
+			})) as Category;
+
 			//Retourner les resultats
-			return resultat;
+			return result;
 		} catch (error) {
 			return error;
 		}

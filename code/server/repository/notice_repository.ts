@@ -1,5 +1,7 @@
 import type { Notice } from "../../models/notice";
+import type { Product } from "../../models/product";
 import MySQLService from "../service/mysql_service";
+import Product_Repository from "./product_repository";
 
 class Notice_Repository {
 	//NOM DE LA TABLE SQL
@@ -17,6 +19,16 @@ class Notice_Repository {
 		try {
 			//execute la requette
 			const [query] = await connection.execute(sql);
+
+			// Boucler sur les resultats pour récupérer les clés étrangères;
+			for (let i = 0; i < (query as Notice[]).length; i++) {
+				const result = (query as Notice[])[i];
+
+				// Clés étrangères
+				result.product = (await new Product_Repository().selectOne({
+					id: result.product_id,
+				})) as Product;
+			}
 			//Retourner les resultats
 			return query;
 		} catch (error) {
@@ -46,9 +58,14 @@ class Notice_Repository {
 			// si la requete possede des variables, utiliser le parametre de la methode
 			const [query] = await connection.execute(sql, data);
 			//recuperer le premier indice d'un array
-			const resultat = (query as Notice[]).shift();
+			const result = (query as Notice[]).shift() as Notice;
+
+			// Clés étrangères
+			result.product = (await new Product_Repository().selectOne({
+				id: result.product_id,
+			})) as Product;
 			//Retourner les resultats
-			return resultat;
+			return result;
 		} catch (error) {
 			return error;
 		}

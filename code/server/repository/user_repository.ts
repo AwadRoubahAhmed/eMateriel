@@ -1,5 +1,7 @@
+import type { Role } from "../../models/role";
 import type { User } from "../../models/user";
 import MySQLService from "../service/mysql_service";
+import Role_Repository from "./role_repository";
 
 class User_Repository {
 	//NOM DE LA TABLE SQL
@@ -17,6 +19,18 @@ class User_Repository {
 		try {
 			//execute la requette
 			const [query] = await connection.execute(sql);
+			console.log(query);
+
+			// Boucler sur les resultats pour récupérer les clés étrangères;
+			for (let i = 0; i < (query as User[]).length; i++) {
+				const result = (query as User[])[i] as User;
+
+				// Clés étrangères
+				result.role = (await new Role_Repository().selectOne({
+					id: result.role_id,
+				})) as Role;
+			}
+
 			//Retourner les resultats
 			return query;
 		} catch (error) {
@@ -44,9 +58,15 @@ class User_Repository {
 			// si la requete possede des variables, utiliser le parametre de la methode
 			const [query] = await connection.execute(sql, data);
 			//recuperer le premier indice d'un array
-			const resultat = (query as User[]).shift();
+			const result = (query as User[]).shift() as User;
+
+			// Clés étrangères
+			result.role = (await new Role_Repository().selectOne({
+				id: result.role_id,
+			})) as Role;
+
 			//Retourner les resultats
-			return resultat;
+			return result;
 		} catch (error) {
 			return error;
 		}

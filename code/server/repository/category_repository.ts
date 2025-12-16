@@ -19,7 +19,7 @@ class Category_Repository {
 			//execute la requette
 			const [query] = await connection.execute(sql);
 			//Retourner les resultats
-			return query;
+			return query;   
 		} catch (error) {
 			return error;
 		}

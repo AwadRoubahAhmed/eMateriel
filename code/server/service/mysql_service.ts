@@ -16,7 +16,7 @@ class MySQLService {
 					password: process.env.MYSQL_PASSWORD,
 					database: process.env.MYSQL_DATABASE,
 				})
-				.getConnection();
+				.getConnection(); 
 		}
 
 		return MySQLService.instance;

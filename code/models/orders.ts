@@ -1,3 +1,6 @@
+import type { Payment_methode } from "./payment_methode";
+import type { User } from "./user";
+
 type Orders = {
 	id: number;
 	name: string;
@@ -5,7 +8,9 @@ type Orders = {
 	total: number;
 	description: string;
 	user_id: number;
-	payment_methode: string;
+	user: User;
+	payment_methode_id: number;
+	payment_method: Payment_methode;
 };
 
 export type { Orders };

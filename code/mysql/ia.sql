@@ -27,21 +27,12 @@ INSERT INTO emateriel_dev.category (name, description) VALUES
 
 -- Insertion de données pour la table product
 INSERT INTO emateriel_dev.product (image, price, description, stock) VALUES
-('ordinateur_portable.jpg', 899, 'Ordinateur portable 15 pouces, 16Go RAM, 512Go SSD', 15),
-('smartphone_x.jpg', 699, 'Smartphone X, 128Go, écran AMOLED 6.5 pouces', 30),
-('imprimante_laser.jpg', 199, 'Imprimante laser noir et blanc, 30ppm', 8),
-('clavier_sans_fil.jpg', 49, 'Clavier sans fil, rétroéclairé', 50),
+('ordinateur_portable.jpg', 899, 'Ordinateur portable 15 pouces, 16Go RAM, 512Go SSD', 15, 1),
+('smartphone_x.jpg', 699, 'Smartphone X, 128Go, écran AMOLED 6.5 pouces', 30, 2),
+('imprimante_laser.jpg', 199, 'Imprimante laser noir et blanc, 30ppm', 8, 3),
+('clavier_sans_fil.jpg', 49, 'Clavier sans fil, rétroéclairé', 50, 4),
 ('aspirateur_robot.jpg', 299, 'Aspirateur robot, autonomie 2h', 12);
 
--- Insertion de données pour la table category_product
-INSERT INTO emateriel_dev.category_product (category_id, product_id) VALUES
-(1, 1), -- Informatique - Ordinateur portable
-(1, 3), -- Informatique - Imprimante laser
-(1, 4), -- Informatique - Clavier sans fil
-(2, 2), -- Téléphonie - Smartphone X
-(3, 5), -- Électroménager - Aspirateur robot
-(4, 3), -- Bureautique - Imprimante laser
-(4, 4); -- Bureautique - Clavier sans fil
 
 -- Insertion de données pour la table orders
 INSERT INTO emateriel_dev.orders (name, image, total, descrption, user_id, payment_method_id) VALUES

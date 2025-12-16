@@ -1,5 +1,9 @@
 import type { Line_order } from "../../models/line_order";
+import type { Orders } from "../../models/orders";
+import type { Product } from "../../models/product";
 import MySQLService from "../service/mysql_service";
+import Orders_Repository from "./orders_repository";
+import Product_Repository from "./product_repository";
 
 class Line_order_Repository {
 	//NOM DE LA TABLE SQL
@@ -17,6 +21,21 @@ class Line_order_Repository {
 		try {
 			//execute la requette
 			const [query] = await connection.execute(sql);
+
+			// Boucler sur les resultats pour récupérer les clés étrangères;
+			for (let i = 0; i < (query as Line_order[]).length; i++) {
+				const result = (query as Line_order[])[i];
+
+				// Clés étrangères
+				result.order = (await new Orders_Repository().selectOne({
+					id: result.order_id,
+				})) as Orders;
+
+				result.product = (await new Product_Repository().selectOne({
+					id: result.product_id,
+				})) as Product;
+			}
+
 			//Retourner les resultats
 			return query;
 		} catch (error) {
@@ -46,9 +65,18 @@ class Line_order_Repository {
 			// si la requete possede des variables, utiliser le parametre de la methode
 			const [query] = await connection.execute(sql, data);
 			//recuperer le premier indice d'un array
-			const resultat = (query as Line_order[]).shift();
+			const result = (query as Line_order[]).shift() as Line_order;
+
+			// Clés étrangères
+			result.order = (await new Orders_Repository().selectOne({
+				id: result.order_id,
+			})) as Orders;
+
+			result.product = (await new Product_Repository().selectOne({
+				id: result.product_id,
+			})) as Product;
 			//Retourner les resultats
-			return resultat;
+			return result;
 		} catch (error) {
 			return error;
 		}

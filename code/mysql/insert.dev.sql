@@ -24,31 +24,25 @@ INSERT INTO emateriel_dev.category (id, name, description) VALUES
 
 -- Données pour la table 'product'
 INSERT INTO emateriel_dev.product (id, name, image, price, description, stock) VALUES
-(1, 'Laptop Gaming X1', 'images/laptop_x1.jpg', 1200, 'Ordinateur portable puissant pour le jeu vidéo.', 15),
-(2, 'Carte Graphique RTX 3080', 'images/rtx_3080.jpg', 750, 'Carte graphique haut de gamme pour des performances extrêmes.', 8),
-(3, 'Clavier Mécanique Pro', 'images/clavier_pro.jpg', 120, 'Clavier mécanique avec switchs tactiles.', 50),
-(4, 'Processeur i7-12700K', 'images/i7_12700k.jpg', 350, 'Processeur Intel Core i7 de 12e génération.', 25);
+(1, 'Laptop Gaming X1', 'images/laptop_x1.jpg', 1200, 'Ordinateur portable puissant pour le jeu vidéo.', 15, 1),
+(2, 'Carte Graphique RTX 3080', 'images/rtx_3080.jpg', 750, 'Carte graphique haut de gamme pour des performances extrêmes.', 8, 2),
+(3, 'Clavier Mécanique Pro', 'images/clavier_pro.jpg', 120, 'Clavier mécanique avec switchs tactiles.', 50, 3),
+(4, 'Processeur i7-12700K', 'images/i7_12700k.jpg', 350, 'Processeur Intel Core i7 de 12e génération.', 25, 4);
 
--- Données pour la table 'category_product'
-INSERT INTO emateriel_dev.category_product (category_id, product_id) VALUES
-(1, 1), -- Laptop Gaming X1 est dans Ordinateurs Portables
-(2, 2), -- Carte Graphique RTX 3080 est dans Composants PC
-(3, 3), -- Clavier Mécanique Pro est dans Périphériques
-(2, 4); -- Processeur i7-12700K est dans Composants PC
 
--- Données pour la table 'orders'
-INSERT INTO emateriel_dev.orders (id, name, image, total, descrption, user_id, payment_method_id) VALUES
-(1, 'Commande #20230001', 'images/order_1.png', 1320, 'Achat d\'un laptop et d\'un clavier.', 1, 1),
-(2, 'Commande #20230002', 'images/order_2.png', 750, 'Achat d\'une carte graphique.', 3, 2);
+-- -- Données pour la table 'orders'
+-- INSERT INTO emateriel_dev.orders (id, name, image, total, descrption, user_id, payment_method_id) VALUES
+-- (1, 'Commande #20230001', 'images/order_1.png', 1320, 'Achat d\'un laptop et d\'un clavier.', 1, 1),
+-- (2, 'Commande #20230002', 'images/order_2.png', 750, 'Achat d\'une carte graphique.', 3, 2);
 
 -- Données pour la table 'line_order'
-INSERT INTO emateriel_dev.line_order (id, qty, total, product_id, order_id) VALUES
-(1, 1, 1200, 1, 1), -- 1 x Laptop Gaming X1 pour la Commande #20230001
-(2, 1, 120, 3, 1), -- 1 x Clavier Mécanique Pro pour la Commande #20230001
-(3, 1, 750, 2, 2); -- 1 x Carte Graphique RTX 3080 pour la Commande #20230002
+-- INSERT INTO emateriel_dev.line_order (id, qty, total, product_id, order_id) VALUES
+-- (1, 1, 1200, 1, 1), -- 1 x Laptop Gaming X1 pour la Commande #20230001
+-- (2, 1, 120, 3, 1), -- 1 x Clavier Mécanique Pro pour la Commande #20230001
+-- (3, 1, 750, 2, 2); -- 1 x Carte Graphique RTX 3080 pour la Commande #20230002
 
--- Données pour la table 'notice'
-INSERT INTO emateriel_dev.notice (id, name, product_id) VALUES
-(1, 'Manuel_Laptop_X1.pdf', 1),
-(2, 'Guide_Installation_RTX3080.html', 2),
-(3, 'Spécifications_Clavier_Pro.docx', 3);
+-- -- Données pour la table 'notice'
+-- INSERT INTO emateriel_dev.notice (id, name, product_id) VALUES
+-- (1, 'Manuel_Laptop_X1.pdf', 1),
+-- (2, 'Guide_Installation_RTX3080.html', 2),
+-- (3, 'Spécifications_Clavier_Pro.docx', 3);

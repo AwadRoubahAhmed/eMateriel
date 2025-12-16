@@ -41,7 +41,7 @@ CREATE TABLE emateriel_dev.payment_method(
 CREATE TABLE emateriel_dev.category(
     id TINYINT AUTO_INCREMENT,
     PRIMARY KEY(id),
-    name VARCHAR(50)  NOT NULL,
+    name VARCHAR(50) NOT NULL,
     description TEXT,
     INDEX(name)
 );
@@ -55,19 +55,10 @@ CREATE TABLE emateriel_dev.product(
     price SMALLINT NOT NULL,
     description TEXT,
     stock SMALLINT NOT NULL,
-    INDEX(name)
-);
-
-
--- category_product
- CREATE TABLE emateriel_dev.category_product(
     category_id TINYINT,
-    product_id TINYINT,
-    FOREIGN KEY (category_id) REFERENCES emateriel_dev.category(id),
-    FOREIGN KEY (product_id) REFERENCES emateriel_dev.product(id),
-    PRIMARY KEY(category_id, product_id)
+    INDEX(name),
+    FOREIGN KEY (category_id) REFERENCES emateriel_dev.category(id)
 );
-
 
 -- orders
 CREATE TABLE emateriel_dev.orders(
@@ -84,14 +75,11 @@ CREATE TABLE emateriel_dev.orders(
        REFERENCES payment_method(id)
 );
 
-
-
-
 -- line_order
 CREATE TABLE emateriel_dev.line_order(
     id TINYINT AUTO_INCREMENT,
     PRIMARY KEY(id),
-    qty  SMALLINT  NOT NULL,
+    qty SMALLINT  NOT NULL,
     total  SMALLINT NOT NULL,
     product_id TINYINT,
     order_id TINYINT,

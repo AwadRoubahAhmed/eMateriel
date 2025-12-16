@@ -1,3 +1,5 @@
+import type { Role } from "./role";
+
 type User = {
 	id: number;
 	firstname: string;
@@ -7,6 +9,8 @@ type User = {
 	telephone: string;
 	adresse_livraison: string;
 	adresse_facturation: string;
+	role_id: number;
+	role: Role;
 };
 
 export type { User };

@@ -1,5 +1,9 @@
 import type { Orders } from "../../models/orders";
+import type { Payment_methode } from "../../models/payment_methode";
+import type { User } from "../../models/user";
 import MySQLService from "../service/mysql_service";
+import Payment_method_Repository from "./payment_method_repository";
+import User_Repository from "./user_repository";
 
 class Orders_Repository {
 	//NOM DE LA TABLE SQL
@@ -17,6 +21,21 @@ class Orders_Repository {
 		try {
 			//execute la requette
 			const [query] = await connection.execute(sql);
+
+			// Boucler sur les resultats pour récupérer les clés étrangères;
+			for (let i = 0; i < (query as Orders[]).length; i++) {
+				const result = (query as Orders[])[i] as Orders;
+
+				// Clés étrangères
+				result.user = (await new User_Repository().selectOne({
+					id: result.user_id,
+				})) as User;
+
+				result.payment_method =
+					(await new Payment_method_Repository().selectOne({
+						id: result.payment_methode_id,
+					})) as Payment_methode;
+			}
 			//Retourner les resultats
 			return query;
 		} catch (error) {
@@ -45,10 +64,21 @@ class Orders_Repository {
 			//execute la requette
 			// si la requete possede des variables, utiliser le parametre de la methode
 			const [query] = await connection.execute(sql, data);
+
 			//recuperer le premier indice d'un array
-			const resultat = (query as Orders[]).shift();
+			const result = (query as Orders[]).shift() as Orders;
+
+			// Clés étrangères
+			result.user = (await new User_Repository().selectOne({
+				id: result.user_id,
+			})) as User;
+
+			result.payment_method = (await new Payment_method_Repository().selectOne({
+				id: result.payment_methode_id,
+			})) as Payment_methode;
+
 			//Retourner les resultats
-			return resultat;
+			return result;
 		} catch (error) {
 			return error;
 		}
