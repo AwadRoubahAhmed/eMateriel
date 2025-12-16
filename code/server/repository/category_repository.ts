@@ -55,10 +55,10 @@ class Category_Repository {
 		//variable de requete : precedée d'un ":", suivi du nom de la variable
 		//quand je fais des requetes avec des variables : "requete préparés" :securité donc la requete est executée si elle ne represente pas de risque de securite
 		const sql = `
-            SELECT ${this.table}.*,
-            FROM ${process.env.MYSQL_DATABASE}.${this.table},
-			JOIN ${process.env.MYSQL_DATABASE}.product,
-			ON ${this.table}.id = product.category_id,
+            SELECT ${this.table}.*
+            FROM ${process.env.MYSQL_DATABASE}.${this.table}
+			JOIN ${process.env.MYSQL_DATABASE}.product
+			ON ${this.table}.id = product.category_id
 			WHERE ${this.table}.id = :id
 			; 
         `;

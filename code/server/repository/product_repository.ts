@@ -14,9 +14,9 @@ class Product_Repository {
 		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
 		const sql = `
             SELECT ${this.table}.*,
-			GROUP_CONCAT(notice.id) AS notice_ids,
-            FROM ${process.env.MYSQL_DATABASE}.${this.table},
-			JOIN ${process.env.MYSQL_DATABASE}.notice,
+			GROUP_CONCAT(notice.id) AS notice_ids
+            FROM ${process.env.MYSQL_DATABASE}.${this.table}
+			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice
 			ON ${this.table}.id = notice.product_id
 			GROUP BY ${this.table}.id
 			;
@@ -55,7 +55,7 @@ class Product_Repository {
 		const sql = `
             SELECT ${this.table}.*,
             FROM ${process.env.MYSQL_DATABASE}.${this.table},
-			JOIN ${process.env.MYSQL_DATABASE}.notice,
+			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice,
 			ON ${this.table}.id = notice.product_id,
 			WHERE ${this.table}.id = :id
 			; 
@@ -125,16 +125,9 @@ class Product_Repository {
 		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
 		const sql = `
             INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-			VALUE (
-			       NULL,
-				   :name,
-				   :image,
-				   :price
-				   :description,
-				   :stock,
-				   :category_id
-
-			)
+			(id, name, image, price, description, stock, category_id)
+			VALUES  
+			(NULL, :name, :image, :price, :description, :stock, :category_id)
             ;
         `;
 		// try / catch : tente et recupere moi resultat et ou l'erreur

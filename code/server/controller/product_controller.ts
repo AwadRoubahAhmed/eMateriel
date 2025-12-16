@@ -51,9 +51,8 @@ class Product_Controller {
 
 	//créer une methode a la route / en GET située dans le routeur
 	public insert = async (req: Request, res: Response) => {
+		console.log(req.body);
 
-		console.log(req.body)
-		
 		//recuperer ma variable de route
 		//recuperation des resultats de la requete
 		// req.body : recupere les proprietés body de la requete HTTP en POST
