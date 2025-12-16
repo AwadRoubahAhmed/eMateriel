@@ -1,4 +1,5 @@
 import type { Category } from "./category";
+import type { Notice } from "./notice";
 
 type Product = {
 	id: number;
@@ -9,6 +10,9 @@ type Product = {
 	stock: number;
 	category_id: number;
 	category: Category;
+
+	notice_ids: string;
+	notices: Notice[];
 };
 
 export type { Product };

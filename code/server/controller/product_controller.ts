@@ -48,6 +48,34 @@ class Product_Controller {
 			data: resultat,
 		});
 	};
+
+	//créer une methode a la route / en GET située dans le routeur
+	public insert = async (req: Request, res: Response) => {
+
+		console.log(req.body)
+		
+		//recuperer ma variable de route
+		//recuperation des resultats de la requete
+		// req.body : recupere les proprietés body de la requete HTTP en POST
+		const resultat = await new Product_Repository().insert(req.body);
+		//si la requete renvoie une erreur, c'est ok, mais en prod faut pas
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			//si return est seul comme ceci, il stoppe le lancement
+			return;
+		}
+
+		//renvoyer une reponse avec un code de statut HTTP et au format JSON
+		res.status(201).json({
+			status: 201,
+			message: "ok",
+			data: resultat,
+		});
+	};
 }
 
 export default Product_Controller;

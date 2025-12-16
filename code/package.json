@@ -12,7 +12,9 @@
     "start": "npx tsx watch server/index.ts"
   },
   "dependencies": {
+    "@types/multer": "^2.0.0",
     "express": "^5.2.1",
+    "multer": "^2.0.2",
     "mysql2": "^3.15.3",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",

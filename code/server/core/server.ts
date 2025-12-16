@@ -17,6 +17,10 @@ class Server {
 
 	//constructor
 	constructor() {
+		//middlewares
+		// parser le corps des requetes HTTP en JSON
+		this.app.use(express.json());
+
 		//connect router to application
 		// lier l'application Express au routeur
 		this.app.use(this.router);

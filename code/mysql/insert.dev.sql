@@ -23,7 +23,7 @@ INSERT INTO emateriel_dev.category (id, name, description) VALUES
 (4, 'accessoires', 'Protégez et personnalisez votre smartphone avec nos accessoires indispensables : coques de protection, films écrans, chargeurs rapides, batteries externes, écouteurs sans fil et bien plus. Des solutions pratiques et stylées pour optimiser l’utilisation de votre appareil au quotidien.');
 
 -- Données pour la table 'product'
-INSERT INTO emateriel_dev.product (id, name, image, price, description, stock) VALUES
+INSERT INTO emateriel_dev.product (id, name, image, price, description, stock, category_id) VALUES
 (1, 'Laptop Gaming X1', 'images/laptop_x1.jpg', 1200, 'Ordinateur portable puissant pour le jeu vidéo.', 15, 1),
 (2, 'Carte Graphique RTX 3080', 'images/rtx_3080.jpg', 750, 'Carte graphique haut de gamme pour des performances extrêmes.', 8, 2),
 (3, 'Clavier Mécanique Pro', 'images/clavier_pro.jpg', 120, 'Clavier mécanique avec switchs tactiles.', 50, 3),

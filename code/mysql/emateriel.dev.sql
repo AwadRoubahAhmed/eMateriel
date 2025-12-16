@@ -7,7 +7,7 @@ CREATE DATABASE emateriel_dev;
 -- Début du création des tables;
 
 -- role
-CREATE TABLE emateriel_dev.role(
+CREATE TABLE IF NOT EXISTS emateriel_dev.role(
  id TINYINT  AUTO_INCREMENT,
  name VARCHAR(20) NOT NULL,
  PRIMARY KEY(id) 
