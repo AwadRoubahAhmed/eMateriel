@@ -16,7 +16,7 @@ class Product_Repository {
             SELECT ${this.table}.*,
 			GROUP_CONCAT(notice.id) AS notice_ids
             FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice
+			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice 
 			ON ${this.table}.id = notice.product_id
 			GROUP BY ${this.table}.id
 			;
@@ -34,6 +34,8 @@ class Product_Repository {
 				result.category = (await new Category_Repository().selectOne({
 					id: result.category_id,
 				})) as Category;
+
+
 			}
 			//Retourner les resultats
 			return query;
@@ -53,10 +55,10 @@ class Product_Repository {
 		//variable de requete : precedée d'un ":", suivi du nom de la variable
 		//quand je fais des requetes avec des variables : "requete préparés" :securité donc la requete est executée si elle ne represente pas de risque de securite
 		const sql = `
-            SELECT ${this.table}.*,
-            FROM ${process.env.MYSQL_DATABASE}.${this.table},
-			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice,
-			ON ${this.table}.id = notice.product_id,
+            SELECT ${this.table}.*
+            FROM ${process.env.MYSQL_DATABASE}.${this.table}
+			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice
+			ON ${this.table}.id = notice.product_id
 			WHERE ${this.table}.id = :id
 			; 
         `;
@@ -68,7 +70,7 @@ class Product_Repository {
 			//recuperer le premier indice d'un array
 			const result = (query as Product[]).shift() as Product;
 
-			// Clés étrangères
+			// Clés étrangères category_id
 			result.category = (await new Category_Repository().selectOne({
 				id: result.category_id,
 			})) as Category;
@@ -121,12 +123,13 @@ class Product_Repository {
 		data: Partial<Product>,
 	): Promise<QueryResult | unknown> => {
 
-		//connexion au serveur MySQL  
+		//connexion au serveur MySQL
 		const connection = await new MySQLService().connect();
 
 		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
 		const sql = `
             INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
+			(id, name, image, price, description, stock, category_id)
 			VALUES  
 			(NULL, :name, :image, :price, :description, :stock, :category_id)
             ;
@@ -135,7 +138,7 @@ class Product_Repository {
 		try {
 
 			// demarer la transaction
-			connection.beginTransaction();
+			//connection.beginTransaction();
 
 			// execute la requette;
 			const [query] = await connection.execute(sql, data);	
@@ -165,7 +168,7 @@ class Product_Repository {
 			return query;
 		} catch (error) {
 			// annuler la transaction en cas d'erreur;
-			connection.rollback();
+			//connection.rollback();
 			return error;
 		}
 	};

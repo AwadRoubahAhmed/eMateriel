@@ -11,6 +11,8 @@ type User = {
 	adresse_facturation: string;
 	role_id: number;
 	role: Role;
+
+	
 };
 
 export type { User };

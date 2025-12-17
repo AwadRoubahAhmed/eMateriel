@@ -14,8 +14,8 @@ class Category_Repository {
 		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
 		const sql = `
             SELECT
-				${this.table}.*, 
-				GROUP_CONCAT(product.id) AS product_ids 
+			${this.table}.*, 
+			GROUP_CONCAT(product.id) AS product_ids 
             FROM ${process.env.MYSQL_DATABASE}.${this.table}
 			JOIN ${process.env.MYSQL_DATABASE}.product
 			ON ${this.table}.id = product.category_id

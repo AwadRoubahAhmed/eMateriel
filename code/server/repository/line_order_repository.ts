@@ -26,11 +26,12 @@ class Line_order_Repository {
 			for (let i = 0; i < (query as Line_order[]).length; i++) {
 				const result = (query as Line_order[])[i];
 
-				// Clés étrangères
+				// Clés étrangères order_id
 				result.order = (await new Orders_Repository().selectOne({
 					id: result.order_id,
 				})) as Orders;
-
+                
+				// Clés étrangères product_id
 				result.product = (await new Product_Repository().selectOne({
 					id: result.product_id,
 				})) as Product;
@@ -77,6 +78,38 @@ class Line_order_Repository {
 			})) as Product;
 			//Retourner les resultats
 			return result;
+		} catch (error) {
+			return error;
+		}
+	};
+
+	// selectinlist
+	public selectInList = async (list: string): Promise<Line_order[] | unknown> => {
+		//connexion au serveur MySQL
+		const connection = await new MySQLService().connect();
+		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
+		const sql = `
+            SELECT ${this.table}.*
+            FROM ${process.env.MYSQL_DATABASE}.${this.table}
+			WHERE  ${this.table}.id IN (${list});
+			;
+        `;
+		// try / catch : tente et recupere moi resultat et ou l'erreur
+		try {
+			//execute la requette
+			const [query] = await connection.execute(sql);
+
+			// Boucler sur les resultats pour récupérer les clés étrangères;
+			// for (let i = 0; i < (query as Product[]).length; i++) {
+			// 	const result = (query as Product[])[i];
+
+			// 	// Clés étrangères
+			// 	result.category = (await new Category_Repository().selectOne({
+			// 		id: result.category_id,
+			// 	})) as Category;
+			// }
+			//Retourner les resultats
+			return query;
 		} catch (error) {
 			return error;
 		}
