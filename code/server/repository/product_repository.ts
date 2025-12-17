@@ -120,25 +120,52 @@ class Product_Repository {
 	public insert = async (
 		data: Partial<Product>,
 	): Promise<QueryResult | unknown> => {
-		//connexion au serveur MySQL
+
+		//connexion au serveur MySQL  
 		const connection = await new MySQLService().connect();
+
 		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
 		const sql = `
             INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-			(id, name, image, price, description, stock, category_id)
 			VALUES  
 			(NULL, :name, :image, :price, :description, :stock, :category_id)
             ;
         `;
 		// try / catch : tente et recupere moi resultat et ou l'erreur
 		try {
+
+			// demarer la transaction
+			connection.beginTransaction();
+
+			// execute la requette;
+			const [query] = await connection.execute(sql, data);	
+
 			//execute la requette
 			// si la requete possede des variables, utiliser le parametre de la methode;
-			const [query] = await connection.execute(sql, data);
+			//const [query] = await connection.execute(sql, data);
+			
+			// deuxieme requete;
+			//sql = ` SET @id = LAST_INSERT_ID();`
+			//const [query] = await connection.execute(sql);
+
+			// troisieme requete;
+			// split : couper une chaine de caractere en plusieurs sous chaines;
+			//const joinIds = (data.notice_ids as string).split(",")
+			//.map((value) => `(${value}, @id)`)
+			//.join(", ");
+			//sql = ` INSERT INTO ${process.env.MYSQL_DATABASE}.notice_product
+			// VALUE 
+			// ${joinIds}  ;`
+			//const [query] = await connection.execute(sql);
+
+			// valider la transaction;
+			//connection.commit();
 
 			//Retourner les resultats;
 			return query;
 		} catch (error) {
+			// annuler la transaction en cas d'erreur;
+			connection.rollback();
 			return error;
 		}
 	};

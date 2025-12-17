@@ -30,19 +30,19 @@ INSERT INTO emateriel_dev.product (id, name, image, price, description, stock, c
 (4, 'Processeur i7-12700K', 'images/i7_12700k.jpg', 350, 'Processeur Intel Core i7 de 12e génération.', 25, 4);
 
 
--- -- Données pour la table 'orders'
--- INSERT INTO emateriel_dev.orders (id, name, image, total, descrption, user_id, payment_method_id) VALUES
--- (1, 'Commande #20230001', 'images/order_1.png', 1320, 'Achat d\'un laptop et d\'un clavier.', 1, 1),
--- (2, 'Commande #20230002', 'images/order_2.png', 750, 'Achat d\'une carte graphique.', 3, 2);
+-- Données pour la table 'orders'
+INSERT INTO emateriel_dev.orders (id, name, image, total, descrption, user_id, payment_method_id) VALUES
+(1, 'Commande #20230001', 'images/order_1.png', 1320, 'Achat d\'un laptop et d\'un clavier.', 1, 1),
+(2, 'Commande #20230002', 'images/order_2.png', 750, 'Achat d\'une carte graphique.', 3, 2);
 
--- Données pour la table 'line_order'
--- INSERT INTO emateriel_dev.line_order (id, qty, total, product_id, order_id) VALUES
--- (1, 1, 1200, 1, 1), -- 1 x Laptop Gaming X1 pour la Commande #20230001
--- (2, 1, 120, 3, 1), -- 1 x Clavier Mécanique Pro pour la Commande #20230001
--- (3, 1, 750, 2, 2); -- 1 x Carte Graphique RTX 3080 pour la Commande #20230002
 
--- -- Données pour la table 'notice'
--- INSERT INTO emateriel_dev.notice (id, name, product_id) VALUES
--- (1, 'Manuel_Laptop_X1.pdf', 1),
--- (2, 'Guide_Installation_RTX3080.html', 2),
--- (3, 'Spécifications_Clavier_Pro.docx', 3);
+INSERT INTO emateriel_dev.line_order (id, qty, total, product_id, order_id) VALUES
+(1, 1, 1200, 1, 1), -- 1 x Laptop Gaming X1 pour la Commande #20230001
+(2, 1, 120, 3, 1), -- 1 x Clavier Mécanique Pro pour la Commande #20230001
+(3, 1, 750, 2, 2); -- 1 x Carte Graphique RTX 3080 pour la Commande #20230002
+
+
+INSERT INTO emateriel_dev.notice (id, name, product_id) VALUES
+(1, 'Manuel_Laptop_X1.pdf', 1),
+(2, 'Guide_Installation_RTX3080.html', 2),
+(3, 'Spécifications_Clavier_Pro.docx', 3);
