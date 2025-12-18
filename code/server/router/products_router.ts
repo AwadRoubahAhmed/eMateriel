@@ -9,7 +9,7 @@ class Product_router {
 	private multer = multer({ dest: "public" });
 
 	public getRoutes = () => {
-		//create a get router it will be only accessible in get method
+		//create a GET router it will be only accessible in get method
 		this.router.get("/", new Product_Controller().index);
 		this.router.get("/:id", new Product_Controller().selectOne);
 
@@ -17,7 +17,11 @@ class Product_router {
 		// utiliser multer pour gerer les fichiers envoyés
 		this.router.post("/", this.multer.any(), new Product_Controller().insert);
 
+			// Route en PUT pour modifier un enregistrement
+		// utiliser multer pour gerer les fichiers envoyés
+		this.router.put("/", this.multer.any(), new Product_Controller().update);
+
 		return this.router;
 	};
-}
+} 
 export default Product_router;
