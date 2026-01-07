@@ -14,12 +14,16 @@ class Product_router {
 		this.router.get("/:id", new Product_Controller().selectOne);
 
 		// Route en POST pour inserer un enregistrement
-		// utiliser multer pour gerer les fichiers envoyés
+		// utiliser multer pour gerer et transferer les fichiers envoyés
 		this.router.post("/", this.multer.any(), new Product_Controller().insert);
 
-			// Route en PUT pour modifier un enregistrement
+		// Route en PUT pour modifier un enregistrement
 		// utiliser multer pour gerer les fichiers envoyés
 		this.router.put("/", this.multer.any(), new Product_Controller().update);
+
+		// Route en DELETE pour modifier un enregistrement
+		// utiliser multer pour gerer et transferer les fichiers envoyés
+		this.router.delete("/", new Product_Controller().delete);
 
 		return this.router;
 	};

@@ -76,6 +76,7 @@ class Product_Controller {
 		});
 	};
 
+	//créer une methode a la route / en PUT => Update située dans le routeur
 	public update = async (req: Request, res: Response) => {
 		console.log(req.body);
 
@@ -97,7 +98,33 @@ class Product_Controller {
 		//renvoyer une reponse avec un code de statut HTTP et au format JSON
 		res.status(200).json({
 			status: 200,
-			message: "Update",
+			message: "Updated",
+			data: resultat,
+		});
+	};
+
+	public delete = async (req: Request, res: Response) => {
+		console.log(req.body);
+
+		//recuperer ma variable de route
+		//recuperation des resultats de la requete
+		// req.body : recupere les proprietés body de la requete HTTP en POST
+		const resultat = await new Product_Repository().delete(req.body);
+		//si la requete renvoie une erreur, c'est ok, mais en prod faut pas
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			//si return est seul comme ceci, il stoppe le lancement
+			return;
+		}
+
+		//renvoyer une reponse avec un code de statut HTTP et au format JSON
+		res.status(200).json({
+			status: 200,
+			message: "Deleted",
 			data: resultat,
 		});
 	};

@@ -126,7 +126,7 @@ class Product_Repository {
 		//connexion au serveur MySQL
 		const connection = await new MySQLService().connect();
 
-		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
+		//requete SQL
 		const sql = `
             INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
 			(id, name, image, price, description, stock, category_id)
@@ -173,7 +173,7 @@ class Product_Repository {
 		}
 	};
 
-	// Inserer un enregistrement;
+	// Mettre a jour un enregistrement;
 	public update = async (
 		data: Partial<Product>,
 	): Promise<QueryResult | unknown> => {
@@ -184,15 +184,15 @@ class Product_Repository {
 		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
 		const sql = `
             UPDATE ${process.env.MYSQL_DATABASE}.${this.table}
-			  SET  
+			SET  
 			   ${this.table}.name = :name, 
 			    ${this.table}.image = :image, 
 			    ${this.table}.price = :price, 
 			    ${this.table}.description = :description, 
 			    ${this.table}.stock = :stock, 
 			    ${this.table}.category_id = :category_id
-			  WHERE 
-			   ${this.table}:id = id
+			WHERE 
+			   ${this.table}.id = :id
             ;
         `;
 		// try / catch : tente et recupere moi resultat et ou l'erreur
@@ -212,8 +212,12 @@ class Product_Repository {
 			// deuxieme requete Update / Delete;
 			//sql = ` SET @id = LAST_INSERT_ID();`
 			//sql = ` DELETE FROM
-			//  ${process.env.MYSQL_DATABASE}.${this.table}
+			//  ${process.env.MYSQL_DATABASE}.${this.table} // supprimer la table jointure;
 			// WHERE dish_menu.menu_id = id;`
+			//
+			//sql = ` DELETE FROM
+			//  ${process.env.MYSQL_DATABASE}.${this.table}
+			// WHERE ${this.table}.id = id;`
 			//const [query] = await connection.execute(sql);
 
 			// troisieme requete Insert;
@@ -223,8 +227,75 @@ class Product_Repository {
 			////.map((value) => `(${value}, id)`) // pour Inserer
 			//.join(", ");
 			//sql = ` INSERT INTO ${process.env.MYSQL_DATABASE}.notice_product
-			// VALUE 
+			// VALUE
 			// ${joinIds}  ;`
+			
+			// Mettre le quey dans la derniere requete
+			//const [query] = await connection.execute(sql);
+
+			// valider la transaction;
+			//connection.commit();
+
+			//Retourner les resultats;
+			return query;
+		} catch (error) {
+			// annuler la transaction en cas d'erreur;
+			//connection.rollback();
+			return error;
+		}
+	};
+
+	// Supprimer un enregistrement;
+	public delete = async (
+		data: Partial<Product>,
+	): Promise<QueryResult | unknown> => {
+
+		//connexion au serveur MySQL
+		const connection = await new MySQLService().connect();
+
+		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
+		const sql = `
+            DELETE ${process.env.MYSQL_DATABASE}.${this.table}
+			  WHERE 
+			   ${this.table}.id = :id
+            ;
+        `;
+		// try / catch : tente et recupere moi resultat et ou l'erreur
+		try {
+
+			// demarer la transaction
+			//connection.beginTransaction();
+
+			// execute la requette;
+			const [query] = await connection.execute(sql, data);	
+
+			//execute premiere requette
+			// si la requete possede des variables, utiliser le parametre de la methode;
+			//const [query] = await connection.execute(sql, data);
+			// await connection.execute(sql, data)
+			
+			// deuxieme requete Update / Delete;
+			//sql = ` SET @id = LAST_INSERT_ID();`
+			//sql = ` DELETE FROM
+			//  ${process.env.MYSQL_DATABASE}.${this.table} // supprimer la table jointure;
+			// WHERE dish_menu.menu_id = id;`
+			//
+			//sql = ` DELETE FROM
+			//  ${process.env.MYSQL_DATABASE}.${this.table}
+			// WHERE ${this.table}.id = id;`
+			//const [query] = await connection.execute(sql);
+
+			// troisieme requete Insert;
+			// split : couper une chaine de caractere en plusieurs sous chaines;
+			//const joinIds = (data.notice_ids as string).split(",")
+			//.map((value) => `(${value}, @id)`)
+			////.map((value) => `(${value}, id)`) // pour Inserer
+			//.join(", ");
+			//sql = ` INSERT INTO ${process.env.MYSQL_DATABASE}.notice_product
+			// VALUE
+			// ${joinIds}  ;`
+			
+			// Mettre le query dans la derniere requete
 			//const [query] = await connection.execute(sql);
 
 			// valider la transaction;
