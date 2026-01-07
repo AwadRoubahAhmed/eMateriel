@@ -23,6 +23,11 @@ class RouterService {
 						lazy: () => import("../pages/products/Products"),
 					},
 					{
+						id: "products_detail",
+						path: "/products/:id",
+						lazy: () => import("../pages/products/ProductsDetail"),
+					},
+					{
 						id: "contact",
 						path: "/contact",
 						lazy: () => import("../pages/contact/Contact"),

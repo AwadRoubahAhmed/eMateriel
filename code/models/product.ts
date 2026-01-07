@@ -1,5 +1,4 @@
 import type { Category } from "./category";
-import type { Line_order } from "./line_order";
 import type { Notice } from "./notice";
 
 type Product = {
