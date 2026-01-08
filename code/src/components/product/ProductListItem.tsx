@@ -6,7 +6,8 @@ export default function ProductListItem({ data }: ProductListItemProps) {
       <div>
           <p>
                {data.id}: {data.name}
-          </p>
+      </p>
+      <img src={`/images/${data.image}`} alt={data.name} />
       </div>
   )
 }

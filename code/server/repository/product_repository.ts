@@ -86,7 +86,7 @@ class Product_Repository {
 	public selectInList = async (list: string): Promise<Product[] | unknown> => {
 		//connexion au serveur MySQL
 		const connection = await new MySQLService().connect();
-		//requete SQL "SELECT product.* FROM profit_dev.reservation_status;"
+		//requete SQL "SELECT product.* FROM product WHERE product.id IN (list);"
 		const sql = `
             SELECT ${this.table}.*,
 			GROUP_CONCAT(notice.id) AS notice_ids
@@ -254,20 +254,48 @@ class Product_Repository {
 		const connection = await new MySQLService().connect();
 
 		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
-		const sql = `
-            DELETE ${process.env.MYSQL_DATABASE}.${this.table}
+		// Supprime les notices associées au produit
+		let sql = `
+            DELETE FROM ${process.env.MYSQL_DATABASE}.notice
 			  WHERE 
-			   ${this.table}.id = :id
+			   notice.product_id = :id
             ;
         `;
+
+		// DELETE ${process.env.MYSQL_DATABASE}.${this.table}
+		// 	  WHERE
+		// 	   ${this.table}.id = :id
+		//     ;
+		
+
 		// try / catch : tente et recupere moi resultat et ou l'erreur
 		try {
 
 			// demarer la transaction
-			//connection.beginTransaction();
+			connection.beginTransaction();
 
-			// execute la requette;
-			const [query] = await connection.execute(sql, data);	
+            // execute la premiere requette (Delete notice);
+			await connection.execute(sql, data);	
+			
+			// Supprime les lignes de commande associées au produit
+			sql = `
+            DELETE FROM ${process.env.MYSQL_DATABASE}.line_order
+			  WHERE 
+			   line_order.product_id = :id
+            ;
+        `;
+			// execute la deuxieme requette (Delete line_order);
+			await connection.execute(sql, data);
+            
+			// Supprime le produit lui-même
+			sql = `
+             DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table}
+		        WHERE
+			   ${this.table}.id = :id
+		    ;
+        `;
+            // execute la troisieme requette (Delete product);
+			const [query] = await connection.execute(sql, data);
 
 			//execute premiere requette
 			// si la requete possede des variables, utiliser le parametre de la methode;
@@ -299,13 +327,13 @@ class Product_Repository {
 			//const [query] = await connection.execute(sql);
 
 			// valider la transaction;
-			//connection.commit();
+			connection.commit();
 
 			//Retourner les resultats;
 			return query;
 		} catch (error) {
 			// annuler la transaction en cas d'erreur;
-			//connection.rollback();
+			connection.rollback();
 			return error;
 		}
 	};

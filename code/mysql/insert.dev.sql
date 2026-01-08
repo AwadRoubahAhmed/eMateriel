@@ -24,16 +24,16 @@ INSERT INTO emateriel_dev.category (id, name, description) VALUES
 
 -- Données pour la table 'product'
 INSERT INTO emateriel_dev.product (id, name, image, price, description, stock, category_id) VALUES
-(1, 'Laptop Gaming X1', 'images/laptop_x1.jpg', 1200, 'Ordinateur portable puissant pour le jeu vidéo.', 15, 1),
-(2, 'Carte Graphique RTX 3080', 'images/rtx_3080.jpg', 750, 'Carte graphique haut de gamme pour des performances extrêmes.', 8, 2),
-(3, 'Clavier Mécanique Pro', 'images/clavier_pro.jpg', 120, 'Clavier mécanique avec switchs tactiles.', 50, 3),
-(4, 'Processeur i7-12700K', 'images/i7_12700k.jpg', 350, 'Processeur Intel Core i7 de 12e génération.', 25, 4);
+(1, 'Laptop Gaming X1', 'laptop_x1.jpg', 1200, 'Ordinateur portable puissant pour le jeu vidéo.', 15, 1),
+(2, 'Carte Graphique RTX 3080', 'rtx_3080.jpg', 750, 'Carte graphique haut de gamme pour des performances extrêmes.', 8, 2),
+(3, 'Clavier Mécanique Pro', 'clavier_pro.jpg', 120, 'Clavier mécanique avec switchs tactiles.', 50, 3),
+(4, 'Processeur i7-12700K', 'i7_12700k.jpg', 350, 'Processeur Intel Core i7 de 12e génération.', 25, 4);
 
 
 -- Données pour la table 'orders'
 INSERT INTO emateriel_dev.orders (id, name, image, total, descrption, user_id, payment_method_id) VALUES
-(1, 'Commande #20230001', 'images/order_1.png', 1320, 'Achat d\'un laptop et d\'un clavier.', 1, 1),
-(2, 'Commande #20230002', 'images/order_2.png', 750, 'Achat d\'une carte graphique.', 3, 2);
+(1, 'Commande #20230001', 'order_1.png', 1320, 'Achat d\'un laptop et d\'un clavier.', 1, 1),
+(2, 'Commande #20230002', 'order_2.png', 750, 'Achat d\'une carte graphique.', 3, 2);
 
 
 INSERT INTO emateriel_dev.line_order (id, qty, total, product_id, order_id) VALUES
