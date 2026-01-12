@@ -52,10 +52,3 @@
 	pointer-events: none;
 	z-index: 1;
 }
-
-.icons {
-	display: flex;
-	align-items: center;
-	gap: 20px;
-	cursor: pointer;
-}

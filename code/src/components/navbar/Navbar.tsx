@@ -20,10 +20,10 @@ export default function Navbar() {
 				<Search />
 				<div className={styles.icons}>
 					<div>
-						<FaCartArrowDown size={24} />
+						<Link to="/panier"><FaCartArrowDown size={24} /></Link>
 					</div>
 					<div>
-						<FaUserAlt size={24} />
+						<Link to="/connection"><FaUserAlt size={24} /></Link>     
 					</div>
 				</div>
 			</nav>
