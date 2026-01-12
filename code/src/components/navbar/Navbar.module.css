@@ -16,7 +16,7 @@ img.logo {
 	cursor: pointer;
 	border-radius: 100%;
 }
-.navLinks {
+/* .navLinks {
 	display: flex;
 	align-items: center;
 	gap: 15px;
@@ -35,10 +35,9 @@ img.logo {
 .navLinks li a:hover {
 	color: #0927eb;
 	border-radius: 5px;
-}
+} */
 
-/* From Uiverse.io by LightAndy1 */
-.group {
+/* .group {
 	display: flex;
 	line-height: 28px;
 	align-items: center;
@@ -98,4 +97,4 @@ img.logo {
 	align-items: center;
 	gap: 20px;
 	cursor: pointer;
-}
+} */
