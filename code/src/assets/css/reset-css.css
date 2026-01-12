@@ -3,6 +3,9 @@
    License: none (public domain)
 */
 
+/* Google fonts Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 html,
 body,
 div,
@@ -88,7 +91,7 @@ video {
 	padding: 0;
 	border: 0;
 	font-size: 100%;
-	font: inherit;
+	font-family: "Inter", sans-serif;
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
