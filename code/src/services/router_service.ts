@@ -47,6 +47,11 @@ class RouterService {
 						path: "/connection",
 						lazy: () => import("../pages/connection/Connection"),
 					},
+					{
+						id: "Error",
+						path: "*",
+						lazy: () => import("../pages/error/Error"),
+					},
 
 					// {
 					// 	id: "public_layaout",

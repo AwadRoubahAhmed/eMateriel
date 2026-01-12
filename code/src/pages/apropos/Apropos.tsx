@@ -5,6 +5,11 @@ import Seo from "../../components/Seo";
 export default function Apropos() {
 	return (
 		<>
+			<Seo
+				title="eMatériel - A propos"
+				description="La page a propos du site eMatériel."
+				url="/apropos"
+			/>
 			<Navbar />
 			<h1>À propos de nous</h1>
 			<p>
@@ -12,11 +17,7 @@ export default function Apropos() {
 				fournir les meilleurs services et produits à nos clients.
 			</p>
 
-			<Seo
-				title="eMatériel - A propos"
-				description="La page a propos du site eMatériel."
-				url="/apropos"
-			/>
+
 			<Footer />
 		</>
 	);
