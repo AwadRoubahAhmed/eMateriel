@@ -11,7 +11,7 @@ export default function ProductList() {
 
 
   return (
-    <div>
+    <div> 
       {
         result.data?.map(product => {
           return (
