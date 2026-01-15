@@ -91,10 +91,20 @@ class Product_Controller {
 	public update = async (req: Request, res: Response) => {
 		console.log(req.body);
 
+		// req.files permet de recupérer les fichiers transférés
+		console.log(req.files)
+		const file = (req.files as Express.Multer.File[]).shift() as Express.Multer.File;
+		
+		// instancier le service de fichier 
+		const fileService = new FileService();
+
+		// renommer le fichier transféré et récupérer le nom complet;
+		const fullname = await fileService.rename(file)
+
 		//recuperer ma variable de route
 		//recuperation des resultats de la requete
 		// req.body : recupere les proprietés body de la requete HTTP en POST
-		const resultat = await new Product_Repository().update(req.body);
+		const resultat = await new Product_Repository().update({...req.body, image: fullname});
 		//si la requete renvoie une erreur, c'est ok, mais en prod faut pas
 		if (resultat instanceof Error) {
 			res.status(400).json({
