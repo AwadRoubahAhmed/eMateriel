@@ -48,13 +48,13 @@ CREATE TABLE emateriel_dev.category(
 
 -- product
 CREATE TABLE emateriel_dev.product(
-    id TINYINT AUTO_INCREMENT,
+    id TINYINT UNSIGNED AUTO_INCREMENT,
     PRIMARY KEY(id),
     name VARCHAR(50)  NOT NULL,
     image  VARCHAR(150) NOT NULL,
-    price SMALLINT NOT NULL,
+    price SMALLINT UNSIGNED NOT NULL,
     description TEXT,
-    stock SMALLINT NOT NULL,
+    stock SMALLINT UNSIGNED NOT NULL,
     category_id TINYINT,
     INDEX(name),
     FOREIGN KEY (category_id) REFERENCES emateriel_dev.category(id)
@@ -81,7 +81,7 @@ CREATE TABLE emateriel_dev.line_order(
     PRIMARY KEY(id),
     qty SMALLINT  NOT NULL,
     total  SMALLINT NOT NULL,
-    product_id TINYINT,
+    product_id TINYINT UNSIGNED,
     order_id TINYINT,
     FOREIGN KEY (product_id)
        REFERENCES product(id),
@@ -94,7 +94,7 @@ CREATE TABLE emateriel_dev.notice(
     id TINYINT AUTO_INCREMENT,
     PRIMARY KEY(id),
     name VARCHAR(50) NOT NULL,
-     product_id TINYINT,
+     product_id TINYINT UNSIGNED,
    FOREIGN KEY (product_id)
        REFERENCES product(id)
 );

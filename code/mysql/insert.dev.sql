@@ -55,21 +55,19 @@ INSERT INTO emateriel_dev.orders (name, image, total, descrption, user_id, payme
 ('Commande #20230002', 'order_2.png', 750, 'une carte graphique.', 3, 2)
 ON DUPLICATE KEY UPDATE
 name = VALUES(name),
-price = VALUES(price),
-stock = VALUES(stock),
+total = VALUES(total),
 image = VALUES(image),
-description = VALUES(description),
-category_id = VALUES(category_id);
+descrption = VALUES(descrption);
 
 
 
-INSERT INTO emateriel_dev.line_order (qty, total, product_id, order_id) VALUES
-(1, 1, 1200, 1), -- 1 x Laptop Gaming X1 pour la Commande #20230001
-(2, 1, 120, 1), -- 1 x Clavier Mécanique Pro pour la Commande #20230001
-(3, 1, 750, 2); -- 1 x Carte Graphique RTX 3080 pour la Commande #20230002;
+-- INSERT INTO emateriel_dev.line_order (qty, total, product_id, order_id) VALUES
+-- (1, 1, 1200, 1), -- 1 x Laptop Gaming X1 pour la Commande #20230001
+-- (2, 1, 120, 1), -- 1 x Clavier Mécanique Pro pour la Commande #20230001
+-- (3, 1, 750, 2); -- 1 x Carte Graphique RTX 3080 pour la Commande #20230002;
 
--- Données pour la table 'notice'
-INSERT INTO emateriel_dev.notice (name, product_id) VALUES
-('Manuel_Laptop_X1.pdf', 1),
-('Guide_Installation_RTX3080.html', 2),
-('Spécifications_Clavier_Pro.docx', 3);
+-- -- Données pour la table 'notice'
+-- INSERT INTO emateriel_dev.notice (name, product_id) VALUES
+-- ('Manuel_Laptop_X1.pdf', 1),
+-- ('Guide_Installation_RTX3080.html', 2),
+-- ('Spécifications_Clavier_Pro.docx', 3);

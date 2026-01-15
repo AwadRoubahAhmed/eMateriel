@@ -3,10 +3,10 @@ import multer from "multer";
 import Product_Controller from "../controller/product_controller";
 
 class Product_router {
-	private router = express.Router();
+	private router = express.Router(); 
 
 	// multer permet de gérer le transfert de fichiers;
-	private multer = multer({ dest: "public" });
+	private multer = multer({ dest: `${process.env.PUBLIC_DIR}/images` });
 
 	public getRoutes = () => {
 		//create a GET router it will be only accessible in get method
