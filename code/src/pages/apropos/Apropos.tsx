@@ -1,5 +1,3 @@
-import Footer from "../../components/footer/Footer";
-import Navbar from "../../components/navbar/Navbar";
 import Seo from "../../components/Seo";
 
 export default function Apropos() {
@@ -10,7 +8,7 @@ export default function Apropos() {
 				description="La page a propos du site eMatériel."
 				url="/apropos"
 			/>
-			<Navbar />
+			
 			<h1>À propos de nous</h1>
 			<p>
 				Bienvenue sur la page À propos de eMatériel. Nous sommes dédiés à
@@ -18,7 +16,7 @@ export default function Apropos() {
 			</p>
 
 
-			<Footer />
+			
 		</>
 	);
 }

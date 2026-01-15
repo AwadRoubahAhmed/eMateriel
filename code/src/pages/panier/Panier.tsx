@@ -1,5 +1,3 @@
-import Footer from "../../components/footer/Footer";
-import Navbar from "../../components/navbar/Navbar";
 import Seo from "../../components/Seo";
 
 export default function Panier() {
@@ -11,9 +9,9 @@ export default function Panier() {
 				url="/panier"
 			/>
 
-			<Navbar />
+			
 			<h1>Panier page</h1>
-			<Footer />
+			
 		</>
 	);
 }

@@ -12,66 +12,159 @@ class RouterService {
 				lazy: () => import("../layouts/root_layout"),
 				children: [
 					{
-						id: "home",
-						index: true,
+						id: "public",
 						path: "",
-						lazy: () => import("../pages/Homepage"),
+						lazy: () => import("../layouts/public_layout"),
+						children: [
+							{
+								id: "home",
+								index: true,
+								path: "",
+								lazy: () => import("../pages/Homepage"),
+							},
+							{
+								id: "products",
+								path: "products",
+								lazy: () => import("../pages/products/Products"),
+							},
+							{
+								id: "products_detail",
+								path: "products/:id",
+								lazy: () => import("../pages/products/ProductsDetail"),
+							},
+							{
+								id: "contact",
+								path: "contact",
+								lazy: () => import("../pages/contact/Contact"),
+							},
+							{
+								id: "apropos",
+								path: "apropos",
+								lazy: () => import("../pages/apropos/Apropos"),
+							},
+							{
+								id: "panier",
+								path: "panier",
+								lazy: () => import("../pages/panier/Panier"),
+							},
+							{
+								id: "connection",
+								path: "connection",
+								lazy: () => import("../pages/connection/Connection"),
+							},
+							{
+								id: "Error",
+								path: "*",
+								lazy: () => import("../pages/error/Error"),
+							},
+						]
 					},
 					{
-						id: "products",
-						path: "/products",
-						lazy: () => import("../pages/products/Products"),
-					},
-					{
-						id: "products_detail",
-						path: "/products/:id",
-						lazy: () => import("../pages/products/ProductsDetail"),
-					},
-					{
-						id: "contact",
-						path: "/contact",
-						lazy: () => import("../pages/contact/Contact"),
-					},
-					{
-						id: "apropos",
-						path: "/apropos",
-						lazy: () => import("../pages/apropos/Apropos"),
-					},
-					{
-						id: "panier",
-						path: "/panier",
-						lazy: () => import("../pages/panier/Panier"),
-					},
-					{
-						id: "connection",
-						path: "/connection",
-						lazy: () => import("../pages/connection/Connection"),
-					},
-					{
-						id: "Error",
-						path: "*",
-						lazy: () => import("../pages/error/Error"),
+						id: "admin",
+						path: "/admin",
+						lazy: () => import("../layouts/admin_layout"),
+						children: [
+							{
+								id: "admin-home",
+								path: "",
+								lazy: () => import("../pages/admin/index"),
+							},
+							{
+								id: "admin-product-home",
+								path: "products",
+								lazy: () => import("../pages/admin/product/index"),
+							},
+							{
+								id: "admin-product-form",
+								path: "product/form/:id?",
+								lazy: () => import("../pages/admin/product/form"),
+							},
+						]
 					},
 
-					// {
-					// 	id: "public_layaout",
-					// 	path: "/",
-					// 	lazy: () => import("../layouts/public_layout"),
-					// 	children: [
-					// 		{
-					// 			id: "home",
-					// 			index: true,
-					// 			path: "",
-					// 			lazy: () => import("../pages/Homepage"),
-					// 		},
-					// 		{
-					// 			id: "contact",
-					// 			path: "/contact",
-					// 			lazy: () => import("../pages/Contact"),
-					// 		},
-					// 	],
-					// },
-				],
+
+
+				]
+
+				// children: [
+				// 	{
+				// 		id: "home",
+				// 		index: true,
+				// 		path: "",
+				// 		lazy: () => import("../pages/Homepage"),
+				// 	},
+				// 	{
+				// 		id: "products",
+				// 		path: "/products",
+				// 		lazy: () => import("../pages/products/Products"),
+				// 	},
+				// 	{
+				// 		id: "products_detail",
+				// 		path: "/products/:id",
+				// 		lazy: () => import("../pages/products/ProductsDetail"),
+				// 	},
+				// 	{
+				// 		id: "contact",
+				// 		path: "/contact",
+				// 		lazy: () => import("../pages/contact/Contact"),
+				// 	},
+				// 	{
+				// 		id: "apropos",
+				// 		path: "/apropos",
+				// 		lazy: () => import("../pages/apropos/Apropos"),
+				// 	},
+				// 	{
+				// 		id: "panier",
+				// 		path: "/panier",
+				// 		lazy: () => import("../pages/panier/Panier"),
+				// 	},
+				// 	{
+				// 		id: "connection",
+				// 		path: "/connection",
+				// 		lazy: () => import("../pages/connection/Connection"),
+				// 	},
+				// 	{
+				// 		id: "Error",
+				// 		path: "*",
+				// 		lazy: () => import("../pages/error/Error"),
+				// 	},
+				// 	{
+				// 		id: "admin-home",
+				// 		path: "/admin",
+				// 		lazy: () => import("../pages/admin/index"),
+				// 	},
+				// 	{
+				// 		id: "admin-product-home",
+				// 		path: "/admin/products",
+				// 		lazy: () => import("../pages/admin/product/index"),
+				// 	},
+				// 	{
+				// 		id: "admin-product-form",
+				// 		path: "/admin/products/form/:id?",
+				// 		lazy: () => import("../pages/admin/product/form"),
+				// 	},
+
+
+
+				// 	// {
+				// 	// 	id: "public_layaout",
+				// 	// 	path: "/",
+				// 	// 	lazy: () => import("../layouts/public_layout"),
+				// 	// 	children: [
+				// 	// 		{
+				// 	// 			id: "home",
+				// 	// 			index: true,
+				// 	// 			path: "",
+				// 	// 			lazy: () => import("../pages/Homepage"),
+				// 	// 		},
+				// 	// 		{
+				// 	// 			id: "contact",
+				// 	// 			path: "/contact",
+				// 	// 			lazy: () => import("../pages/Contact"),
+				// 	// 		},
+				// 	// 	],
+				// 	// },
+				// ],
 			},
 		] satisfies RSCRouteConfig;
 	};

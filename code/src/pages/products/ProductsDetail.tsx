@@ -1,6 +1,4 @@
 import { use } from "react";
-import Footer from "../../components/footer/Footer";
-import Navbar from "../../components/navbar/Navbar";
 import Seo from "../../components/Seo";
 import ApiProductService from "../../services/api_product_service";
 
@@ -17,14 +15,14 @@ export default function ProductsDetail({ params }) {
 				description="La page Products Detail"
 				url="/products"
 			/>
-			<Navbar />
+	
 			<h1>Products page</h1>
 
 			{
 				result.data?.name
 			}
 
-			<Footer />
+		
 		</>
 	);
 }

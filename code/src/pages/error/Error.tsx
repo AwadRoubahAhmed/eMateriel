@@ -1,5 +1,3 @@
-import Footer from "../../components/footer/Footer";
-import Navbar from "../../components/navbar/Navbar";
 import Seo from "../../components/Seo";
 
 export default function Error() {
@@ -10,10 +8,10 @@ export default function Error() {
         description="La page erreur du site eMatériel."
         url="/error"
       />
-      <Navbar />
+      
       <h1>Not Found This Page !</h1>
 
-      <Footer />
+     
     </section>
   )
 }

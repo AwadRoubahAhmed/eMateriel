@@ -19,5 +19,16 @@ class ApiProductService {
         const results = await response.json();
         return results;
     }
+
+    public insert = async (data:FormData): Promise<ApiResponse<null>> => {
+        const request = new
+            Request(`${import.meta.env.VITE_API_URL}/api/product/`, {
+                method: 'post',
+                body: data
+            });
+        const response = await fetch(request);
+        const results = await response.json();
+        return results;
+    }
 }
 export default ApiProductService;

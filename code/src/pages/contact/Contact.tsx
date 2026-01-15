@@ -4,17 +4,18 @@ import Seo from "../../components/Seo";
 
 export default function Contact() {
 	return (
-		<>  
-		    <Navbar/>
-			<h1>Contact Us</h1>
-			<p>If you have any questions, feel free to reach out!</p>
-
+		<>
 			<Seo
 				title="eMatériel - Contact"
 				description="La page de Contact"
 				url="/contact"
 			/>
-			<Footer /> 
+
+			<h1>Contact Us</h1>
+			<p>If you have any questions, feel free to reach out!</p>
+
+
+
 		</>
 	);
 }

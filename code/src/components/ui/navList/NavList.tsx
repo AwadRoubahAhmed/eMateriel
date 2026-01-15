@@ -25,6 +25,11 @@ export default function NavList() {
                         A propos
                     </Link>
                 </li>
+                <li>
+                    <Link className={styles.menu} to={"/admin"}>
+                        Admin
+                    </Link>
+                </li>
             </ul>
         </div>
     )

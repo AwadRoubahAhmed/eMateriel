@@ -8,6 +8,7 @@ import Payment_method_router from "../router/payment_method_router";
 import Product_router from "../router/products_router";
 import Role_router from "../router/role_router";
 import User_router from "../router/user_router";
+import cors from 'cors';
 
 class Server {
 	//properties
@@ -20,6 +21,12 @@ class Server {
 		//middlewares
 		// parser le corps des requetes HTTP en JSON
 		this.app.use(express.json());
+		
+		// CORS : autoriser l'accès aux données entre origines (protocole, sous-domaine, port)
+		this.app.use(cors({
+			origin: process.env.ORIGINS?.split(',')
+		}));
+
 
 		//connect router to application
 		// lier l'application Express au routeur
