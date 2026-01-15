@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import Product_Repository from "../repository/product_repository";
 import FileService from "../service/file_service";
+import type { Product } from "../../models/product";
 
 class Product_Controller {
 	//créer une methode a la route / en GET située dans le routeur
@@ -88,7 +89,7 @@ class Product_Controller {
 	};
 
 	//créer une methode a la route / en PUT => Update située dans le routeur
-	public update = async (req: Request, res: Response) => {
+	public update = async (req: Request, res: Response) => { 
 		console.log(req.body);
 
 		// req.files permet de recupérer les fichiers transférés
@@ -99,7 +100,15 @@ class Product_Controller {
 		const fileService = new FileService();
 
 		// renommer le fichier transféré et récupérer le nom complet;
-		const fullname = await fileService.rename(file)
+		let fullname
+
+		if (file) {
+			fullname = await fileService.rename(file)
+		} else {
+			fullname = (await new Product_Repository().selectOne(req.body) as Product).image
+		}
+
+		console.log(fullname)
 
 		//recuperer ma variable de route
 		//recuperation des resultats de la requete
