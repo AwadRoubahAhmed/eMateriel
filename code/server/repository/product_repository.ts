@@ -146,7 +146,7 @@ class Product_Repository {
 			//execute la requette
 			// si la requete possede des variables, utiliser le parametre de la methode;
 			//const [query] = await connection.execute(sql, data);
-			
+			 
 			// deuxieme requete;
 			//sql = ` SET @id = LAST_INSERT_ID();`
 			//const [query] = await connection.execute(sql);

@@ -54,16 +54,16 @@ class Product_Controller {
 	//créer une methode a la route / en GET située dans le routeur
 	public insert = async (req: Request, res: Response) => {
 		// req.files permet de recupérer les fichiers transférés
-		console.log(req.files)
+		// console.log(req.files)
 		const file = (req.files as Express.Multer.File[]).shift()as Express.Multer.File;
 
-		// instancier le service de fichier 
+		// // instancier le service de fichier 
 		const fileService = new FileService();
 
-		// renommer le fichier transféré et récupérer le nom complet;
+		// // renommer le fichier transféré et récupérer le nom complet;
 		const fullname = await fileService.rename(file)
 
-		console.log(req.body);
+		// console.log(req.body);
 
 		//recuperer ma variable de route
 		//recuperation des resultats de la requete

@@ -6,11 +6,11 @@ class FileService {
     // doit retouener le nom complet du fichier;
  
     public rename = async (file:Express.Multer.File) => {
-        console.log(file);
+        // console.log(file);
 
         // Ajouter l'extension au fichier
         const fullname = `${file.filename}.${(await fileTypeFromFile(file.path))?.ext}`
-        console.log(fullname)
+        // console.log(fullname)
 
         
 		// renommer le fichier avec le nom complet;

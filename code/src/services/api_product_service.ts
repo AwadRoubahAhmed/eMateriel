@@ -22,7 +22,7 @@ class ApiProductService {
 
     public insert = async (data:FormData): Promise<ApiResponse<null>> => {
         const request = new
-            Request(`${import.meta.env.VITE_API_URL}/api/product/`, {
+            Request(`${import.meta.env.VITE_API_URL}/api/product`, {
                 method: 'post',
                 body: data
             });

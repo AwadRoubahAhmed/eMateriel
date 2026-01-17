@@ -1,6 +1,6 @@
 'use client'
 
-import {  useId, useState } from "react";
+import {  useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form"
 import type { Product } from "../../../../models/product";
 import ApiProductService from "../../../services/api_product_service";
@@ -21,29 +21,38 @@ const AdminProductFormContent = ({ categories }: AdminProductFormContentProps) =
   // useNavigate permet de créer une rédirection
   const navigate = useNavigate()
 
+  // Stocker les messages d'erreurs de validation coté server
+  const [serverErrors, setServerErrors] = useState<Partial<Product>>();
+
+  // meessage lié a la soumission du formulaire
   const [message, setMessage] = useState<string>("")
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<Product>();
 
   // Comportements;
- 
+  useEffect(() => {
+    // normalizer les données saisie et se baser sur les données testées dans Flashpost pour que données..
+   
+   
+ }, [])
 
 
   const submitForm = async (data: Product) => {
-    console.log(data);
+    // console.log(data);
 
     const formData = new FormData();
     formData.set('id', data.id as unknown as string);
     formData.set('name', data.name);
-    formData.set('image', data.image);
+    formData.set('image', data.image[0]);
     formData.set('price', data.price as unknown as string);
     formData.set('description', data.description);
     formData.set('stock', data.stock as unknown as string);
     formData.set('category_id', data.category_id as unknown as string);
+// console.log(formData);
 
     const process = await new ApiProductService().insert(formData)
 
-    console.log(process);
+    // console.log(process);
 
     if ([200, 201].indexOf(process.status) !== -1) {
       navigate('/admin/products')

@@ -8,7 +8,7 @@ const AdminHome = () => {
         <Seo
             title="eMatériel - Panier"
             description="La page Panier"
-            url="/panier"
+            url="/panier" 
         />
 
       
