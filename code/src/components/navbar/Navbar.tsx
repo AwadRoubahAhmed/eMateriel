@@ -23,7 +23,7 @@ export default function Navbar() {
 
 	return (
 		<header className={styles.header}>
-			<nav className={styles.navbar}>
+			<nav className={styles.navbar} aria-label="Navigation principale">
 				{/* Logo */}
 				<Link to="/" className={styles.logoWrapper}>
 					<img src={logo} alt="eMatériel" className={styles.logo} />
@@ -37,10 +37,10 @@ export default function Navbar() {
 
 				{/* Icons */}
 				<div className={styles.icons}>
-					<Link to="/panier">
+					<Link to="/panier" aria-label="Voir le panier">
 						<FaCartArrowDown size={22} />
 					</Link>
-					<Link to="/connexion">
+					<Link to="/connexion" aria-label="Se connecter">
 						<FaUserAlt size={22} />
 					</Link>
 				</div>

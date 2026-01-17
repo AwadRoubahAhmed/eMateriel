@@ -12,10 +12,10 @@ export default function NavList({ isMenuOpen }: NavListProps) {
             className={`${styles.navList} ${isMenuOpen ? styles.mobileOpen : ""
                 }`}
         >
-            <li><Link to="/">Accueil</Link></li>
-            <li><Link to="/produits">Produits</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
-            <li><Link to="/apropos">À propos</Link></li>
+            <li role="none"><Link role="menuitem" to="/">Accueil</Link></li>
+            <li role="none"><Link role="menuitem" to="/produits">Produits</Link></li>
+            <li role="none"><Link role="menuitem" to="/contact">Contact</Link></li>
+            <li role="none"><Link role="menuitem" to="/apropos">À propos</Link></li>
         </ul>
     );
 }
