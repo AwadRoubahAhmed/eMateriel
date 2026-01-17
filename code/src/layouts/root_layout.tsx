@@ -14,7 +14,6 @@ export default function RootLayout() {
 			<body>
 				{/* Outlet : zone remplie par un autre contenu */}
 				<div className="container">
-					root
 					<Outlet />
 				</div>
 

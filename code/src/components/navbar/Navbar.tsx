@@ -1,31 +1,68 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { FaUserAlt } from "react-icons/fa";
 import { FaCartArrowDown } from "react-icons/fa6";
-
-import { Link } from "react-router-dom";
-import logo from "../../assets/images/eMatériel.png";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { IoCloseSharp } from "react-icons/io5";
 import styles from "./Navbar.module.css";
+import logo from "../../assets/images/eMatériel.png";
 import NavList from "../ui/navList/NavList";
 import Search from "../ui/search/Search";
 
 export default function Navbar() {
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+	const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+
+	/* Bonne pratique : bloquer le scroll en mobile */
+	useEffect(() => {
+		document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
+	}, [isMenuOpen]);
+
 	return (
-		<header>
+		<header className={styles.header}>
 			<nav className={styles.navbar}>
-				<div>
-					<Link to={"/"}>
-						<img className={styles.logo} src={logo} alt="logo eMatériel" />
+				{/* Logo */}
+				<Link to="/" className={styles.logoWrapper}>
+					<img src={logo} alt="eMatériel" className={styles.logo} />
+				</Link>
+
+				{/* Navigation */}
+				<NavList isMenuOpen={isMenuOpen} />
+
+				{/* Search */}
+				<Search />
+
+				{/* Icons */}
+				<div className={styles.icons}>
+					<Link to="/panier">
+						<FaCartArrowDown size={22} />
+					</Link>
+					<Link to="/connexion">
+						<FaUserAlt size={22} />
 					</Link>
 				</div>
-				<NavList />
-				<Search />
-				<div className={styles.icons}>
-					<div>
-						<Link to="/panier"><FaCartArrowDown size={24} /></Link>
-					</div>
-					<div>
-						<Link to="/connection"><FaUserAlt size={24} /></Link>     
-					</div>
-				</div>
+
+				{/* Hamburger / Close */}
+				<button
+					onClick={toggleMenu}
+					className={styles.menuButton}
+					aria-label="Menu"
+				>
+					{isMenuOpen ? (
+						<IoCloseSharp
+							size={28}
+							className={`${styles.menuIcon} ${styles.close}`}
+						/>
+					) : (
+						<GiHamburgerMenu
+							size={26}
+							className={`${styles.menuIcon} ${styles.burger}`}
+						/>
+					)}
+				</button>
 			</nav>
 		</header>
 	);

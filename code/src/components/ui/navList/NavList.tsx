@@ -1,36 +1,22 @@
-import { Link } from "react-router-dom"
-import styles from "./NavList.module.css"
+import { Link } from "react-router-dom";
+import styles from "./NavList.module.css";
 
-export default function NavList() {
-    return (
-        <div className={styles.navigation}>
-            <ul className={styles.navLinks}>
-                <li>
-                    <Link className={styles.menu} to={"/"}>
-                        Accueil
-                    </Link>
-                </li>
-                <li>
-                    <Link className={styles.menu} to={"/products"}>
-                        Produits
-                    </Link>
-                </li>
-                <li>
-                    <Link className={styles.menu} to={"/contact"}>
-                        Contact
-                    </Link>
-                </li>
-                <li>
-                    <Link className={styles.menu} to={"/apropos"}>
-                        A propos
-                    </Link>
-                </li>
-                <li>
-                    <Link className={styles.menu} to={"/admin"}>
-                        Admin
-                    </Link>
-                </li>
-            </ul>
-        </div>
-    )
+type NavListProps = {
+    isMenuOpen: boolean;
+    // closeMenu: () => void
 }
+
+export default function NavList({ isMenuOpen }: NavListProps) {
+    return (
+        <ul
+            className={`${styles.navList} ${isMenuOpen ? styles.mobileOpen : ""
+                }`}
+        >
+            <li><Link to="/">Accueil</Link></li>
+            <li><Link to="/produits">Produits</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/apropos">À propos</Link></li>
+        </ul>
+    );
+}
+
