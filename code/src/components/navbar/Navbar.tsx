@@ -12,8 +12,10 @@ import NavList from "../ui/navList/NavList";
 import Search from "../ui/search/Search";
 
 export default function Navbar() {
+	// States;
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+	// Comportements;
 	const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
 	/* Bonne pratique : bloquer le scroll en mobile */
@@ -21,6 +23,7 @@ export default function Navbar() {
 		document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
 	}, [isMenuOpen]);
 
+	// Affichage;
 	return (
 		<header className={styles.header}>
 			<nav className={styles.navbar} aria-label="Navigation principale">
@@ -58,7 +61,7 @@ export default function Navbar() {
 						/>
 					) : (
 						<GiHamburgerMenu
-							size={26}
+							size={28}
 							className={`${styles.menuIcon} ${styles.burger}`}
 						/>
 					)}

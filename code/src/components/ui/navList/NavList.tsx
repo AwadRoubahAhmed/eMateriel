@@ -13,9 +13,10 @@ export default function NavList({ isMenuOpen }: NavListProps) {
                 }`}
         >
             <li role="none"><Link role="menuitem" to="/">Accueil</Link></li>
-            <li role="none"><Link role="menuitem" to="/produits">Produits</Link></li>
+            <li role="none"><Link role="menuitem" to="/products">Produits</Link></li>
             <li role="none"><Link role="menuitem" to="/contact">Contact</Link></li>
             <li role="none"><Link role="menuitem" to="/apropos">À propos</Link></li>
+            <li role="none"><Link role="menuitem" to="/admin">Admin</Link></li>
         </ul>
     );
 }

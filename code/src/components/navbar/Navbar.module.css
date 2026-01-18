@@ -7,11 +7,9 @@
 .navbar {
 	min-height: 72px;
 	padding: 0 2rem;
-
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-
 	background-color: #ffffff;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
@@ -35,7 +33,11 @@
 }
 
 .icons a {
-	color: #111827;
+	color: #1f2937;
+}
+
+.icons a:hover {
+	color: #2563eb;
 }
 
 /* HAMBURGER ICON */
