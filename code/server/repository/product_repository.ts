@@ -19,7 +19,7 @@ class Product_Repository {
 			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice 
 			ON ${this.table}.id = notice.product_id
 			GROUP BY ${this.table}.id
-			;
+			; 
         `;
 		// try / catch : tente et recupere moi resultat et ou l'erreur
 		try {

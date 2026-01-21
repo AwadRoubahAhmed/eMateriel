@@ -7,7 +7,7 @@ class Product_router {
 
 	// multer permet de gérer le transfert de fichiers;
 	private multer = multer({ dest: `${process.env.PUBLIC_DIR}/images` });
-
+ 
 	public getRoutes = () => {
 		//create a GET router it will be only accessible in get method
 		this.router.get("/", new Product_Controller().index);

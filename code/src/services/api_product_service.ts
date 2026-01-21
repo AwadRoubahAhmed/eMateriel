@@ -9,7 +9,7 @@ class ApiProductService {
         const response = await fetch(request);
         const results = await response.json();
         return results;
-    }
+    } 
 
     // récupérer un produit
     public selectOne = async (id: number): Promise<ApiResponse<Product>> => {
