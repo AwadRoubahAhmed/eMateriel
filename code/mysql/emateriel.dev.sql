@@ -33,7 +33,7 @@ CREATE TABLE emateriel_dev.user(
 --  paiement
 CREATE TABLE emateriel_dev.payment_method(
     id TINYINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    mode_paiement VARCHAR(150) NOT NULL
 ) ;
 
 

@@ -10,7 +10,7 @@ INSERT INTO emateriel_dev.user (firstname, lastname, email, password, telephone,
 ('Pierre', 'Leroy', 'pierre.leroy@example.com', 'motdepassehash3', '0611121314', '5 Rue du Commerce, 31000 Toulouse', '5 Rue du Commerce, 31000 Toulouse', 2);
 
 -- Données pour la table 'payment_method'
-INSERT INTO emateriel_dev.payment_method ( name) VALUES
+INSERT INTO emateriel_dev.payment_method ( mode_paiement) VALUES
 ('Carte Bancaire'),
 ('PayPal'),
 ('Virement Bancaire');
