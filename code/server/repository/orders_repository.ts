@@ -46,7 +46,7 @@ class Orders_Repository {
 				result.line_orders =
 					(await new Line_order_Repository().selectInList(
 					result.line_order_ids
-					)) as Line_order[];
+					)) as Line_order[]; 
 				
 				
 				

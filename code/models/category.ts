@@ -7,6 +7,6 @@ type Category = {
 	
 	product_ids: string;
 	products: Product[];
-};
+}; 
 
 export type { Category };
