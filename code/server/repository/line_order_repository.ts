@@ -5,6 +5,7 @@ import MySQLService from "../service/mysql_service";
 import Orders_Repository from "./orders_repository";
 import Product_Repository from "./product_repository";
 
+
 class Line_order_Repository {
 	//NOM DE LA TABLE SQL
 	private table = "line_order";

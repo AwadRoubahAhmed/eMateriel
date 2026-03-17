@@ -4,7 +4,7 @@ import type { User } from "./user";
 
 type Orders = {
 	id: number;
-	name: string;
+	name: string; 
 	image: string;
 	total: number;
 	description: string;

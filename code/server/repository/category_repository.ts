@@ -17,7 +17,7 @@ class Category_Repository {
 			${this.table}.*, 
 			GROUP_CONCAT(product.id) AS product_ids 
             FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			JOIN ${process.env.MYSQL_DATABASE}.product
+			LEFT JOIN ${process.env.MYSQL_DATABASE}.product
 			ON ${this.table}.id = product.category_id
 			GROUP BY ${this.table}.id
 			;

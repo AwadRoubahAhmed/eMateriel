@@ -96,7 +96,7 @@ class Product_Repository {
 			WHERE  ${this.table}.id IN (${list})
 			GROUP BY ${this.table}.id
 			;
-        `;
+        `; 
 		// try / catch : tente et recupere moi resultat et ou l'erreur
 		try {
 			//execute la requette

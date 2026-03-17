@@ -13,6 +13,6 @@ type Product = {
 
 	notice_ids: string;
 	notices: Notice[];
-};
+}; 
 
 export type { Product };

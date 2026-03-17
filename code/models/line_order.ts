@@ -8,7 +8,7 @@ type Line_order = {
 	order_id: number;
 	order: Orders;
 	product_id: number;
-	product: Product;
+	product: Product; 
 };
 
 export type { Line_order };

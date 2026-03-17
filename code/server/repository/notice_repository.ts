@@ -7,7 +7,7 @@ class Notice_Repository {
 	//NOM DE LA TABLE SQL
 	private table = "notice";
 
-
+ 
 	//selectionner tous les enregistrements
 	public selectAll = async (): Promise<Notice[] | unknown> => {
 		//connexion au serveur MySQL
