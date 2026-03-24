@@ -1,104 +1,89 @@
 DROP DATABASE IF EXISTS emateriel_dev;
 
--- créer la base de données 
+CREATE DATABASE emateriel_dev
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
 
-CREATE DATABASE emateriel_dev;
+USE emateriel_dev;
 
--- Début du création des tables;
+-- source emateriel.dev.sql;source insert.dev.sql;
 
--- role
-CREATE TABLE IF NOT EXISTS emateriel_dev.role(
- id TINYINT  AUTO_INCREMENT,
- name VARCHAR(20) NOT NULL,
- PRIMARY KEY(id) 
-);
+-- TABLE ROLE
+CREATE TABLE role (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL
+) ENGINE=InnoDB;
 
--- user
-CREATE TABLE emateriel_dev.user(
-    id TINYINT AUTO_INCREMENT,
-    PRIMARY KEY(id),
+-- TABLE USER
+CREATE TABLE user (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     firstname VARCHAR(150) NOT NULL,
     lastname VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(150) NOT NULL,
-    telephone VARCHAR(20) ,
-    adresse_livraison  VARCHAR(150)  NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    telephone VARCHAR(20),
+    adresse_livraison VARCHAR(150) NOT NULL,
     adresse_facturation VARCHAR(150) NOT NULL,
-    role_id TINYINT,
-     FOREIGN KEY (role_id)
-       REFERENCES role(id)
-) ;
+    role_id INT UNSIGNED,
+    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
 
-
---  paiement
-CREATE TABLE emateriel_dev.payment_method(
-    id TINYINT AUTO_INCREMENT PRIMARY KEY,
+-- TABLE PAYMENT_METHOD
+CREATE TABLE payment_method (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mode_paiement VARCHAR(150) NOT NULL
-) ;
+) ENGINE=InnoDB;
 
-
--- category
-CREATE TABLE emateriel_dev.category(
-    id TINYINT AUTO_INCREMENT,
-    PRIMARY KEY(id),
+-- TABLE CATEGORY
+CREATE TABLE category (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT,
     INDEX(name)
-);
+) ENGINE=InnoDB;
 
--- product
-CREATE TABLE emateriel_dev.product(
-    id TINYINT UNSIGNED AUTO_INCREMENT,
-    PRIMARY KEY(id),
-    name VARCHAR(50)  NOT NULL,
-    image  VARCHAR(150) NOT NULL,
-    price SMALLINT UNSIGNED NOT NULL,
-    description TEXT,
-    stock SMALLINT UNSIGNED NOT NULL,
-    category_id TINYINT,
-    INDEX(name),
-    FOREIGN KEY (category_id) REFERENCES emateriel_dev.category(id)
-);
-
--- orders
-CREATE TABLE emateriel_dev.orders(
-     id TINYINT AUTO_INCREMENT,
-     PRIMARY KEY(id),
-     name  VARCHAR(50) NOT NULL,
-     image VARCHAR(255) NOT NULL,
-     total SMALLINT NOT NULL,
-     descrption TEXT,
-     user_id TINYINT,
-     payment_method_id TINYINT,
-     FOREIGN KEY (user_id) REFERENCES user(id),
-     FOREIGN KEY (payment_method_id) 
-       REFERENCES payment_method(id)
-);
-
--- line_order
-CREATE TABLE emateriel_dev.line_order(
-    id TINYINT AUTO_INCREMENT,
-    PRIMARY KEY(id),
-    qty SMALLINT  NOT NULL,
-    total  SMALLINT NOT NULL,
-    product_id TINYINT UNSIGNED,
-    order_id TINYINT,
-    FOREIGN KEY (product_id)
-       REFERENCES product(id),
-     FOREIGN KEY (order_id)
-       REFERENCES orders(id)
-);
-
--- notice
-CREATE TABLE emateriel_dev.notice(
-    id TINYINT AUTO_INCREMENT,
-    PRIMARY KEY(id),
+-- TABLE PRODUCT
+CREATE TABLE product (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-     product_id TINYINT UNSIGNED,
-   FOREIGN KEY (product_id)
-       REFERENCES product(id)
-);
+    image VARCHAR(150) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    stock INT UNSIGNED NOT NULL,
+    category_id INT UNSIGNED,
+    INDEX(name),
+    FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
 
--- Fin de la création de tables;
+-- TABLE ORDERS
+CREATE TABLE orders (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    description TEXT,
+    user_id INT UNSIGNED,
+    payment_method_id INT UNSIGNED,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (payment_method_id) REFERENCES payment_method(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- TABLE LINE_ORDER
+CREATE TABLE line_order (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    qty INT UNSIGNED NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    product_id INT UNSIGNED,
+    order_id INT UNSIGNED,
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 
+-- TABLE NOTICE
+CREATE TABLE notice (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    product_id INT UNSIGNED,
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

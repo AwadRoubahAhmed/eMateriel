@@ -1,30 +1,32 @@
--- Données pour la table 'role'
-INSERT INTO emateriel_dev.role (id, name) VALUES
+-- ROLE
+INSERT INTO role (id, name) VALUES
 (1, 'Administrateur'),
 (2, 'Client');
 
--- Données pour la table 'user'
-INSERT INTO emateriel_dev.user (firstname, lastname, email, password, telephone, adresse_livraison, adresse_facturation, role_id) VALUES
-('Jean', 'Dupont', 'jean.dupont@example.com', 'motdepassehash1', '0601020304', '10 Rue de la Paix, 75001 Paris', '10 Rue de la Paix, 75001 Paris', 2),
-('Marie', 'Curie', 'marie.curie@admin.com', 'motdepassehash2', '0705060708', '22 Avenue des Champs, 69002 Lyon', '22 Avenue des Champs, 69002 Lyon', 1),
-('Pierre', 'Leroy', 'pierre.leroy@example.com', 'motdepassehash3', '0611121314', '5 Rue du Commerce, 31000 Toulouse', '5 Rue du Commerce, 31000 Toulouse', 2);
+-- USER
+INSERT INTO user 
+(firstname, lastname, email, password, telephone, adresse_livraison, adresse_facturation, role_id)
+VALUES
+('Jean', 'Dupont', 'jean.dupont@example.com', 'motdepassehash1', '0601020304', '10 Rue de la Paix', '10 Rue de la Paix', 2),
+('Marie', 'Curie', 'marie.curie@admin.com', 'motdepassehash2', '0705060708', '22 Avenue des Champs', '22 Avenue des Champs', 1),
+('Pierre', 'Leroy', 'pierre.leroy@example.com', 'motdepassehash3', '0611121314', '5 Rue du Commerce', '5 Rue du Commerce', 2);
 
--- Données pour la table 'payment_method'
-INSERT INTO emateriel_dev.payment_method ( mode_paiement) VALUES
+-- PAYMENT METHOD
+INSERT INTO payment_method (mode_paiement) VALUES
 ('Carte Bancaire'),
 ('PayPal'),
 ('Virement Bancaire');
 
 -- Données pour la table 'category'
-INSERT INTO emateriel_dev.category (name, description) VALUES
+INSERT INTO category (name, description) VALUES
 ('Téléphones', 'Découvrez notre sélection de smartphones dernier cri, alliant performance, design et innovation. Des modèles haut de gamme aux appareils plus accessibles, trouvez le téléphone qui correspond à vos besoins : écrans haute résolution, appareils photo professionnels, batteries longue durée et fonctionnalités intelligentes.'),
 ('Tabettes', 'Explorez nos tablettes tactiles, idéales pour le travail, les loisirs ou la créativité. Légères, puissantes et polyvalentes, elles offrent une expérience immersive pour regarder des films, naviguer sur le web, dessiner ou travailler en déplacement.'),
 ('Ordinateurs', 'Souris, claviers, écrans et casques.Retrouvez une gamme complète d’ordinateurs portables et fixes, conçus pour répondre à tous vos besoins : bureautique, gaming, création graphique ou montage vidéo. Performances optimisées, écrans haute définition et autonomie prolongée pour une productivité sans limites.'),
 ('accessoires', 'Protégez et personnalisez votre smartphone avec nos accessoires indispensables : coques de protection, films écrans, chargeurs rapides, batteries externes, écouteurs sans fil et bien plus. Des solutions pratiques et stylées pour optimiser l’utilisation de votre appareil au quotidien.');
 
 
--- Données pour la table 'product'
-INSERT INTO emateriel_dev.product ( name, image, price, description, stock, category_id) VALUES
+-- PRODUCT
+INSERT INTO product ( name, image, price, description, stock, category_id) VALUES
 ('Iphone 17 Pro Max', 'iphone17proMax.png', 1270, 'Un iPhone moderne et performant, offrant une excellente fluidité, un design élégant et une autonomie optimisée pour un usage quotidien sans compromis.', 82, 1),
 ('Iphone 16 Pro', 'iphone16pro.png', 1070, 'Un smartphone premium combinant puissance, finesse et innovation, doté d’un écran fluide et de performances avancées pour les utilisateurs exigeants.', 48, 1),
 ('Iphone 15 Pro Max', 'iphone15proMax.png', 899, 'Le modèle haut de gamme d’Apple avec un écran immersif, un processeur ultra-puissant et un système photo professionnel pour des photos et vidéos de qualité exceptionnelle.', 135, 1),
@@ -70,25 +72,21 @@ INSERT INTO emateriel_dev.product ( name, image, price, description, stock, cate
 ('protection Iphone', 'protectionIphone.png', 200, 'Écran 10,1" HD, MediaTek Helio G85, 4 Go RAM, 64 Go stockage, Android 14.', 153, 4);
 
 
--- Données pour la table 'orders'
-INSERT INTO emateriel_dev.orders (name, image, total, descrption, user_id, payment_method_id) VALUES
-('Commande #20230001', 'order_1.png', 1320, 'un laptop et d\.', 1, 1),
-('Commande #20230002', 'order_2.png', 750, 'une carte graphique.', 3, 2)
-ON DUPLICATE KEY UPDATE
-name = VALUES(name),
-total = VALUES(total),
-image = VALUES(image),
-descrption = VALUES(descrption);
+-- ORDERS
+INSERT INTO orders (name, image, total, description, user_id, payment_method_id) VALUES
+('Commande #1', 'order1.png', 1320, 'Commande simple', 1, 1),
+('Commande #2', 'order2.png', 750, 'Deuxième commande', 3, 2);
 
 
 
--- INSERT INTO emateriel_dev.line_order (qty, total, product_id, order_id) VALUES
--- (1, 1, 1200, 1), -- 1 x Laptop Gaming X1 pour la Commande #20230001
--- (2, 1, 120, 1), -- 1 x Clavier Mécanique Pro pour la Commande #20230001
--- (3, 1, 750, 2); -- 1 x Carte Graphique RTX 3080 pour la Commande #20230002;
+-- LINE ORDER
+INSERT INTO line_order (qty, total, product_id, order_id) VALUES
+(1, 1270, 1, 1),
+(1, 920, 2, 2);
 
--- -- Données pour la table 'notice'
--- INSERT INTO emateriel_dev.notice (name, product_id) VALUES
--- ('Manuel_Laptop_X1.pdf', 1),
--- ('Guide_Installation_RTX3080.html', 2),
--- ('Spécifications_Clavier_Pro.docx', 3);
+
+-- INSERT NOTICE
+INSERT INTO notice (name, product_id) VALUES
+('Très satisfait', 1),
+('Bonne qualité', 2),
+('Confortable', 3);
