@@ -1,17 +1,18 @@
 .navList {
 	display: flex;
-	gap: 2rem;
+	gap: 1.2rem;
 	list-style: none;
 }
 
-.navList a {
-	font-weight: 500;
+.navLink {
 	color: #1f2937;
-	position: relative;
 	text-decoration: none;
+	font-weight: 500;
+	position: relative;
+	transition: color 0.3s;
 }
 
-.navList a::after {
+.navLink::after {
 	content: "";
 	position: absolute;
 	bottom: -4px;
@@ -22,14 +23,20 @@
 	transition: width 0.3s ease;
 }
 
-.navList a:hover::after {
+.navLink:hover::after {
 	width: 100%;
 }
 
-/* =====================
-   MOBILE MENU
-===================== */
+.active {
+	color: #2563eb;
+	font-weight: 600;
+}
 
+.active::after {
+	width: 100%;
+}
+
+/* MOBILE MENU */
 @media (max-width: 768px) {
 	.navList {
 		position: fixed;
@@ -37,8 +44,7 @@
 		left: 0;
 		width: 100%;
 		height: calc(100vh - 72px);
-		background-color: #444;
-		backdrop-filter: blur(6px);
+		background-color: rgba(0, 0, 0, 0.85);
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
@@ -46,19 +52,29 @@
 		transform: translateY(-12px) scale(0.96);
 		opacity: 0;
 		pointer-events: none;
-		transition: all 0.35s ease;
+		transition:
+			transform 0.35s ease,
+			opacity 0.35s ease;
+		z-index: 999;
 	}
 
 	.mobileOpen {
 		transform: translateY(0) scale(1);
-		opacity: 0.75;
+		opacity: 1;
 		pointer-events: auto;
 	}
 
-	.navList a {
+	.navLink {
 		font-size: 1.25rem;
 		font-weight: 600;
 		color: #ffffff;
-		text-decoration: none;
+	}
+
+	.navLink:hover::after {
+		width: 100%;
+	}
+
+	.active {
+		color: #2563eb;
 	}
 }

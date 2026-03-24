@@ -1,3 +1,4 @@
+/* HEADER */
 .header {
 	position: sticky;
 	top: 0;
@@ -14,18 +15,17 @@
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-
-/* Logo */
+/* LOGO */
 .logoWrapper {
 	flex-shrink: 0;
 }
 
 .logo {
 	width: 90px;
-	height: 80px;
+	height: auto;
 }
 
-/* Icons */
+/* ICONS */
 .icons {
 	display: flex;
 	align-items: center;
@@ -40,7 +40,70 @@
 	color: #2563eb;
 }
 
-/* HAMBURGER ICON */
+/* DROPDOWN */
+.dropdownWrapper {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+}
+.dropdownButton {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #1f2937;
+	display: flex;
+	align-items: center;
+	padding: 0;
+}
+.dropdownButton:hover {
+	color: #2563eb;
+}
+.dropdownMenu {
+	position: absolute;
+	right: 0;
+	top: 100%;
+	padding-top: 0.5rem;
+	z-index: 10;
+}
+
+.menuContent {
+	width: 100px;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 0.75rem 1.25rem;
+	background-color: #f1f5f9;
+	color: #6b7280;
+	border-radius: 0.375rem;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.itemMenu {
+	cursor: pointer;
+	transition: color 0.2s;
+}
+
+.itemMenu:hover {
+	color: #000000;
+}
+.cartWrapper {
+	position: relative;
+}
+.spanNum {
+	width: 1em;
+	height: 1em;
+	position: absolute;
+	right: -5px;
+	bottom: -5px;
+	text-align: center;
+	background-color: #000;
+	color: #fff;
+	line-height: 1 rem;
+	border-radius: 50%;
+	font-size: 16px;
+}
+
+/* HAMBURGER */
 .menuButton {
 	display: none;
 	background: none;
@@ -50,7 +113,9 @@
 
 .menuIcon {
 	color: #111827;
-	transition: transform 0.3s ease, opacity 0.2s ease;
+	transition:
+		transform 0.3s ease,
+		opacity 0.2s ease;
 }
 
 .burger {
@@ -71,10 +136,6 @@
 
 	.icons {
 		gap: 0.8rem;
-	}
-
-	.hamburger {
-		display: flex;
 	}
 
 	.menuButton {
