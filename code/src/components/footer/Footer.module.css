@@ -1,0 +1,139 @@
+.footer {
+	background: #00003e;
+	padding: 40px 60px;
+	font-family: sans-serif;
+	color: white;
+}
+.footerTop {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	margin-bottom: 40px;
+	gap: 20px;
+}
+/* .footerItem {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+} */
+
+.footerItem {
+	flex: 1 1 200px;
+}
+.titleItem {
+	padding: 15px 0px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+	.footerTop {
+		flex-direction: column;
+		gap: 15px;
+	}
+	.footerItem {
+		flex: 1 1 100%;
+	}
+}
+
+.footerMain {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 30px;
+}
+/* Tablette */
+@media (max-width: 992px) {
+	.footerMain {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+/* Mobile */
+@media (max-width: 600px) {
+	.footerMain {
+		grid-template-columns: 1fr;
+	}
+}
+.footerColumn {
+	margin: 15px;
+}
+.footerColumn > ul {
+	list-style: none;
+	padding: 0;
+}
+.footerColumn > ul > li {
+	margin-bottom: 8px;
+	cursor: pointer;
+}
+.links {
+	margin: 15px 0px;
+}
+.textColumn {
+	margin: 15px 0px;
+	line-height: 1.6;
+}
+.socials {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+.socials > svg {
+	margin-top: 20px;
+	cursor: pointer;
+}
+.textNewsletter {
+	margin: 15px 0px;
+	line-height: 1.6;
+}
+.newsletter input {
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+}
+.newsletter button {
+	width: 100%;
+	padding: 10px;
+	background: #fff;
+	color: #000;
+	border: none;
+	cursor: pointer;
+	margin-top: 15px;
+	font-size: 1.2rem;
+	border-radius: 10px;
+}
+.newsletter button:hover {
+	background: #ccc;
+	color: #000;
+	border: none;
+	cursor: pointer;
+	margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+	.newsletter input {
+		font-size: 14px;
+	}
+
+	.newsletter button {
+		font-size: 14px;
+	}
+}
+
+.footerBottom {
+	text-align: center;
+	margin-top: 30px;
+	font-size: 14px;
+}
+
+@media (max-width: 600px) {
+	.footer {
+		padding: 30px 20px;
+	}
+	.footerColumn h3 {
+		font-size: 16px;
+	}
+	.footerColumn ul li {
+		font-size: 14px;
+	}
+	.footerBottom {
+		font-size: 12px;
+	}
+}

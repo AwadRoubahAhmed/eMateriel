@@ -53,11 +53,30 @@ class RouterService {
 								lazy: () => import("../pages/connection/Connection"),
 							},
 							{
+								id: "conditions_generales",
+								path: "condition_generale",
+								lazy: () =>
+									import("../pages/ConditionsGenerales/ConditionsGenerales"),
+							},
+							{
+								id: "politique_confidentialite",
+								path: "Politique_Confidentialite",
+								lazy: () =>
+									import(
+										"../pages/PolitiqueConfidentialite/PolitiqueConfidentialite"
+									),
+							},
+							{
+								id: "faqs",
+								path: "FAQs",
+								lazy: () => import("../pages/FAQs/FAQs"),
+							},
+							{
 								id: "Error",
 								path: "*",
 								lazy: () => import("../pages/error/Error"),
 							},
-						]
+						],
 					},
 					{
 						id: "admin",
@@ -79,12 +98,9 @@ class RouterService {
 								path: "product/form/:id?",
 								lazy: () => import("../pages/admin/product/form"),
 							},
-						]
+						],
 					},
-
-
-
-				]
+				],
 
 				// children: [
 				// 	{
@@ -143,8 +159,6 @@ class RouterService {
 				// 		path: "/admin/products/form/:id?",
 				// 		lazy: () => import("../pages/admin/product/form"),
 				// 	},
-
-
 
 				// 	// {
 				// 	// 	id: "public_layaout",
