@@ -4,7 +4,8 @@ const Newsletter = () => {
 	return (
 		<div className={styles.newsletter}>
 			<p className={styles.textNewsletter}>
-				Subscribe to our newsletter to receive updates and exclusive offers.
+				 Inscrivez-vous à notre newsletter pour recevoir les nouveautés et
+				offres exclusives.
 			</p>
 			<input type="email" placeholder="Enter your email" />
 			<button type="button">Subscribe</button>

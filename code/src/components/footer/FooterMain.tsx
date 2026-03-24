@@ -6,6 +6,7 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styles from "./Footer.module.css";
+import FooterCategories from "./FooterCategories";
 import FooterColumn from "./FooterColumn";
 import Newsletter from "./Newsletter";
 
@@ -51,17 +52,7 @@ const FooterMain = () => {
 			</FooterColumn>
 
 			{/* Categories */}
-			<FooterColumn title="Categories">
-				<ul>
-					<li className={styles.links}>Mobiles</li>
-					<li className={styles.links}>Appliances</li>
-					<li className={styles.links}>Smartphones</li>
-					<li className={styles.links}>Air Conditioners</li>
-					<li className={styles.links}>Washing Machine</li>
-					<li className={styles.links}>Kitchen Appliances</li>
-					<li className={styles.links}>Gadget Accessories</li>
-				</ul>
-			</FooterColumn>
+			<FooterCategories />
 
 			{/* Newsletter */}
 			<FooterColumn title="Newsletter">

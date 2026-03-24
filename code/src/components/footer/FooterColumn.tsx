@@ -1,9 +1,15 @@
+import type { ReactNode } from "react";
 import styles from "./Footer.module.css";
 
-const FooterColumn = ({ title, children }) => {
+type FooterColumnProps = {
+	title: string;
+	children: ReactNode;
+};
+
+const FooterColumn = ({ title, children }: FooterColumnProps) => {
 	return (
 		<div className={styles.footerColumn}>
-			<h3>{title}</h3>
+			<h3 className={styles.titleItem}>{title}</h3>
 			{children}
 		</div>
 	);
