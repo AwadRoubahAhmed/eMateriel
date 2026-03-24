@@ -1,3 +1,36 @@
+import heroImage from "../../../public/images/hero_shop.png";
+import styles from "./Hero.module.css";
+
 export default function Hero() {
-	return <div>Hero section</div>;
+	return (
+		<section className={styles.hero}>
+			<div className={styles.leftSide}>
+				<div className={styles.contentWrapper}>
+					<div className={styles.content}>
+						<span className={styles.divider}></span>
+						<p className={styles.title}>NOS MEILLEURS VENTES</p>
+					</div>
+
+					<h1 className={styles.heading}>
+						Nouveautés <br /> Collection 2026
+					</h1>
+
+					<div className={styles.textContent}>
+						<button type="button" className={styles.cta}>
+							ACHETEZ MAINTENANT
+						</button>
+						<span className={styles.divider}></span>
+					</div>
+				</div>
+			</div>
+
+			<div className={styles.rightSide}>
+				<img
+					className={styles.image}
+					src={heroImage}
+					alt="Produits tendances"
+				/>
+			</div>
+		</section>
+	);
 }
