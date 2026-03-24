@@ -2,51 +2,104 @@ import type { Request, Response } from "express";
 import Orders_Repository from "../repository/orders_repository";
 
 class Orders_Controller {
-	//créer une methode a la route / en GET située dans le routeur
+	// GET ALL
 	public index = async (_req: Request, res: Response) => {
-		//recuperation des resultats de la requete
 		const resultat = await new Orders_Repository().selectAll();
-		//si la requete renvoie une erreur, c'est ok, mais en prod faut pas
+
 		if (resultat instanceof Error) {
 			res.status(400).json({
 				status: 400,
 				message:
 					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
 			});
-			//si return est seul comme ceci, il stoppe le lancement
 			return;
 		}
 
-		//renvoyer une reponse avec un code de statut HTTP et au format JSON
-		res.status(200).json({
-			status: 200,
-			message: "ok",
-			data: resultat,
-		});
+		res.status(200).json({ status: 200, message: "ok", data: resultat });
 	};
 
-	//créer une methode a la route / en GET située dans le routeur
+	// GET ONE
 	public selectOne = async (req: Request, res: Response) => {
-		//recuperer ma variable de route
-		//recuperation des resultats de la requete
-		const resultat = await new Orders_Repository().selectOne(req.params);
-		//si la requete renvoie une erreur, c'est ok, mais en prod faut pas
+		const id = Number(req.params.id);
+		const resultat = await new Orders_Repository().selectOne({ id });
+
 		if (resultat instanceof Error) {
 			res.status(400).json({
 				status: 400,
 				message:
 					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
 			});
-			//si return est seul comme ceci, il stoppe le lancement
 			return;
 		}
 
-		//renvoyer une reponse avec un code de statut HTTP et au format JSON
-		res.status(200).json({
-			status: 200,
-			message: "ok",
-			data: resultat,
-		});
+		if (!resultat) {
+			res.status(404).json({ status: 404, message: "Order not found" });
+			return;
+		}
+
+		res.status(200).json({ status: 200, message: "ok", data: resultat });
+	};
+
+	// CREATE
+	public create = async (req: Request, res: Response) => {
+		const resultat = await new Orders_Repository().create(req.body);
+
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			return;
+		}
+
+		res
+			.status(201)
+			.json({ status: 201, message: "Order created", id: resultat });
+	};
+
+	// UPDATE
+	public update = async (req: Request, res: Response) => {
+		const id = Number(req.params.id);
+		const resultat = await new Orders_Repository().update(id, req.body);
+
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			return;
+		}
+
+		if (!resultat) {
+			res.status(404).json({ status: 404, message: "Order not found" });
+			return;
+		}
+
+		res.status(200).json({ status: 200, message: "Order updated" });
+	};
+
+	// DELETE
+	public delete = async (req: Request, res: Response) => {
+		const id = Number(req.params.id);
+		const resultat = await new Orders_Repository().delete(id);
+
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			return;
+		}
+
+		if (!resultat) {
+			res.status(404).json({ status: 404, message: "Order not found" });
+			return;
+		}
+
+		res.status(200).json({ status: 200, message: "Order deleted" });
 	};
 }
 

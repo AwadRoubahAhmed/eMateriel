@@ -1,3 +1,4 @@
+import type { ResultSetHeader } from "mysql2";
 import type { Category } from "../../models/category";
 import type { Product } from "../../models/product";
 import MySQLService from "../service/mysql_service";
@@ -71,6 +72,67 @@ class Category_Repository {
 			const resultat = (query as Category[]).shift();
 			//Retourner les resultats
 			return resultat;
+		} catch (error) {
+			return error;
+		}
+	};
+
+	public create = async (
+		data: Partial<Category>,
+	): Promise<number | unknown> => {
+		const connection = await new MySQLService().connect();
+
+		const sql = `
+			INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
+			(name, description)
+			VALUES (:name, :description);
+		`;
+
+		try {
+			const [result] = await connection.execute<ResultSetHeader>(sql, data);
+			return result.insertId; // retourne l'id créé
+		} catch (error) {
+			return error;
+		}
+	};
+
+	public update = async (
+		id: number,
+		data: Partial<Category>,
+	): Promise<boolean | unknown> => {
+		const connection = await new MySQLService().connect();
+
+		const sql = `
+			UPDATE ${process.env.MYSQL_DATABASE}.${this.table}
+			SET
+				name = :name,
+				description = :description
+			WHERE id = :id;
+		`;
+
+		try {
+			const [result] = await connection.execute<ResultSetHeader>(sql, {
+				...data,
+				id,
+			});
+
+			return result.affectedRows > 0;
+		} catch (error) {
+			return error;
+		}
+	};
+
+	public delete = async (id: number): Promise<boolean | unknown> => {
+		const connection = await new MySQLService().connect();
+
+		const sql = `
+			DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table}
+			WHERE id = :id;
+		`;
+
+		try {
+			const [result] = await connection.execute<ResultSetHeader>(sql, { id });
+			return result.affectedRows > 0;
 		} catch (error) {
 			return error;
 		}

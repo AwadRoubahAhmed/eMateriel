@@ -48,6 +48,81 @@ class Category_Controller {
 			data: resultat,
 		});
 	};
+
+	public create = async (req: Request, res: Response) => {
+		const resultat = await new Category_Repository().create(req.body);
+
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			return;
+		}
+
+		res.status(201).json({
+			status: 201,
+			message: "Category created",
+			id: resultat,
+		});
+	};
+
+	public update = async (req: Request, res: Response) => {
+		const id = Number(req.params.id);
+
+		const resultat = await new Category_Repository().update(id, req.body);
+
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			return;
+		}
+
+		if (!resultat) {
+			res.status(404).json({
+				status: 404,
+				message: "Category not found",
+			});
+			return;
+		}
+
+		res.status(200).json({
+			status: 200,
+			message: "Category updated",
+		});
+	};
+
+	public delete = async (req: Request, res: Response) => {
+		const id = Number(req.params.id);
+
+		const resultat = await new Category_Repository().delete(id);
+
+		if (resultat instanceof Error) {
+			res.status(400).json({
+				status: 400,
+				message:
+					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
+			});
+			return;
+		}
+
+		if (!resultat) {
+			res.status(404).json({
+				status: 404,
+				message: "Category not found",
+			});
+			return;
+		}
+
+		res.status(200).json({
+			status: 200,
+			message: "Category deleted",
+		});
+	};
 }
 
 export default Category_Controller;
