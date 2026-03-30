@@ -10,7 +10,12 @@ export default defineConfig(({ mode }) => {
 		},
 		test: {
 			// ne pas oublier de définir le troisième argument
+			// Chargée les variables d'environnement à partir du fichier .env
+
 			env: loadEnv(mode, process.cwd(), ""),
+
+			// Exclure les dossiers "node_modules" et "mongodb" des tests
+			exclude: ["node_modules", "mongodb"],
 		},
 		plugins: [
 			rsc({
