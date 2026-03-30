@@ -1,5 +1,7 @@
+import Delivery from "../components/delivery/Delivery";
 import Hero from "../components/hero/Hero";
 import Seo from "../components/Seo";
+import styles from "./Homepage.module.css";
 
 export default function Homepage() {
 	return (
@@ -17,7 +19,9 @@ export default function Homepage() {
 				<Hero />
 
 				{/* Contenu de la page d'accueil */}
-				<h1>Contenu de la page d'accueil</h1>
+				<div className={styles.delivery}>
+					<Delivery />
+				</div>
 
 				{/* Composant Footer */}
 			</div>
