@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
 			env: loadEnv(mode, process.cwd(), ""),
 
 			// Exclure les dossiers "node_modules" et "mongodb" des tests
-			exclude: ["node_modules", "mongodb"],
+			exclude: ["node_modules", "mongodb", "server/index.ts"],
 		},
 		plugins: [
 			rsc({
