@@ -6,7 +6,7 @@ CREATE DATABASE emateriel_test
 
 USE emateriel_test;
 
--- source emateriel.dev.sql;source insert.dev.sql;
+-- source emateriel.test.sql;source insert.test.sql;
 
 -- TABLE ROLE
 CREATE TABLE role (
