@@ -14,13 +14,15 @@ export default defineConfig(({ mode }) => {
 
 			env: loadEnv(mode, process.cwd(), ""),
 
-			// Exclure les dossiers "node_modules" et "mongodb" des tests
-			exclude: ["node_modules", "mongodb", "server/index.ts"],
-			// Inclure tous les fichiers TypeScript dans le dossier "server" pour les tests
-			include: ["server/**/*.ts"],
+			coverage: {
+				// Exclure les dossiers "node_modules" et "mongodb" des tests
+				exclude: ["node_modules", "mongodb", "server/index.ts"],
+				// Inclure tous les fichiers TypeScript dans le dossier "server" pour les tests
+				include: ["server/**/*.ts"],
 
-			// Dossier d'exportaion de la couverture de code en HTML
-			reportsDirectory: "tests/coverage",
+				// Dossier d'exportaion de la couverture de code en HTML
+				reportsDirectory: "tests/coverage",
+			},
 		},
 		plugins: [
 			rsc({

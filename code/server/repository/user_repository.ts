@@ -59,6 +59,25 @@ class User_Repository {
 			return error;
 		}
 	};
+	// 	const connection = await new MySQLService().connect();
+
+	// 	const sql = `
+	//     INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
+	//     (email, password, role_id)
+	//     VALUES (:email, :password, :role_id);
+	// `;
+
+	// 	try {
+	// 		const [result] = await connection.execute<ResultSetHeader>(sql, data);
+
+	// 		return {
+	// 			id: result.insertId,
+	// 			...data,
+	// 		} as User;
+	// 	} catch (error) {
+	// 		return error as Error;
+	// 	}
+	// };
 }
 
 export default User_Repository;
