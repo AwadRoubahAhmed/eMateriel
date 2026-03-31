@@ -22,3 +22,17 @@ services:
     tty: true
     working_dir: /app
     restart: always
+
+  mongodb:
+    image: mongo:8.2
+    ports:
+      - 27017:27017
+    volumes:
+      - ./code/mongodb:/app - ./mongodb-data:/data/db
+    # si mongoDB redémarre en permanence, changer le dossier cible
+    # - ./mongodb-data:/data
+    working_dir: /app
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    restart: always
