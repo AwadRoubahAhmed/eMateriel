@@ -15,7 +15,7 @@ class Product_router {
 		this.router.post(
 			"/",
 			this.multer.any(),
-			new AuthorizationMiddlewere().authorize(["admin"]),
+			// new AuthorizationMiddlewere().authorize(["admin"]),
 			new Product_Controller().insert,
 		);
 
