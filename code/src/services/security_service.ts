@@ -28,6 +28,8 @@ class SecurityService {
 	};
 
 	public setToken = async (user: User | null) => {
+		console.log(import.meta);
+		
 		const secret = new TextEncoder().encode(import.meta.env.VITE_JWT_SECRET);
 		const alg = "HS256";
 		if (user) {

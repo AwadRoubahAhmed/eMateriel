@@ -66,6 +66,7 @@ class SecurityController {
 			(results as User).password,
 			req.body.password,
 		);
+
 		if (!passwordIsValid) {
 			res.status(401).json({
 				status: 401,
@@ -75,6 +76,7 @@ class SecurityController {
 						: "Unauthorized-Invalid password",
 			});
 		}
+
 
 		res.status(200).json({
 			status: 200,

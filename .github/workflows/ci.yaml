@@ -1,0 +1,35 @@
+
+# nom du flux de travail / workflow
+name: emateriel ci workflow
+
+# déclenchement du workflow
+on: 
+    # déclenchement lorsqu'une branche est modifiée 
+    push:
+        branches: [master]
+
+# travaux / jobs / taches
+jobs:
+
+    # nom de la tache
+    CI: 
+        # choix de l'OS
+        runs-on: unbuntu-latest
+
+        # étapes de la tache
+        steps:
+            -
+                name: Cloner le repository
+                uses: actions/checkout@v6 
+
+            -
+                name: Installer les dépendances
+                working-directory: code
+                run: npm ci
+            
+            -
+                name: Compiler le projet React
+                working-directory: code
+                run: npm build
+
+

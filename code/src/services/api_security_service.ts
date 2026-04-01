@@ -1,11 +1,11 @@
 import type { User } from "../../models/user";
 import type { ApiResponse } from "../models/api_response";
+import type { LoginResponse } from "../models/props/auth_props";
 
 
 class SecurityAPiService {
     // préfixe de l'api
     private prefix = "/api";
-
     //sélection de tous les enregistrement
     public register = async (data:Partial<User>): Promise<ApiResponse<User>> => {
         // configurer la requete HTTP
@@ -31,7 +31,7 @@ class SecurityAPiService {
         return results;
     };
 
-    public login = async (data:Partial<User>): Promise<ApiResponse<string>> => {
+    public login = async (data:Partial<User>): Promise<ApiResponse<LoginResponse>> => {
         const request = new Request(
             `${import.meta.env.VITE_API_URL}${this.prefix}/login`,
             {

@@ -59,7 +59,7 @@ class Server {
 
 		this.router.use("/api/role", new Role_router().getRoutes());
 
-		this.router.use("/api/security", new SecurityRouter().getRoutes());
+		this.router.use("/api", new SecurityRouter().getRoutes());
 
 		this.router.use("/api/user", new User_router().getRoutes());
 

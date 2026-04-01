@@ -48,10 +48,15 @@ class RouterService {
 								lazy: () => import("../pages/panier/Panier"),
 							},
 							{
-								id: "connection",
-								path: "connection",
-								lazy: () => import("../pages/connection/Connection"),
-							},
+                               id: "login",
+                               path: "login",
+                               lazy: () => import("../pages/auth/login/Login"),
+                           },
+						{
+                              id: "register",
+                              path: "register",
+                              lazy: () => import("../pages/auth/register/Register"),
+                    },
 							{
 								id: "conditions_generales",
 								path: "condition_generale",

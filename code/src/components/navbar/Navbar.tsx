@@ -5,7 +5,7 @@ import { FaCartArrowDown, FaSearch, FaUserAlt } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCloseSharp } from "react-icons/io5";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/eMatériel.png";
 import NavList from "../ui/navList/NavList";
 import styles from "./Navbar.module.css";
@@ -14,6 +14,8 @@ export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+	const navigate = useNavigate();
+
 	const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 	const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
@@ -21,6 +23,12 @@ export default function Navbar() {
 	useEffect(() => {
 		document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
 	}, [isMenuOpen]);
+
+	const handleDropdownNavigation = (path: string) => {
+		setIsDropdownOpen(false);
+		setIsMenuOpen(false);
+		navigate(path);
+	};
 
 	return (
 		<header className={styles.header}>
@@ -47,7 +55,7 @@ export default function Navbar() {
 						<button
 							type="button"
 							className={styles.dropdownButton}
-							onClick={() => toggleDropdown()}
+							onClick={toggleDropdown}
 							aria-haspopup="true"
 							aria-expanded={isDropdownOpen}
 						>
@@ -57,9 +65,20 @@ export default function Navbar() {
 						{isDropdownOpen && (
 							<div className={styles.dropdownMenu}>
 								<div className={styles.menuContent}>
-									<p className={styles.itemMenu}>My Profile</p>
-									<p className={styles.itemMenu}>Orders</p>
-									<p className={styles.itemMenu}>Logout</p>
+									<button
+										type="button"
+										className={styles.itemMenu}
+										onClick={() => handleDropdownNavigation("/login")}
+									>
+										Se connecter
+									</button>
+									<button
+										type="button"
+										className={styles.itemMenu}
+										onClick={() => handleDropdownNavigation("/register")}
+									>
+										S’inscrire
+									</button>
 								</div>
 							</div>
 						)}
