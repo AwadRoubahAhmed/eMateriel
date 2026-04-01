@@ -31,4 +31,12 @@ jobs:
                 working-directory: code
                 run: npm build
 
+            -
+                name: Démarer MYSQL et importer la base de donées de tests
+                working-directory: code
+                run: |
+                  sudo service msql start
+                  mysql -uroot -proot -e "source emateriel.test.sql;"
+                  mysql -uroot -proot -e "insert.test.sql;"
+                  mysql -uroot -proot -e "show databases;"
 
