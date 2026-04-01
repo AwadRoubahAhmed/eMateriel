@@ -3,46 +3,39 @@ name: emateriel ci workflow
 
 # déclenchement du workflow
 on: 
-    # déclenchement lorsqu'une branche est modifiée 
-    push:
-        branches: [master]
+  # déclenchement lorsqu'une branche est modifiée 
+  push:
+    branches: [master]
 
 # travaux / jobs / taches
 jobs:
 
-    # nom de la tache
-    CI: 
-        # choix de l'OS
-        runs-on: unbuntu-latest
+  # nom de la tache
+  CI: 
+    # choix de l'OS
+    runs-on: ubuntu-latest
 
-        # étapes de la tache
-        steps:
-            -
-                name: Cloner le repository
-                uses: actions/checkout@v6 
+    # étapes de la tache
+    steps:
+      - name: Cloner le repository
+        uses: actions/checkout@v4
 
-            -
-                name: Installer les dépendances
-                working-directory: code
-                run: npm ci
-            
-            -
-                name: Compiler le projet React
-                working-directory: code
-                run: npm build
+      - name: Installer les dépendances
+        working-directory: code
+        run: npm ci
+      
+      - name: Compiler le projet React
+        working-directory: code
+        run: npm run build
 
-            -
-                name: Démarer MYSQL et importer la base de donées de tests
-                working-directory: code
-                run: |
-                  sudo service msql start
-                  mysql -uroot -proot -e "source emateriel.test.sql;"
-                  mysql -uroot -proot -e "insert.test.sql;"
-                  mysql -uroot -proot -e "show databases;"
-
-            
-             -
-                name: Exécuter les tests
-                working-directory: code
-                run: npm run test
-
+      - name: Démarrer MYSQL et importer la base de données de tests
+        working-directory: code
+        run: |
+          sudo service mysql start
+          mysql -uroot -proot -e "source emateriel.test.sql;"
+          mysql -uroot -proot -e "source insert.test.sql;"
+          mysql -uroot -proot -e "show databases;"
+      
+      - name: Exécuter les tests
+        working-directory: code
+        run: npm run test
