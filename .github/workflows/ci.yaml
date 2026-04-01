@@ -40,3 +40,9 @@ jobs:
                   mysql -uroot -proot -e "insert.test.sql;"
                   mysql -uroot -proot -e "show databases;"
 
+            
+             -
+                name: Exécuter les tests
+                working-directory: code
+                run: npm run test
+
