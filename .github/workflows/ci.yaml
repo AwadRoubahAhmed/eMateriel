@@ -29,12 +29,13 @@ jobs:
         run: npm run build
 
       - name: Démarrer MYSQL et importer la base de données de tests
-        working-directory: code
+        working-directory: code/mysql
         run: |
           sudo service mysql start
-          mysql -uroot -proot -e "source mysql/emateriel.test.sql;"
-          mysql -uroot -proot -e "source mysql/insert.test.sql;"
-          mysql -uroot -proot -e "show databases;"
+          mysql -uroot -proot -e "CREATE DATABASE emateriel_test;"
+          mysql -uroot -proot emateriel_test < emateriel.test.sql
+          mysql -uroot -proot emateriel_test < insert.test.sql 
+          mysql -uroot -proot -e "SHOW DATABASES;"
       
       - name: Exécuter les tests
         working-directory: code
