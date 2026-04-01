@@ -5,11 +5,23 @@ class Category_router {
 	private router = express.Router();
 
 	public getRoutes = () => {
-		//create a get router it will be only accessible in get method
-		this.router.get("/", new Category_Controller().index);
-		this.router.get("/:id", new Category_Controller().selectOne);
+		const controller = new Category_Controller();
+
+		// GET
+		this.router.get("/", controller.index);
+		this.router.get("/:id", controller.selectOne);
+
+		// POST
+		this.router.post("/", controller.create);
+
+		// PUT
+		this.router.put("/:id", controller.update);
+
+		// DELETE
+		this.router.delete("/:id", controller.delete);
 
 		return this.router;
 	};
 }
+
 export default Category_router;

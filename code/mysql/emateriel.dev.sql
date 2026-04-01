@@ -17,13 +17,13 @@ CREATE TABLE role (
 -- TABLE USER
 CREATE TABLE user (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    firstname VARCHAR(150) NOT NULL,
-    lastname VARCHAR(150) NOT NULL,
+    firstname VARCHAR(150),
+    lastname VARCHAR(150),
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     telephone VARCHAR(20),
-    adresse_livraison VARCHAR(150) NOT NULL,
-    adresse_facturation VARCHAR(150) NOT NULL,
+    adresse_livraison VARCHAR(150),
+    adresse_facturation VARCHAR(150),
     role_id INT UNSIGNED,
     FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;

@@ -14,7 +14,7 @@ class SecurityRepository {
 		const sql = `
 			INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
 			(email, password, role_id)
-			VALUES (:email, :password, :role_id)
+			VALUES (:email, :password, 2)
 		`;
 
 		try {

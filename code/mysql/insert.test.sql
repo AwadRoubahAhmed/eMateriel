@@ -8,7 +8,7 @@ INSERT INTO user
 (firstname, lastname, email, password, telephone, adresse_livraison, adresse_facturation, role_id)
 VALUES
 ('Jean', 'Dupont', 'jean.dupont@example.com', 'motdepassehash1', '0601020304', '10 Rue de la Paix', '10 Rue de la Paix', 2),
-('Marie', 'Curie', 'marie.curie@admin.com', 'motdepassehash2', '0705060708', '22 Avenue des Champs', '22 Avenue des Champs', 1),
+('Marie', 'Curie', 'marie.curie@admin.com', '$argon2i$v=19$m=16,t=2,p=1$amYwYWtHSFlIdEVCOUlYeg$lXnnF43UW6BaMb/DamiPZg', '0705060708', '22 Avenue des Champs', '22 Avenue des Champs', 1),
 ('Pierre', 'Leroy', 'pierre.leroy@example.com', 'motdepassehash3', '0611121314', '5 Rue du Commerce', '5 Rue du Commerce', 2);
 
 -- PAYMENT METHOD

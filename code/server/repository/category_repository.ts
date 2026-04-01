@@ -46,7 +46,6 @@ class Category_Repository {
 	};
 
 	//selectionner un enregistrement
-	//data represente unepartie des proprietésdu type grace au PARTIAL
 	public selectOne = async (
 		data: Partial<Category>,
 	): Promise<Category[] | unknown> => {
