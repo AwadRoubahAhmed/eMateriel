@@ -3,10 +3,10 @@ import type { User } from "../../models/user";
 
 class SecurityService {
 	//stocker l'utilisateur
-	private static user: User | null;
+	private static user: User | null = null;
 
 	//STocker le JWT token
-	private static token: string | null;
+	private static token: string | null = null;
 
 	//deconnexion
 	public logout = () => {
@@ -29,7 +29,7 @@ class SecurityService {
 
 	public setToken = async (user: User | null) => {
 		console.log(import.meta);
-		
+
 		const secret = new TextEncoder().encode(import.meta.env.VITE_JWT_SECRET);
 		const alg = "HS256";
 		if (user) {

@@ -5,9 +5,14 @@ import styles from "./NavList.module.css";
 type NavListProps = {
 	isMenuOpen: boolean;
 	closeMenu: () => void;
+	onLogout: () => void;
 };
 
-export default function NavList({ isMenuOpen, closeMenu }: NavListProps) {
+export default function NavList({
+	isMenuOpen,
+	closeMenu,
+	onLogout,
+}: NavListProps) {
 	// const links = [
 	// 	{ to: "/", label: "Accueil", end: true },
 	// 	{ to: "/products", label: "Nos Produits" },
@@ -18,8 +23,10 @@ export default function NavList({ isMenuOpen, closeMenu }: NavListProps) {
 	const navigate = useNavigate();
 
 	const handleLogout = () => {
+		new SecurityService().logout();
+		onLogout();
 		closeMenu();
-		navigate("/logout	");
+		navigate("/");
 	};
 
 	return (

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { FaCartArrowDown, FaSearch, FaUserAlt } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCloseSharp } from "react-icons/io5";
-
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/eMatériel.png";
 import NavList from "../ui/navList/NavList";
@@ -13,7 +12,7 @@ import styles from "./Navbar.module.css";
 export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+	const [_refresh, setRefresh] = useState(0);
 	const navigate = useNavigate();
 
 	const toggleMenu = () => setIsMenuOpen((prev) => !prev);
@@ -42,6 +41,7 @@ export default function Navbar() {
 				<NavList
 					isMenuOpen={isMenuOpen}
 					closeMenu={() => setIsMenuOpen(false)}
+					onLogout={() => setRefresh((prev) => prev + 1)}
 				/>
 
 				{/* Icons */}
