@@ -1,0 +1,18 @@
+.switch {
+	text-align: center;
+	margin-top: 1.5rem;
+	font-size: 0.9rem;
+	color: #666;
+}
+
+.switch button {
+	background: none;
+	border: none;
+	color: #4a90e2;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+.switch button:hover {
+	text-decoration: underline;
+}

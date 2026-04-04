@@ -48,15 +48,15 @@ class RouterService {
 								lazy: () => import("../pages/panier/Panier"),
 							},
 							{
-                               id: "login",
-                               path: "login",
-                               lazy: () => import("../pages/auth/login/Login"),
-                           },
-						{
-                              id: "register",
-                              path: "register",
-                              lazy: () => import("../pages/auth/register/Register"),
-                    },
+								id: "auth",
+								path: "auth",
+								lazy: () => import("../pages/auth/AuthPage/AuthPage"),
+							},
+							{
+								id: "logout",
+								path: "logout",
+								lazy: () => import("../pages/Logout"),
+							},
 							{
 								id: "conditions_generales",
 								path: "condition_generale",
@@ -90,7 +90,7 @@ class RouterService {
 						children: [
 							{
 								id: "admin-home",
-								path: "",
+								path: "dashboard",
 								lazy: () => import("../pages/admin/index"),
 							},
 							{

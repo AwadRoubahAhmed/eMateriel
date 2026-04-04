@@ -68,17 +68,17 @@ export default function Navbar() {
 									<button
 										type="button"
 										className={styles.itemMenu}
-										onClick={() => handleDropdownNavigation("/login")}
+										onClick={() => handleDropdownNavigation("/auth")}
 									>
 										Se connecter
 									</button>
-									<button
+									{/* <button
 										type="button"
 										className={styles.itemMenu}
-										onClick={() => handleDropdownNavigation("/register")}
+										onClick={() => handleDropdownNavigation("/auth")}
 									>
 										S’inscrire
-									</button>
+									</button> */}
 								</div>
 							</div>
 						)}

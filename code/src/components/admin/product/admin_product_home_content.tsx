@@ -16,7 +16,7 @@ const AdminProductHomeContent = () => {
 
 			{results.map((data) => {
 				return (
-					<div>
+					<div key={data.id}>
 						<p>
 							{data.id}: {data.name}
 						</p>

@@ -1,23 +1,23 @@
 import { Link } from "react-router-dom";
+// import Guard from "../../components/Guard";
 import Seo from "../../components/Seo";
 
-
-
 const AdminHome = () => {
-    return <>
-        <Seo
-            title="eMatériel - Panier"
-            description="La page Panier"
-            url="/panier" 
-        />
+	return (
+		<>
+			<Seo
+				title="eMatériel - Panier"
+				description="La page Panier"
+				url="/panier"
+			/>
 
-      
-        <h1>AdminHome</h1>
+			{/* <Guard roles={["admin"]} />
+ */}
+			<h1>AdminHome</h1>
 
-        <Link to={'/admin/products'}>Produits</Link>
-       
-    </>;
+			<Link to={"/admin/products"}>Produits</Link>
+		</>
+	);
+};
 
-}
-
-export default AdminHome
+export default AdminHome;

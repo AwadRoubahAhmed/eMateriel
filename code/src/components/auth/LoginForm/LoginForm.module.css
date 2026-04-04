@@ -1,0 +1,55 @@
+.form {
+	display: flex;
+	flex-direction: column;
+}
+
+.field {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 1rem;
+}
+
+.field label {
+	font-weight: 500;
+	margin-bottom: 0.3rem;
+}
+
+.field input {
+	padding: 0.6rem;
+	border-radius: 6px;
+	border: 1px solid #ccc;
+	font-size: 1rem;
+	transition: border 0.2s;
+}
+
+.field input:focus {
+	border-color: #4a90e2;
+	outline: none;
+}
+
+button {
+	margin-top: 1rem;
+	padding: 0.7rem;
+	background-color: #4a90e2;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+button:hover {
+	background-color: #357ab8;
+}
+
+button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.error {
+	color: red;
+	font-size: 0.9rem;
+	margin-top: 0.5rem;
+}
