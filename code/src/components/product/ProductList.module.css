@@ -1,0 +1,27 @@
+.gridContainer {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 2rem;
+	padding: 2rem;
+	max-width: 1200px;
+	width: 100%;
+	margin: 0 auto;
+	box-sizing: border-box;
+}
+
+/* Tablette */
+@media (max-width: 1024px) {
+	.gridContainer {
+		grid-template-columns: repeat(2, 1fr);
+		padding: 1.5rem;
+	}
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+	.gridContainer {
+		grid-template-columns: 1fr;
+		padding: 1rem;
+		gap: 1.5rem;
+	}
+}
