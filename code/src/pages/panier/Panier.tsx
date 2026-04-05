@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Line_order } from "../../../models/line_order";
 import Seo from "../../components/Seo";
+import Title from "../../components/title/Title";
 import ApiLineOrderService from "../../services/api_line_order_service";
 import ApiOrdersService from "../../services/api_orders_service";
 import styles from "./Panier.module.css";
@@ -64,7 +65,7 @@ export default function Panier() {
 			/>
 
 			<section className={styles.container}>
-				<h1 className={styles.title}>Mon Panier</h1>
+				<Title title="Votre Panier" />
 
 				{lineOrders.length ? (
 					<div className={styles.layout}>

@@ -1,6 +1,7 @@
 import ProductList from "../../components/product/ProductList";
 import Seo from "../../components/Seo";
-import styles from "./Products.module.css";
+import Title from "../../components/title/Title";
+
 
 export default function Products() {
 	return (
@@ -11,7 +12,7 @@ export default function Products() {
 				url="/products"
 			/>
 
-			<h1 className={styles.productPage}>Nos Produits</h1>
+			<Title title="Nos Produits" />
 			<ProductList />
 		</>
 	);
