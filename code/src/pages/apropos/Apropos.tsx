@@ -1,22 +1,26 @@
+"use client";
+
+import AboutIntro from "../../components/apropos/AboutIntro";
+import AboutValues from "../../components/apropos/AboutValues";
 import Seo from "../../components/Seo";
+import Title from "../../components/title/Title";
+import styles from "./Apropos.module.css";
 
 export default function Apropos() {
 	return (
 		<>
 			<Seo
-				title="eMatériel - A propos"
-				description="La page a propos du site eMatériel."
+				title="eMatériel - À propos"
+				description="Découvrez notre entreprise spécialisée en matériel électronique"
 				url="/apropos"
 			/>
-			
-			<h1>À propos de nous</h1>
-			<p>
-				Bienvenue sur la page À propos de eMatériel. Nous sommes dédiés à
-				fournir les meilleurs services et produits à nos clients.
-			</p>
 
+			<section className={styles.container}>
+				<Title title="À propos de nous" />
 
-			
+				<AboutIntro />
+				<AboutValues />
+			</section>
 		</>
 	);
 }
