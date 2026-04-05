@@ -9,6 +9,12 @@ class Orders_router {
 		this.router.get("/", new Orders_Controller().index);
 		this.router.get("/:id", new Orders_Controller().selectOne);
 
+		this.router.post("/:id", new Orders_Controller().create);
+
+		this.router.put("/:id", new Orders_Controller().update);
+
+		this.router.delete("/:id", new Orders_Controller().delete);
+
 		return this.router;
 	};
 }
