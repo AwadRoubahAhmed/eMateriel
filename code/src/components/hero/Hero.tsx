@@ -1,3 +1,6 @@
+"use client";
+
+import { Link } from "react-router-dom";
 import heroImage from "../../../public/images/hero_shop.png";
 import styles from "./Hero.module.css";
 
@@ -16,9 +19,9 @@ export default function Hero() {
 					</h1>
 
 					<div className={styles.textContent}>
-						<button type="button" className={styles.cta}>
+						<Link to="/products" className={styles.cta}>
 							ACHETEZ MAINTENANT
-						</button>
+						</Link>
 						<span className={styles.divider}></span>
 					</div>
 				</div>
