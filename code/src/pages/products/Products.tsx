@@ -1,5 +1,6 @@
 import ProductList from "../../components/product/ProductList";
 import Seo from "../../components/Seo";
+import styles from "./Products.module.css";
 
 export default function Products() {
 	return (
@@ -9,10 +10,9 @@ export default function Products() {
 				description="La page Products"
 				url="/products"
 			/>
-			
-			<h1>Products page</h1>
+
+			<h1 className={styles.productPage}>Nos Produits</h1>
 			<ProductList />
-			
 		</>
 	);
 }

@@ -6,7 +6,6 @@ export default function ProductsDetail({ params }) {
 	console.log(params);
 
 	const result = use(new ApiProductService().selectOne(params.id));
-		console.log(result);
 
 	return (
 		<>
