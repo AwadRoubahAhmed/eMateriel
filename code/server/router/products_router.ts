@@ -20,14 +20,14 @@ class Product_router {
 		);
 
 		this.router.put(
-			"/",
+			"/:id",
 			this.multer.any(),
 			new AuthorizationMiddlewere().authorize(["admin"]),
 			new Product_Controller().update,
 		);
 
 		this.router.delete(
-			"/",
+			"/:id",
 			new AuthorizationMiddlewere().authorize(["admin"]),
 			new Product_Controller().delete,
 		);

@@ -9,6 +9,12 @@ class Line_order_router {
 		this.router.get("/", new Line_order_Controller().index);
 		this.router.get("/:id", new Line_order_Controller().selectOne);
 
+		this.router.post("/", new Line_order_Controller().create);
+
+		this.router.put("/:id", new Line_order_Controller().update);
+
+		this.router.delete("/:id", new Line_order_Controller().delete);
+
 		return this.router;
 	};
 }
