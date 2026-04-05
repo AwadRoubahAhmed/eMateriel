@@ -1,0 +1,114 @@
+.section {
+	padding: 40px 20px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.heading {
+	font-size: 2rem;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+/* GRID catégories */
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 20px;
+}
+
+/* CARD catégorie */
+.card {
+	background: white;
+	border-radius: 12px;
+	padding: 20px;
+	text-decoration: none;
+	color: inherit;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transition: 0.3s;
+}
+
+.card:hover {
+	transform: translateY(-5px);
+}
+
+/* TEXT */
+.title {
+	font-size: 1.3rem;
+	margin-bottom: 10px;
+}
+
+.description {
+	font-size: 0.9rem;
+	color: #666;
+}
+
+/* PRODUITS */
+.products {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 20px;
+}
+
+.loading {
+	text-align: center;
+	padding: 20px;
+	font-size: 1.2rem;
+}
+.section {
+	padding: 40px 20px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.heading {
+	font-size: 2rem;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+/* GRID catégories */
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 20px;
+}
+
+/* CARD catégorie */
+.card {
+	background: white;
+	border-radius: 12px;
+	padding: 20px;
+	text-decoration: none;
+	color: inherit;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transition: 0.3s;
+}
+
+.card:hover {
+	transform: translateY(-5px);
+}
+
+/* TEXT */
+.title {
+	font-size: 1.3rem;
+	margin-bottom: 10px;
+}
+
+.description {
+	font-size: 0.9rem;
+	color: #666;
+}
+
+/* PRODUITS */
+.products {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 20px;
+}
+
+.loading {
+	text-align: center;
+	padding: 20px;
+	font-size: 1.2rem;
+}

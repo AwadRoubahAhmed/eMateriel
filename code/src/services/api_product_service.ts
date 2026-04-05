@@ -20,6 +20,15 @@ class ApiProductService {
 		return results;
 	};
 
+	public getByCategory = async (
+		categoryId: string,
+	): Promise<ApiResponse<Product[]>> => {
+		const response = await fetch(
+			`${import.meta.env.VITE_API_URL}/api/product/category/${categoryId}`,
+		);
+		return await response.json();
+	};
+
 	public insert = async (data: FormData): Promise<ApiResponse<null>> => {
 		const request = new Request(`${import.meta.env.VITE_API_URL}/api/product`, {
 			method: "post",

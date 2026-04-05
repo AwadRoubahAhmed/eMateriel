@@ -1,3 +1,4 @@
+// import CategorySection from "../components/category/CategorySection";
 import Delivery from "../components/delivery/Delivery";
 import Hero from "../components/hero/Hero";
 import Seo from "../components/Seo";
@@ -22,6 +23,9 @@ export default function Homepage() {
 				<div className={styles.delivery}>
 					<Delivery />
 				</div>
+
+				{/* Section Catégories */}
+				{/* <CategorySection /> */}
 
 				{/* Composant Footer */}
 			</div>
