@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "react-router-dom";
 import type { ProductListItemProps } from "../../models/props/ProductListItemProps";
 import styles from "./ProductListItem.module.css";

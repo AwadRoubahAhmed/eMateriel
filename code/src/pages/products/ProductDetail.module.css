@@ -1,7 +1,7 @@
 .section {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+	padding: 2rem;
+	max-width: 1200px;
+	margin: 0 auto;
 }
 .container {
 	display: grid;
@@ -27,7 +27,7 @@
 	transition: color 0.2s ease;
 }
 .backButton:hover {
-    color: #1e40af;
+	color: #1e40af;
 }
 
 /* IMAGE */
@@ -103,7 +103,6 @@
 	cursor: pointer;
 	transition: all 0.2s ease;
 }
-
 .buyButton:hover {
 	background-color: #1e40af;
 	transform: translateY(-2px);
