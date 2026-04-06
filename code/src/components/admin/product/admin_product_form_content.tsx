@@ -4,12 +4,14 @@ import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import type { Product } from "../../../../models/product";
+import type { ApiResponse } from "../../../models/api_response";
 import type { AdminProductFormContentProps } from "../../../models/props/admin_product_form_content_props";
 import ApiProductService from "../../../services/api_product_service";
 import Seo from "../../Seo";
 
 const AdminProductFormContent = ({
 	categories,
+	product,
 }: AdminProductFormContentProps) => {
 	// States;
 	const idId = useId();
@@ -24,10 +26,10 @@ const AdminProductFormContent = ({
 	const navigate = useNavigate();
 
 	// Stocker les messages d'erreurs de validation coté server
-	const [serverErrors, setServerErrors] = useState<Partial<Product>>();
+	// const [serverErrors, setServerErrors] = useState<Partial<Product>>();
 
 	// meessage lié a la soumission du formulaire
-	const [message, setMessage] = useState<string>("");
+	const [_message, setMessage] = useState<string>("");
 
 	const {
 		register,
@@ -38,12 +40,19 @@ const AdminProductFormContent = ({
 
 	// Comportements;
 	useEffect(() => {
-		// normalizer les données saisie et se baser sur les données testées dans Flashpost pour que données..
-	}, []);
+		if (product) {
+			reset({
+				id: product.id,
+				name: product.name,
+				price: product.price,
+				description: product.description,
+				stock: product.stock,
+				category_id: product.category_id,
+			});
+		}
+	}, [product, reset]);
 
 	const submitForm = async (data: Product) => {
-		// console.log(data);
-
 		const formData = new FormData();
 		formData.set("id", data.id as unknown as string);
 		formData.set("name", data.name);
@@ -52,11 +61,18 @@ const AdminProductFormContent = ({
 		formData.set("description", data.description);
 		formData.set("stock", data.stock as unknown as string);
 		formData.set("category_id", data.category_id as unknown as string);
-		// console.log(formData);
 
-		const process = await new ApiProductService().insert(formData);
+		if (data.image && data.image.length > 0) {
+			formData.set("image", data.image[0]);
+		}
 
-		// console.log(process);
+		let process: ApiResponse<null>;
+
+		if (product) {
+			process = await new ApiProductService().update(product.id, formData);
+		} else {
+			process = await new ApiProductService().insert(formData);
+		}
 
 		if ([200, 201].indexOf(process.status) !== -1) {
 			navigate("/admin/products");
@@ -170,7 +186,9 @@ const AdminProductFormContent = ({
 
 				<div>
 					<input type="hidden" id={idId} {...register("id")} />
-					<button type="submit">Ajouter un produit</button>
+					<button type="submit">
+						{product ? "Modifier le produit" : "Ajouter un produit"}
+					</button>
 				</div>
 			</form>
 		</>

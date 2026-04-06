@@ -1,0 +1,17 @@
+.AdminHome {
+	background-color: #f2f2f2;
+	padding: 2rem;
+	width: 100%;
+	height: 100%;
+}
+.AdminButtons {
+	height: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+	margin-top: 2rem;
+}
+.AdminProductDelete {
+	padding: 2rem;
+}

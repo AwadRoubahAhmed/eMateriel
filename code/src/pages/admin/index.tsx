@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 // import Guard from "../../components/Guard";
 import Seo from "../../components/Seo";
+import Title from "../../components/title/Title";
+import styles from "./admin.module.css";
 
 const AdminHome = () => {
 	return (
@@ -12,10 +14,20 @@ const AdminHome = () => {
 			/>
 
 			{/* <Guard roles={["admin"]} />
- */}
-			<h1>AdminHome</h1>
+			 */}
+			<section className={styles.AdminHome}>
+				<Title title="AdminHome" />
 
-			<Link to={"/admin/products"}>Produits</Link>
+				<div className={styles.AdminButtons}>
+					<Link to={"/admin/products"}>Produits</Link>
+
+					<Link to={"/admin/products"}>Categories</Link>
+
+					<Link to={"/admin/products"}>User</Link>
+
+					<Link to={"/admin/products"}>Commandes</Link>
+				</div>
+			</section>
 		</>
 	);
 };

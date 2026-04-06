@@ -1,0 +1,113 @@
+.AdminProductHomeContent {
+	padding: 2rem;
+	background-color: #f8f9fa;
+	min-height: 80vh;
+}
+
+/* Bouton Ajouter */
+.buttons {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 1rem;
+}
+
+.addBtn {
+	background-color: #2563eb;
+	color: white;
+	margin-bottom: 1rem;
+	padding: 0.5rem 1rem;
+	border-radius: 6px;
+	text-decoration: none;
+	transition: background 0.3s;
+}
+
+.addBtn:hover {
+	background-color: #1e40af;
+}
+
+/* Grid des produits */
+.productsGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 1.5rem;
+}
+
+.productCard {
+	background-color: white;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.2s;
+}
+
+.productCard:hover {
+	transform: translateY(-4px);
+}
+
+.productImage {
+	width: 100%;
+	height: 150px;
+	object-fit: cover;
+}
+
+.productInfo {
+	padding: 1rem;
+	flex-grow: 1;
+}
+
+.productInfo h3 {
+	margin: 0;
+	font-size: 1.1rem;
+	color: #111827;
+}
+
+.productInfo p {
+	margin: 0.25rem 0;
+	font-size: 0.9rem;
+	color: #4b5563;
+}
+
+/* Actions */
+.productActions {
+	display: flex;
+	justify-content: space-around;
+	padding: 0.5rem 1rem;
+	background-color: #f3f4f6;
+}
+
+.editBtn,
+.deleteBtn {
+	padding: 0.3rem 0.6rem;
+	border-radius: 4px;
+	text-decoration: none;
+	font-size: 0.85rem;
+	color: white;
+}
+
+.editBtn {
+	background-color: #10b981;
+}
+
+.editBtn:hover {
+	background-color: #059669;
+}
+
+.deleteBtn {
+	background-color: #ef4444;
+}
+
+.deleteBtn:hover {
+	background-color: #b91c1c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.productCard {
+		flex-direction: column;
+	}
+	.productImage {
+		height: 120px;
+	}
+}
