@@ -15,20 +15,20 @@ class Product_router {
 		this.router.post(
 			"/",
 			this.multer.any(),
-			// new AuthorizationMiddlewere().authorize(["admin"]),
+			new AuthorizationMiddlewere().authorize(["Administrateur"]),
 			new Product_Controller().insert,
 		);
 
 		this.router.put(
 			"/:id",
 			this.multer.any(),
-			new AuthorizationMiddlewere().authorize(["admin"]),
+			new AuthorizationMiddlewere().authorize(["Administrateur"]),
 			new Product_Controller().update,
 		);
 
 		this.router.delete(
 			"/:id",
-			new AuthorizationMiddlewere().authorize(["admin"]),
+			new AuthorizationMiddlewere().authorize(["Administrateur"]),
 			new Product_Controller().delete,
 		);
 

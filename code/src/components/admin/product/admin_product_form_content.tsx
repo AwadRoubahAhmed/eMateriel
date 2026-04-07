@@ -7,13 +7,18 @@ import type { Product } from "../../../../models/product";
 import type { ApiResponse } from "../../../models/api_response";
 import type { AdminProductFormContentProps } from "../../../models/props/admin_product_form_content_props";
 import ApiProductService from "../../../services/api_product_service";
+import SecurityService from "../../../services/security_service";
 import Seo from "../../Seo";
+import Title from "../../title/Title";
+import styles from "./adminForm.module.css";
 
 const AdminProductFormContent = ({
 	categories,
 	product,
 }: AdminProductFormContentProps) => {
-	// States;
+	const security = new SecurityService();
+	const token = security.getToken();
+
 	const idId = useId();
 	const nameId = useId();
 	const imageId = useId();
@@ -22,13 +27,7 @@ const AdminProductFormContent = ({
 	const stockId = useId();
 	const categoryId = useId();
 
-	// useNavigate permet de créer une rédirection
 	const navigate = useNavigate();
-
-	// Stocker les messages d'erreurs de validation coté server
-	// const [serverErrors, setServerErrors] = useState<Partial<Product>>();
-
-	// meessage lié a la soumission du formulaire
 	const [_message, setMessage] = useState<string>("");
 
 	const {
@@ -38,7 +37,6 @@ const AdminProductFormContent = ({
 		formState: { errors },
 	} = useForm<Product>();
 
-	// Comportements;
 	useEffect(() => {
 		if (product) {
 			reset({
@@ -56,45 +54,58 @@ const AdminProductFormContent = ({
 		const formData = new FormData();
 		formData.set("id", data.id as unknown as string);
 		formData.set("name", data.name);
-		formData.set("image", data.image[0]);
+		if (data.image && data.image.length > 0)
+			formData.set("image", data.image[0]);
 		formData.set("price", data.price as unknown as string);
 		formData.set("description", data.description);
 		formData.set("stock", data.stock as unknown as string);
 		formData.set("category_id", data.category_id as unknown as string);
 
-		if (data.image && data.image.length > 0) {
-			formData.set("image", data.image[0]);
-		}
-
 		let process: ApiResponse<null>;
+		console.log("JWT token:", token);
+
+		console.log("JWT token:", token);
+		console.log("Product ID:", product?.id);
 
 		if (product) {
-			process = await new ApiProductService().update(product.id, formData);
+			process = await new ApiProductService().update(
+				product.id,
+				formData,
+				token ?? undefined,
+			);
 		} else {
-			process = await new ApiProductService().insert(formData);
+			process = await new ApiProductService().insert(
+				formData,
+				token ?? undefined,
+			);
 		}
 
-		if ([200, 201].indexOf(process.status) !== -1) {
+		if ([200, 201].includes(process.status)) {
 			navigate("/admin/products");
-		} else if ([400].indexOf(process.status) !== -1) {
+		} else if (process.status === 400) {
 			setMessage(process.message as unknown as string);
 		}
 	};
 
 	return (
-		<>
+		<div className={styles.container}>
 			<Seo
 				title="eMatériel - Panier"
 				description="La page Panier"
 				url="/panier"
 			/>
+			<Title title="Formulaire d'ajout de produit" />
 
-			<h1>AdminFormHome</h1>
-
-			<form encType="multipart/form-data" onSubmit={handleSubmit(submitForm)}>
-				{/* name */}
-				<div>
-					<label htmlFor={nameId}>Nom :</label>
+			<form
+				className={styles.form}
+				encType="multipart/form-data"
+				onSubmit={handleSubmit(submitForm)}
+			>
+				{/* Name */}
+				<div className={styles.formGroup}>
+					<label htmlFor={nameId} className={styles.label}>
+						Nom :
+					</label>
 					<input
 						type="text"
 						id={nameId}
@@ -109,69 +120,89 @@ const AdminProductFormContent = ({
 								message: "Le nom doit comporter 50 caractères au maximum",
 							},
 						})}
+						className={styles.input}
 					/>
-					<small role="alert">{errors.name?.message}</small>
+					<small role="alert" className={styles.errorMessage}>
+						{errors.name?.message}
+					</small>
 				</div>
-				{/* image */}
-				<div>
-					<label htmlFor={imageId}>Image :</label>
+
+				{/* Image */}
+				<div className={styles.formGroup}>
+					<label htmlFor={imageId} className={styles.label}>
+						Image :
+					</label>
 					<input
 						type="file"
-						id={nameId}
+						id={imageId}
 						{...register("image", {
 							required: "Le champs image est obligatoire",
-							maxLength: {
-								value: 150,
-								message: "L'image doit comporter 150 caractères au maximum",
-							},
 						})}
+						className={styles.fileInput}
 					/>
-					<small>{errors.image?.message}</small>
+					<small className={styles.errorMessage}>{errors.image?.message}</small>
 				</div>
-				{/* price */}
-				<div>
-					<label htmlFor={priceId}>Price :</label>
+
+				{/* Price */}
+				<div className={styles.formGroup}>
+					<label htmlFor={priceId} className={styles.label}>
+						Price :
+					</label>
 					<input
 						type="number"
 						id={priceId}
 						{...register("price", {
 							required: "Le champs price est obligatoire",
 						})}
+						className={styles.input}
 					/>
-					<small>{errors.price?.message}</small>
+					<small className={styles.errorMessage}>{errors.price?.message}</small>
 				</div>
-				{/* description */}
-				<div>
-					<label htmlFor={descriptionId}>Description :</label>
+
+				{/* Description */}
+				<div className={styles.formGroup}>
+					<label htmlFor={descriptionId} className={styles.label}>
+						Description :
+					</label>
 					<textarea
 						id={descriptionId}
 						{...register("description", {
 							required: "Le champs description est obligatoire",
 						})}
+						className={styles.textarea}
 					/>
-					<small>{errors.description?.message}</small>
+					<small className={styles.errorMessage}>
+						{errors.description?.message}
+					</small>
 				</div>
-				{/* stock */}
-				<div>
-					<label htmlFor={stockId}>Stock :</label>
+
+				{/* Stock */}
+				<div className={styles.formGroup}>
+					<label htmlFor={stockId} className={styles.label}>
+						Stock :
+					</label>
 					<input
 						type="number"
 						id={stockId}
 						{...register("stock", {
-							required: "Le champs image est obligatoire",
+							required: "Le champs stock est obligatoire",
 						})}
+						className={styles.input}
 					/>
-					<small>{errors.stock?.message}</small>
+					<small className={styles.errorMessage}>{errors.stock?.message}</small>
 				</div>
-				{/* category_id */}
-				<div>
-					<label htmlFor={categoryId}>Catégorie :</label>
 
+				{/* Category */}
+				<div className={styles.formGroup}>
+					<label htmlFor={categoryId} className={styles.label}>
+						Catégorie :
+					</label>
 					<select
 						id={categoryId}
 						{...register("category_id", {
 							required: "La catégorie est obligatoire",
 						})}
+						className={styles.select}
 					>
 						<option value="">Sélectionner une catégorie</option>
 						{categories.map((category) => (
@@ -180,18 +211,20 @@ const AdminProductFormContent = ({
 							</option>
 						))}
 					</select>
-
-					<small>{errors.category_id?.message}</small>
+					<small className={styles.errorMessage}>
+						{errors.category_id?.message}
+					</small>
 				</div>
 
-				<div>
+				{/* Hidden ID & submit */}
+				<div className={styles.formGroup}>
 					<input type="hidden" id={idId} {...register("id")} />
-					<button type="submit">
+					<button type="submit" className={styles.submitButton}>
 						{product ? "Modifier le produit" : "Ajouter un produit"}
 					</button>
 				</div>
 			</form>
-		</>
+		</div>
 	);
 };
 

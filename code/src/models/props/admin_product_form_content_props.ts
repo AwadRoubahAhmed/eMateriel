@@ -1,7 +1,9 @@
-import type { Category } from "../../../models/category"
+import type { Category } from "../../../models/category";
+import type { Product } from "../../../models/product";
 
 type AdminProductFormContentProps = {
-    categories: Category[]
-}
+	categories: Category[];
+	product?: Product;
+};
 
-export type {AdminProductFormContentProps}
+export type { AdminProductFormContentProps };

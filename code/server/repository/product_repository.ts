@@ -142,51 +142,87 @@ class Product_Repository {
 		}
 	};
 
+	// public delete = async (
+	// 	data: Partial<Product>,
+	// ): Promise<QueryResult | unknown> => {
+	// 	const connection = await new MySQLService().connect();
+
+	// 	let sql = `
+	//         DELETE FROM ${process.env.MYSQL_DATABASE}.notice
+	// 		  WHERE
+	// 		   notice.product_id = :id
+	//         ;
+	//     `;
+
+	// 	try {
+	// 		// demarer la transaction
+	// 		connection.beginTransaction();
+
+	// 		// execute la premiere requette (Delete notice);
+	// 		await connection.execute(sql, data);
+
+	// 		// Supprime les lignes de commande associées au produit
+	// 		sql = `
+	//         DELETE FROM ${process.env.MYSQL_DATABASE}.line_order
+	// 		  WHERE
+	// 		   line_order.product_id = :id
+	//         ;
+	//     `;
+	// 		// execute la deuxieme requette (Delete line_order);
+	// 		await connection.execute(sql, data);
+
+	// 		// Supprime le produit lui-même
+	// 		sql = `
+	//          DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table}
+	// 	        WHERE
+	// 		   ${this.table}.id = :id
+	// 	    ;
+	//     `;
+	// 		// execute la troisieme requette (Delete product);
+	// 		const [query] = await connection.execute(sql, data);
+
+	// 		connection.commit();
+
+	// 		return query;
+	// 	} catch (error) {
+	// 		// annuler la transaction en cas d'erreur;
+	// 		connection.rollback();
+	// 		return error;
+	// 	}
+	// };
+
 	public delete = async (
 		data: Partial<Product>,
 	): Promise<QueryResult | unknown> => {
 		const connection = await new MySQLService().connect();
 
-		let sql = `
-            DELETE FROM ${process.env.MYSQL_DATABASE}.notice
-			  WHERE 
-			   notice.product_id = :id
-            ;
-        `;
-
 		try {
-			// demarer la transaction
-			connection.beginTransaction();
+			// démarrer la transaction
+			await connection.beginTransaction();
 
-			// execute la premiere requette (Delete notice);
-			await connection.execute(sql, data);
+			// Supprimer les notices associées
+			await connection.execute(
+				`DELETE FROM ${process.env.MYSQL_DATABASE}.notice WHERE notice.product_id = ?`,
+				[data.id],
+			);
 
-			// Supprime les lignes de commande associées au produit
-			sql = `
-            DELETE FROM ${process.env.MYSQL_DATABASE}.line_order
-			  WHERE 
-			   line_order.product_id = :id
-            ;
-        `;
-			// execute la deuxieme requette (Delete line_order);
-			await connection.execute(sql, data);
+			// Supprimer les lignes de commande associées
+			await connection.execute(
+				`DELETE FROM ${process.env.MYSQL_DATABASE}.line_order WHERE line_order.product_id = ?`,
+				[data.id],
+			);
 
-			// Supprime le produit lui-même
-			sql = `
-             DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table}
-		        WHERE
-			   ${this.table}.id = :id
-		    ;
-        `;
-			// execute la troisieme requette (Delete product);
-			const [query] = await connection.execute(sql, data);
+			// Supprimer le produit lui-même
+			const [query] = await connection.execute(
+				`DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table} WHERE ${this.table}.id = ?`,
+				[data.id],
+			);
 
-			connection.commit();
+			await connection.commit();
 
 			return query;
 		} catch (error) {
-			// annuler la transaction en cas d'erreur;
-			connection.rollback();
+			await connection.rollback();
 			return error;
 		}
 	};

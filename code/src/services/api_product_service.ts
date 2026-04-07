@@ -1,72 +1,95 @@
-import type { ApiResponse } from "../../models/api_response";
 import type { Product } from "../../models/product";
+import type { ApiResponse } from "../models/api_response";
 
 class ApiProductService {
 	// récupérer tous les produits
-	public selectAll = async (): Promise<ApiResponse<Product[]>> => {
-		const request = new Request(`${import.meta.env.VITE_API_URL}/api/product`);
-		const response = await fetch(request);
-		const results = await response.json();
-		return results;
-	};
-
-	// récupérer un produit
-	public selectOne = async (id: number): Promise<ApiResponse<Product>> => {
-		const request = new Request(
-			`${import.meta.env.VITE_API_URL}/api/product/${id}`,
-		);
-		const response = await fetch(request);
-		const results = await response.json();
-		return results;
-	};
-
-	public getByCategory = async (
-		categoryId: string,
+	public selectAll = async (
+		token?: string,
 	): Promise<ApiResponse<Product[]>> => {
+		const headers: HeadersInit = {};
+		if (token) headers["Authorization"] = `Bearer ${token}`;
+
 		const response = await fetch(
-			`${import.meta.env.VITE_API_URL}/api/product/category/${categoryId}`,
+			`${import.meta.env.VITE_API_URL}/api/product`,
+			{
+				headers,
+			},
 		);
 		return await response.json();
 	};
 
-	public insert = async (data: FormData): Promise<ApiResponse<null>> => {
-		const request = new Request(`${import.meta.env.VITE_API_URL}/api/product`, {
-			method: "post",
-			body: data,
-		});
-		const response = await fetch(request);
-		const results = await response.json();
-		return results;
+	// récupérer un produit
+	public selectOne = async (
+		id: number,
+		token?: string,
+	): Promise<ApiResponse<Product>> => {
+		const headers: HeadersInit = {};
+		if (token) headers["Authorization"] = `Bearer ${token}`;
+
+		const response = await fetch(
+			`${import.meta.env.VITE_API_URL}/api/product/${id}`,
+			{
+				headers,
+			},
+		);
+		return await response.json();
+	};
+
+	// ajouter un produit
+	public insert = async (
+		data: FormData,
+		token?: string,
+	): Promise<ApiResponse<null>> => {
+		const headers: HeadersInit = {};
+		if (token) headers["Authorization"] = `Bearer ${token}`;
+
+		const response = await fetch(
+			`${import.meta.env.VITE_API_URL}/api/product`,
+			{
+				method: "POST",
+				body: data, // ne PAS mettre Content-Type ici
+				headers,
+			},
+		);
+		return await response.json();
 	};
 
 	// mettre à jour un produit
 	public update = async (
 		id: number,
 		data: FormData,
+		token?: string,
 	): Promise<ApiResponse<null>> => {
-		const request = new Request(
+		const headers: HeadersInit = {};
+		if (token) headers["Authorization"] = `Bearer ${token}`;
+
+		const response = await fetch(
 			`${import.meta.env.VITE_API_URL}/api/product/${id}`,
 			{
 				method: "PUT",
 				body: data,
+				headers,
 			},
 		);
-		const response = await fetch(request);
-		const results = await response.json();
-		return results;
+		return await response.json();
 	};
 
 	// supprimer un produit
-	public delete = async (id: number): Promise<ApiResponse<null>> => {
-		const request = new Request(
+	public delete = async (
+		id: number,
+		token?: string,
+	): Promise<ApiResponse<null>> => {
+		const headers: HeadersInit = {};
+		if (token) headers["Authorization"] = `Bearer ${token}`;
+
+		const response = await fetch(
 			`${import.meta.env.VITE_API_URL}/api/product/${id}`,
 			{
 				method: "DELETE",
+				headers,
 			},
 		);
-		const response = await fetch(request);
-		const results = await response.json();
-		return results;
+		return await response.json();
 	};
 }
 export default ApiProductService;

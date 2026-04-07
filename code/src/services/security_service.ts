@@ -1,4 +1,4 @@
-import { SignJWT } from "jose";
+// import { SignJWT } from "jose";
 import type { User } from "../../models/user";
 
 class SecurityService {
@@ -27,18 +27,23 @@ class SecurityService {
 		SecurityService.user = value;
 	};
 
-	public setToken = async (user: User | null) => {
-		console.log(import.meta);
+	// public setToken = async (user: User | null) => {
+	// 	console.log(import.meta);
 
-		const secret = new TextEncoder().encode(import.meta.env.VITE_JWT_SECRET);
-		const alg = "HS256";
-		if (user) {
-			SecurityService.token = await new SignJWT(user as User)
-				.setProtectedHeader({ alg })
-				//durée de validité du token
-				.setExpirationTime("10h")
-				.sign(secret);
-		}
+	// 	const secret = new TextEncoder().encode(import.meta.env.VITE_JWT_SECRET);
+	// 	const alg = "HS256";
+	// 	if (user) {
+	// 		SecurityService.token = await new SignJWT(user as User)
+	// 			.setProtectedHeader({ alg })
+	// 			//durée de validité du token
+	// 			.setExpirationTime("10h")
+	// 			.sign(secret);
+	// 	}
+	// };
+
+	//STOCKER le token (et non le générer)
+	public setToken = (token: string | null) => {
+		SecurityService.token = token;
 	};
 
 	public getToken = (): string | null => SecurityService.token;

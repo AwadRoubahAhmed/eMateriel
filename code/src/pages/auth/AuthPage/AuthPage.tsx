@@ -19,7 +19,7 @@ export default function AuthPage() {
 		const security = new SecurityService();
 
 		security.setUser(user);
-		await security.setToken(user);
+		;
 
 		navigate("/admin/dashboard");
 	};

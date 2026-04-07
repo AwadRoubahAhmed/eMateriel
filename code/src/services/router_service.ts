@@ -101,7 +101,17 @@ class RouterService {
 							{
 								id: "admin-product-form",
 								path: "product/form/:id?",
-								lazy: () => import("../pages/admin/product/form"),
+								lazy: () => import("../pages/admin/product/formAdd"),
+							},
+							{
+								id: "admin-product-update",
+								path: "product/update/:id",
+								lazy: () => import("../pages/admin/product/update"),
+							},
+							{
+								id: "admin-product-delete",
+								path: "product/delete/:id",
+								lazy: () => import("../pages/admin/product/delete"),
 							},
 						],
 					},

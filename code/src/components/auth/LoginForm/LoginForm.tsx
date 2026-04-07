@@ -4,6 +4,7 @@ import { type ChangeEvent, type FormEvent, useState } from "react";
 import type { User } from "../../../../models/user";
 import SecurityAPiService from "../../../services/api_security_service";
 import styles from "./LoginForm.module.css";
+import SecurityService from "../../../services/security_service";
 
 type LoginFormProps = {
 	onSuccess?: (user: User) => void;
@@ -35,6 +36,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 			if (res.status !== 200 || !res.data) {
 				throw new Error(res.message);
 			}
+
+			const security = new SecurityService();
+			security.setToken(res.token);
 
 			onSuccess?.(res.data);
 		} catch (err: unknown) {

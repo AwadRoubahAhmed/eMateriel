@@ -1,53 +1,38 @@
 "use client";
 
-import {
-	createContext,
-	type ReactNode,
-	useContext,
-	useEffect,
-	useState,
-} from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 import type { User } from "../../models/user";
-import SecurityService from "../services/security_service";
 
 type AuthContextType = {
-	userId: number | null;
-	user: User | null; // ou type User
-	login: (user: User) => void;
+	token: string | null;
+	user: User | null;
+	login: (token: string, user: User) => void;
 	logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
-	userId: null,
+	token: null,
 	user: null,
 	login: () => {},
 	logout: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+	const [token, setToken] = useState<string | null>(null);
 	const [user, setUser] = useState<User | null>(null);
-	const securityService = new SecurityService();
 
-	useEffect(() => {
-		// au chargement du client, récupérer user du SecurityService côté serveur si possible
-		const currentUser = securityService.getUser();
-		setUser(currentUser);
-	}, [securityService]);
-
-	const login = (u: User) => {
+	const login = (jwt: string, u: User) => {
+		setToken(jwt);
 		setUser(u);
-		securityService.setUser(u);
 	};
 
 	const logout = () => {
+		setToken(null);
 		setUser(null);
-		securityService.logout();
 	};
 
 	return (
-		<AuthContext.Provider
-			value={{ user, userId: user?.id ?? null, login, logout }}
-		>
+		<AuthContext.Provider value={{ token, user, login, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);
