@@ -37,16 +37,16 @@ const FooterMain = () => {
 						<Link to="/contact">Contactez-nous</Link>
 					</li>
 					<li className={styles.links}>
-						<Link to="/condition_generale">Conditions générales</Link>
+						<Link to="/mentions-legales">Mentions légales</Link>
 					</li>
 					<li className={styles.links}>
 						{" "}
-						<Link to="/Politique_Confidentialite">
+						<Link to="/politique-confidentialite">
 							Politique de Confidentialité
 						</Link>
 					</li>
 					<li className={styles.links}>
-						<Link to="/FAQs">FAQs</Link>
+						<Link to="/faqs">FAQs</Link>
 					</li>
 				</ul>
 			</FooterColumn>

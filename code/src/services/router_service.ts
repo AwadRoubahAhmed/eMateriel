@@ -58,22 +58,20 @@ class RouterService {
 								lazy: () => import("../pages/Logout"),
 							},
 							{
-								id: "conditions_generales",
-								path: "condition_generale",
+								id: "mentions_legales",
+								path: "mentions-legales",
 								lazy: () =>
-									import("../pages/ConditionsGenerales/ConditionsGenerales"),
+									import("../pages/MentionsLegales/MentionsLegales"),
 							},
 							{
-								id: "politique_confidentialite",
-								path: "Politique_Confidentialite",
+								id: "politique-confidentialite",
+								path: "politique-confidentialite",
 								lazy: () =>
-									import(
-										"../pages/PolitiqueConfidentialite/PolitiqueConfidentialite"
-									),
+									import("../pages/PolitiqueConfidentialite/PolitiqueConfidentialite"),
 							},
 							{
 								id: "faqs",
-								path: "FAQs",
+								path: "faqs",
 								lazy: () => import("../pages/FAQs/FAQs"),
 							},
 							{

@@ -17,9 +17,7 @@ const FooterCategories = () => {
 	const [categories, setCategories] = useState<Category[]>([]);
 
 	useEffect(() => {
-		// Ici tu peux remplacer par un fetch réel depuis ton API
 		const fetchCategories = async () => {
-			// Exemple statique pour test
 			const data: Category[] = [
 				{
 					id: 1,
