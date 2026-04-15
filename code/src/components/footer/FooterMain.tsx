@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import styles from "./Footer.module.css";
 import FooterCategories from "./FooterCategories";
 import FooterColumn from "./FooterColumn";
-import Newsletter from "./Newsletter";
+// import Newsletter from "./Newsletter";
 
 const FooterMain = () => {
 	return (
@@ -55,9 +55,9 @@ const FooterMain = () => {
 			<FooterCategories />
 
 			{/* Newsletter */}
-			<FooterColumn title="Newsletter">
+			{/* <FooterColumn title="Newsletter">
 				<Newsletter />
-			</FooterColumn>
+			</FooterColumn> */}
 		</div>
 	);
 };
