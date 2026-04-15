@@ -1,12 +1,13 @@
 "use client";
 
-import styles from "../../styles/Category.module.css";
+import styles from "../../pages/category/Category.module.css";
+import Title from "../title/Title";
 import CategoryList from "./CategoryList";
 
 export default function CategorySection() {
 	return (
 		<section className={styles.section}>
-			<h2 className={styles.heading}>Nos Catégories</h2>
+			<Title title="Nos Catégories" />
 			<CategoryList />
 		</section>
 	);

@@ -10,6 +10,17 @@ class ApiCategoryService {
         const results = await response.json();
         return results;
     }
+
+    public selectOne = async (id: number): Promise<ApiResponse<Category>> => {
+        const request = new Request(
+            `${import.meta.env.VITE_API_URL}/api/category/${id}`
+        );
+
+        const response = await fetch(request);
+        const results = await response.json();
+
+        return results;
+    };
 }
 
 export default ApiCategoryService;

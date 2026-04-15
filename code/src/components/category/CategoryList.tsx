@@ -10,18 +10,37 @@ export default function CategoryList() {
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [loading, setLoading] = useState(true);
 
+	// useEffect(() => {
+	// 	const fetchCategories = async () => {
+	// 		const categoryService = new ApiCategoryService();
+	// 		const res = await categoryService.selectAll();
+
+	// 		setCategories(res?.data ?? []);
+
+	// 		setLoading(false);
+	// 	};
+
+	// 	fetchCategories();
+	// }, []);
+
 	useEffect(() => {
-		const fetchCategories = async () => {
+	const fetchCategories = async () => {
+		try {
 			const categoryService = new ApiCategoryService();
 			const res = await categoryService.selectAll();
 
+			console.log("API categories:", res);
+
 			setCategories(res?.data ?? []);
-
+		} catch (error) {
+			console.error("Erreur API :", error);
+		} finally {
 			setLoading(false);
-		};
+		}
+	};
 
-		fetchCategories();
-	}, []);
+	fetchCategories();
+}, []);
 
 	if (loading) return <p className={styles.loading}>Chargement...</p>;
 

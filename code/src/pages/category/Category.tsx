@@ -7,30 +7,55 @@ import ProductListItem from "../../components/product/ProductListItem";
 import Seo from "../../components/Seo";
 import ApiProductService from "../../services/api_product_service";
 import styles from "./Category.module.css";
+import ApiCategoryService from "../../services/api_category_service";
+import Title from "../../components/title/Title";
 
 export default function Category() {
 	const { id } = useParams();
 	const [products, setProducts] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [categoryName, setCategoryName] = useState("");
+
+	// useEffect(() => {
+	// 	if (!id) return;
+
+	// 	const fetchProducts = async () => {
+	// 		const productService = new ApiProductService();
+	// 		const res = await productService.selectAll();
+
+	// 		const filtered =
+	// 			res?.data?.filter(
+	// 				(product) => product.category_id.toString() === id,
+	// 			) ?? [];
+
+	// 		setProducts(filtered);
+	// 		setLoading(false);
+	// 	};
+
+	// 	fetchProducts();
+	// }, [id]);
 
 	useEffect(() => {
 		if (!id) return;
 
-		const fetchProducts = async () => {
+		const fetchData = async () => {
 			const productService = new ApiProductService();
-			const res = await productService.selectAll();
+			const categoryService = new ApiCategoryService();
 
-			// Optional chaining et fallback vide
+			const resProducts = await productService.selectAll();
+			const resCategory = await categoryService.selectOne(Number(id));
+
 			const filtered =
-				res?.data?.filter(
-					(product) => product.category?.id.toString() === id,
+				resProducts?.data?.filter(
+					(product) => product.category_id.toString() === id,
 				) ?? [];
 
 			setProducts(filtered);
+			setCategoryName(resCategory?.data?.name ?? "");
 			setLoading(false);
 		};
 
-		fetchProducts();
+		fetchData();
 	}, [id]);
 
 	if (loading) return <p className={styles.loading}>Chargement...</p>;
@@ -44,7 +69,7 @@ export default function Category() {
 			/>
 
 			<section className={styles.section}>
-				<h1 className={styles.heading}>Produits</h1>
+				<Title title={categoryName} />
 
 				<div className={styles.products}>
 					{products.map((product) => (
