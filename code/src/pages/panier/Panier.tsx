@@ -18,12 +18,13 @@ export default function Panier() {
 
 	// userId propre
 	const userId = user?.id;
+	const isLogged = !!userId;
 
 	// Charger panier
 	useEffect(() => {
 		const fetchCart = async () => {
 			if (!userId) {
-				navigate("/auth");
+				setLoading(false);
 				return;
 			}
 
@@ -91,7 +92,10 @@ export default function Panier() {
 		<section className={styles.section}>
 			<h1 className={styles.title}>Mon Panier</h1>
 
-			{lines.length === 0 ? (
+			{/* NOT CONNECTED */}
+			{!isLogged ? (
+				<p>Vous devez être connecté pour voir votre panier </p>
+			) : lines.length === 0 ? (
 				<p>Votre panier est vide 🛒</p>
 			) : (
 				<>

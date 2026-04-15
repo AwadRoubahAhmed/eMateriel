@@ -5,7 +5,7 @@ import styles from "./NavList.module.css";
 type NavListProps = {
 	isMenuOpen: boolean;
 	closeMenu: () => void;
-	onLogout: () => void;
+	onLogout?: () => void;
 };
 
 export default function NavList({
@@ -24,7 +24,7 @@ export default function NavList({
 
 	const handleLogout = () => {
 		new SecurityService().logout();
-		onLogout();
+		onLogout?.();
 		closeMenu();
 		navigate("/");
 	};

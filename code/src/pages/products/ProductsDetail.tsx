@@ -14,11 +14,14 @@ import styles from "./ProductDetail.module.css";
 export default function ProductDetail() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const { userId } = useAuth(); // Utilisateur connecté
+
+	// ✅ IMPORTANT : on récupère user correctement
+	const { user } = useAuth();
+	const userId = user?.id;
+
 	const [product, setProduct] = useState<Product | null>(null);
 	const [loading, setLoading] = useState(true);
 
-	// 🔹 Charger le produit
 	useEffect(() => {
 		const fetchProduct = async () => {
 			try {
@@ -30,56 +33,57 @@ export default function ProductDetail() {
 				setLoading(false);
 			}
 		};
+
 		fetchProduct();
 	}, [id]);
 
 	if (loading) return <p>Chargement du produit...</p>;
 	if (!product) return <p>Produit introuvable</p>;
 
-	// 🔹 Ajouter au panier
+	// 🛒 AJOUT AU PANIER (PROPRE)
 	const handleAddToCart = async () => {
+		// ❌ pas connecté → login
 		if (!userId) {
-			// Redirige vers la page login si non connecté
 			navigate("/auth");
 			return;
 		}
 
 		try {
 			const ordersService = new ApiOrdersService();
-			const lineOrderService = new ApiLineOrderService();
+			const lineService = new ApiLineOrderService();
 
-			// Récupérer la commande en cours de l'utilisateur
-			const orders = await ordersService.selectAll();
-			let order = orders.data?.find((o) => o.user_id === userId);
+			// 1️⃣ récupérer toutes les commandes
+			const ordersRes = await ordersService.selectAll();
 
-			// Créer une nouvelle commande si aucune existante
+			// 2️⃣ trouver la commande de l'utilisateur
+			let order = ordersRes.data?.find((o) => o.user_id === userId);
+
+			// 3️⃣ si pas de commande → création
 			if (!order) {
-				const createdOrder = await ordersService.create({
-					name: "Commande en cours",
+				const created = await ordersService.create({
+					name: "Panier",
+					description: "Panier utilisateur",
 					total: 0,
-					description: "",
 					user_id: userId,
 				});
 
-				if (!createdOrder.data) {
-					console.error("Impossible de créer la commande");
-					return;
-				}
-				order = createdOrder.data;
+				if (!created.data) return;
+
+				order = created.data;
 			}
 
-			// Ajouter le produit à la commande
-			await lineOrderService.create({
+			// 4️⃣ ajouter produit dans line_order
+			await lineService.create({
 				order_id: order.id,
 				product_id: product.id,
 				qty: 1,
 				total: product.price,
 			});
 
-			// Aller vers le panier
+			// 5️⃣ redirect panier
 			navigate("/panier");
 		} catch (err) {
-			console.error("Erreur lors de l'ajout au panier", err);
+			console.error("Erreur ajout panier:", err);
 		}
 	};
 
@@ -90,21 +94,27 @@ export default function ProductDetail() {
 				description="Détail du produit"
 				url={`/products/${id}`}
 			/>
+
 			<section className={styles.section}>
 				<Link to="/products" className={styles.backButton}>
 					<IoArrowBackCircleOutline />
 					Retour
 				</Link>
+
 				<div className={styles.container}>
 					<div className={styles.imageWrapper}>
 						<img src={`/images/${product.image}`} alt={product.name} />
 					</div>
+
 					<div className={styles.content}>
 						<h1 className={styles.title}>{product.name}</h1>
+
 						<span className={styles.category}>
 							Catégorie : {product.category?.name ?? "Non renseignée"}
 						</span>
+
 						<p className={styles.description}>{product.description}</p>
+
 						<div className={styles.meta}>
 							<span className={styles.price}>{product.price} €</span>
 							<span className={styles.stock}>
@@ -113,6 +123,7 @@ export default function ProductDetail() {
 									: "Rupture de stock"}
 							</span>
 						</div>
+
 						<button
 							type="button"
 							className={styles.buyButton}
