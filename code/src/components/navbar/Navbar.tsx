@@ -95,7 +95,7 @@ export default function Navbar() {
 				{/* ICONS */}
 				<div className={styles.icons}>
 
-					{/* 🛒 PANIER CLEAN */}
+					{/* PANIER */}
 					<Link
 						to="/panier"
 						className={styles.cartWrapper}
