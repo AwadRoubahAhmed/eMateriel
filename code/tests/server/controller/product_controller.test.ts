@@ -19,7 +19,7 @@ describe("product controller test suites", async () => {
 		role_id: 1,
 		role: {
 			id: 1,
-			name: "admin",
+			name: "Administrateur",
 		},
 	};
 
