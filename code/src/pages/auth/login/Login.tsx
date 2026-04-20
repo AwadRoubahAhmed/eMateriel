@@ -74,7 +74,7 @@ const Login = () => {
 						required
 					/>
 					{error && <p className={styles.error}>{error}</p>}
-					<button type="submit">Se connecter</button>
+					<button type="submit" aria-label="Accéder a la page de connexion">Se connecter</button>
 				</form>
 			</div>
 		</>

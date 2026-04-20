@@ -74,7 +74,9 @@ const Register = () => {
 					{error && <p className={styles.error}>{error}</p>}
 					{success && <p className={styles.success}>{success}</p>}
 
-					<button type="submit">S’inscrire</button>
+					<button type="submit" aria-label="Accéder a la page d'inscription">
+						S’inscrire
+					</button>
 				</form>
 			</div>
 		</>

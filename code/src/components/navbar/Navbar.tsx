@@ -6,11 +6,11 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCloseSharp } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/eMatériel.png";
+import { useAuth } from "../../context/AuthContext";
+import ApiLineOrderService from "../../services/api_line_order_service";
+import ApiOrdersService from "../../services/api_orders_service";
 import NavList from "../ui/navList/NavList";
 import styles from "./Navbar.module.css";
-import ApiOrdersService from "../../services/api_orders_service";
-import ApiLineOrderService from "../../services/api_line_order_service";
-import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
 	const { user } = useAuth();
@@ -38,9 +38,7 @@ export default function Navbar() {
 				const ordersRes = await ordersService.selectAll();
 				const linesRes = await lineService.selectAll();
 
-				const order = ordersRes.data?.find(
-					(o) => o.user_id === user.id
-				);
+				const order = ordersRes.data?.find((o) => o.user_id === user.id);
 
 				if (!order) {
 					setCartCount(0);
@@ -48,14 +46,10 @@ export default function Navbar() {
 				}
 
 				const userLines =
-					linesRes.data?.filter(
-						(line) => line.order_id === order.id
-					) ?? [];
+					linesRes.data?.filter((line) => line.order_id === order.id) ?? [];
 
 				// total qty (pas nombre lignes)
-				setCartCount(
-					userLines.reduce((sum, l) => sum + (l.qty ?? 0), 0)
-				);
+				setCartCount(userLines.reduce((sum, l) => sum + (l.qty ?? 0), 0));
 			} catch (err) {
 				console.error(err);
 				setCartCount(0);
@@ -79,7 +73,6 @@ export default function Navbar() {
 	return (
 		<header className={styles.header}>
 			<nav className={styles.navbar} aria-label="Navigation principale">
-
 				{/* LOGO */}
 				<Link to="/" className={styles.logoWrapper}>
 					<img src={logo} alt="eMatériel" className={styles.logo} />
@@ -89,12 +82,10 @@ export default function Navbar() {
 				<NavList
 					isMenuOpen={isMenuOpen}
 					closeMenu={() => setIsMenuOpen(false)}
-					
 				/>
 
 				{/* ICONS */}
 				<div className={styles.icons}>
-
 					{/* PANIER */}
 					<Link
 						to="/panier"
@@ -104,15 +95,14 @@ export default function Navbar() {
 						<FaCartArrowDown size={22} />
 
 						{cartCount > 0 && (
-							<span className={styles.spanNum}>
-								{cartCount}
-							</span>
+							<span className={styles.spanNum}>{cartCount}</span>
 						)}
 					</Link>
 
 					{/* USER */}
 					<div className={styles.dropdownWrapper}>
 						<button
+							aria-label="Accéder a la page connexion"
 							type="button"
 							className={styles.dropdownButton}
 							onClick={toggleDropdown}
@@ -124,9 +114,9 @@ export default function Navbar() {
 							<div className={styles.dropdownMenu}>
 								<div className={styles.menuContent}>
 									<button
-										onClick={() =>
-											handleDropdownNavigation("/auth")
-										}
+										type="button"
+										onClick={() => handleDropdownNavigation("/auth")}
+										aria-label="Accéder a la page connexion"
 									>
 										Se connecter
 									</button>
@@ -147,7 +137,6 @@ export default function Navbar() {
 							<GiHamburgerMenu size={28} />
 						)}
 					</button>
-
 				</div>
 			</nav>
 		</header>

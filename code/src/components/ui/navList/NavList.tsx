@@ -32,11 +32,10 @@ export default function NavList({
 	return (
 		<ul className={`${styles.navList} ${isMenuOpen ? styles.mobileOpen : ""}`}>
 			{/* {links.map(({ to, label, end }) => ( */}
-			<li role="none">
+			<li>
 				<NavLink
 					to={"/"}
 					end={true}
-					role="menuitem"
 					className={({ isActive }) =>
 						isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
 					}
@@ -49,7 +48,6 @@ export default function NavList({
 				<NavLink
 					to={"/products"}
 					end={true}
-					role="menuitem"
 					className={({ isActive }) =>
 						isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
 					}
@@ -62,7 +60,6 @@ export default function NavList({
 				<NavLink
 					to={"/contact"}
 					end={true}
-					role="menuitem"
 					className={({ isActive }) =>
 						isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
 					}
@@ -75,7 +72,6 @@ export default function NavList({
 				<NavLink
 					to={"/apropos"}
 					end={true}
-					role="menuitem"
 					className={({ isActive }) =>
 						isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
 					}
@@ -89,7 +85,6 @@ export default function NavList({
 					<NavLink
 						to={"/admin/dashboard"}
 						end={true}
-						role="menuitem"
 						className={({ isActive }) =>
 							isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
 						}
@@ -107,7 +102,6 @@ export default function NavList({
 					<NavLink
 						to={"/"}
 						end={true}
-						role="menuitem"
 						className={({ isActive }) =>
 							isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
 						}
