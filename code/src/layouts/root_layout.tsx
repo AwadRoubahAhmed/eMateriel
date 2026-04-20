@@ -12,6 +12,9 @@ export default function RootLayout() {
 				<title>eMatériel</title>
 			</head>
 			<body>
+				<a href="#main-content" className="skipLink">
+					Aller au contenu principal
+				</a>
 				{/* Outlet : zone remplie par un autre contenu */}
 				<div className="container">
 					<Outlet />

@@ -28,7 +28,8 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./code/mongodb:/app - ./mongodb-data:/data/db
+      - ./code/mongodb:/app 
+      - ./mongodb-data:/data/db
     # si mongoDB redémarre en permanence, changer le dossier cible
     # - ./mongodb-data:/data
     working_dir: /app
