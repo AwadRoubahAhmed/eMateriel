@@ -59,7 +59,7 @@ const FooterCategories = () => {
 					<li key={cat.id} className={styles.links}>
 						<Link
 							to={`/products/category/${cat.slug}`}
-							title={cat.description} // tooltip sur hover
+							title={cat.description}
 						>
 							{cat.name}
 						</Link>

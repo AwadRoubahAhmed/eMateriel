@@ -1,9 +1,9 @@
-import {
-	FaFacebookF,
-	FaInstagram,
-	FaLinkedin,
-	FaTwitter,
-} from "react-icons/fa";
+// import {
+// 	FaFacebookF,
+// 	FaInstagram,
+// 	FaLinkedin,
+// 	FaTwitter,
+// } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styles from "./Footer.module.css";
 import FooterCategories from "./FooterCategories";
@@ -19,12 +19,12 @@ const FooterMain = () => {
 					Découvrez nos produits électroniques alliant qualité et performance
 					pour répondre à tous vos besoins.
 				</p>
-				<div className={styles.socials}>
+				{/* <div className={styles.socials}>
 					<FaFacebookF />
 					<FaTwitter />
 					<FaInstagram />
 					<FaLinkedin />
-				</div>
+				</div> */}
 			</FooterColumn>
 
 			{/* Quick Links */}
