@@ -1,2 +1,6 @@
-mysql-data
-code/node_modules
+# databases
+mongodb-data/
+mysql-data/
+
+# dependencies
+node_modules/
