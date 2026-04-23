@@ -4,18 +4,17 @@ import type { User } from "./user";
 
 type Orders = {
 	id: number;
-	name: string; 
+	name: string;
 	image: string;
 	total: number;
 	description: string;
-	user_id: number;
+	user_id: number | null;
 	user: User;
 	payment_methode_id: number;
 	payment_method: Payment_methode;
 
 	line_order_ids: string;
-	line_orders: Line_order []
-	
+	line_orders: Line_order[];
 };
 
 export type { Orders };

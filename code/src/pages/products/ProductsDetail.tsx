@@ -15,7 +15,6 @@ export default function ProductDetail() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 
-	// ✅ IMPORTANT : on récupère user correctement
 	const { user } = useAuth();
 	const userId = user?.id;
 
@@ -40,53 +39,88 @@ export default function ProductDetail() {
 	if (loading) return <p>Chargement du produit...</p>;
 	if (!product) return <p>Produit introuvable</p>;
 
-	// 🛒 AJOUT AU PANIER (PROPRE)
+	// const handleAddToCart = async () => {
+	// 	if (!userId) {
+	// 		navigate("/auth");
+	// 		return;
+	// 	}
+
+	// 	try {
+	// 		const ordersService = new ApiOrdersService();
+	// 		const lineService = new ApiLineOrderService();
+
+	// 		// 1️⃣ récupérer toutes les commandes
+	// 		const ordersRes = await ordersService.selectAll();
+
+	// 		// 2️⃣ trouver la commande de l'utilisateur
+	// 		let order = ordersRes.data?.find((o) => o.user_id === userId);
+
+	// 		// 3️⃣ si pas de commande → création
+	// 		if (!order) {
+	// 			const created = await ordersService.create({
+	// 				name: "Panier",
+	// 				description: "Panier utilisateur",
+	// 				total: 0,
+	// 				user_id: userId,
+	// 			});
+
+	// 			if (!created.data) return;
+
+	// 			order = created.data;
+	// 		}
+
+	// 		// 4️⃣ ajouter produit dans line_order
+	// 		await lineService.create({
+	// 			order_id: order.id,
+	// 			product_id: product.id,
+	// 			qty: 1,
+	// 			total: product.price,
+	// 		});
+
+	// 		// 5️⃣ redirect panier
+	// 		navigate("/panier");
+	// 	} catch (err) {
+	// 		console.error("Erreur ajout panier:", err);
+	// 	}
+	// };
+
 	const handleAddToCart = async () => {
-		// ❌ pas connecté → login
-		if (!userId) {
-			navigate("/auth");
-			return;
+		if (!product) return;
+
+		const ordersService = new ApiOrdersService();
+		const lineService = new ApiLineOrderService();
+
+		let order = null;
+
+		// 1. si user connecté → chercher son dernier order
+		if (userId) {
+			const res = await ordersService.selectAll();
+
+			order = res.data
+				?.filter((o) => o.user_id === userId)
+				.sort((a, b) => b.id - a.id)[0];
 		}
 
-		try {
-			const ordersService = new ApiOrdersService();
-			const lineService = new ApiLineOrderService();
-
-			// 1️⃣ récupérer toutes les commandes
-			const ordersRes = await ordersService.selectAll();
-
-			// 2️⃣ trouver la commande de l'utilisateur
-			let order = ordersRes.data?.find((o) => o.user_id === userId);
-
-			// 3️⃣ si pas de commande → création
-			if (!order) {
-				const created = await ordersService.create({
-					name: "Panier",
-					description: "Panier utilisateur",
-					total: 0,
-					user_id: userId,
-				});
-
-				if (!created.data) return;
-
-				order = created.data;
-			}
-
-			// 4️⃣ ajouter produit dans line_order
-			await lineService.create({
-				order_id: order.id,
-				product_id: product.id,
-				qty: 1,
-				total: product.price,
+		// 2. si pas d'order → créer (comme tu fais déjà)
+		if (!order) {
+			const created = await ordersService.create({
+				user_id: userId ?? null,
+				total: 0,
 			});
 
-			// 5️⃣ redirect panier
-			navigate("/panier");
-		} catch (err) {
-			console.error("Erreur ajout panier:", err);
+			order = created.data;
 		}
-	};
 
+		// 3. ajouter produit
+		await lineService.create({
+			order_id: order.id,
+			product_id: product.id,
+			qty: 1,
+			total: product.price,
+		});
+
+		navigate("/panier");
+	};
 	return (
 		<>
 			<Seo

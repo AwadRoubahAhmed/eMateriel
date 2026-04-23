@@ -24,6 +24,7 @@ export default function Panier() {
 	useEffect(() => {
 		const fetchCart = async () => {
 			if (!userId) {
+				setLines([]);
 				setLoading(false);
 				return;
 			}
@@ -37,9 +38,7 @@ export default function Panier() {
 				// récupérer commandes
 				const ordersRes = await ordersService.selectAll();
 
-				const order = ordersRes.data?.find(
-					(o) => o.user_id === userId
-				);
+				const order = ordersRes.data?.find((o) => o.user_id === userId);
 
 				if (!order) {
 					setLines([]);
@@ -53,9 +52,7 @@ export default function Panier() {
 				const linesRes = await lineService.selectAll();
 
 				const filtered =
-					linesRes.data?.filter(
-						(line) => line.order_id === order.id
-					) ?? [];
+					linesRes.data?.filter((line) => line.order_id === order.id) ?? [];
 
 				setLines(filtered);
 			} catch (err) {
@@ -109,6 +106,7 @@ export default function Panier() {
 								</div>
 
 								<button
+									type="button"
 									onClick={() => handleRemove(line.id)}
 									className={styles.delete}
 								>
@@ -122,6 +120,7 @@ export default function Panier() {
 						<h2>Total : {total} €</h2>
 
 						<button
+							type="button"
 							className={styles.pay}
 							onClick={() => alert("Commande validée")}
 						>

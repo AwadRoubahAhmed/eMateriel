@@ -30,12 +30,12 @@ class Orders_Repository {
 
 			for (const order of results) {
 				order.user = (await new User_Repository().selectOne({
-					id: order.user_id,
+					id: order.user_id ?? undefined,
 				})) as User;
 
 				order.payment_method = (await new Payment_method_Repository().selectOne(
 					{
-						id: order.payment_methode_id,
+						id: order.payment_methode_id ?? undefined,
 					},
 				)) as Payment_methode;
 
@@ -68,10 +68,10 @@ class Orders_Repository {
 			if (!order) return null;
 
 			order.user = (await new User_Repository().selectOne({
-				id: order.user_id,
+				id: order.user_id ?? undefined,
 			})) as User;
 			order.payment_method = (await new Payment_method_Repository().selectOne({
-				id: order.payment_methode_id,
+				id: order.payment_methode_id ?? undefined,
 			})) as Payment_methode;
 
 			return order;
@@ -148,6 +148,22 @@ class Orders_Repository {
 		} catch (error) {
 			return error;
 		}
+	};
+
+	public selectUserCart = async (user_id: number) => {
+		const connection = await new MySQLService().connect();
+
+		const sql = `
+		SELECT *
+		FROM ${process.env.MYSQL_DATABASE}.${this.table}
+		WHERE user_id = :user_id
+		ORDER BY id DESC
+		LIMIT 1;
+	`;
+
+		const [rows] = await connection.execute(sql, { user_id });
+
+		return (rows as Orders[]).shift();
 	};
 }
 
