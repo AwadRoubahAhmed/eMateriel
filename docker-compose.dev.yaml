@@ -15,21 +15,20 @@ services:
     image: node:25
     ports:
       - 5000:5000 # liveserver
-      - 5173:5173 # vite
+      - 5173:5173
       - 3000:3000 # API
     volumes:
       - ./code:/app
     tty: true
     working_dir: /app
     restart: always
-    command: sh -c "npm install && npm run dev"
 
   mongodb:
     image: mongo:8.2
     ports:
       - 27017:27017
     volumes:
-      - ./code/mongodb:/app 
+      - ./code/mongodb:/app
       - ./mongodb-data:/data/db
     # si mongoDB redémarre en permanence, changer le dossier cible
     # - ./mongodb-data:/data

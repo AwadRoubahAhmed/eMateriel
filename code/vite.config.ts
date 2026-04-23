@@ -13,7 +13,8 @@ export default defineConfig(({ mode }) => {
 	return {
 		server: {
 			port: 5173,
-			host: true,
+			strictPort: true,
+			host: true
 		},
 		test: {
 			// ne pas oublier de définir le troisième argument

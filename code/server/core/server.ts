@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { type Express, type Router } from "express";
 import Category_router from "../router/category_router";
+import ContactRouter from "../router/contact_router";
 import Homepage_router from "../router/homepage_router";
 import Line_order_router from "../router/line_order_router";
 import Notice_router from "../router/notice_router";
@@ -46,7 +47,7 @@ class Server {
 		this.router.use("/api", new Homepage_router().getRoutes());
 
 		this.router.use("/api/category", new Category_router().getRoutes());
-		
+
 		this.router.use("/api/product", new Product_router().getRoutes());
 
 		this.router.use("/api/orders", new Orders_router().getRoutes());
@@ -64,6 +65,8 @@ class Server {
 		this.router.use("/api/user", new User_router().getRoutes());
 
 		this.router.use("/api/line_order", new Line_order_router().getRoutes());
+
+		this.router.use("/api/contact", new ContactRouter().getRoutes());
 	};
 	//start server
 	public startServer = () => {

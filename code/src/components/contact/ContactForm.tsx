@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "../../pages/contact/Contact.module.css";
+import ContactApiService from "../../services/api_contact_service";
 
 type FormData = {
 	name: string;
@@ -9,6 +10,8 @@ type FormData = {
 	subject: string;
 	message: string;
 };
+
+const contactApi = new ContactApiService();
 
 export default function ContactForm() {
 	const [form, setForm] = useState<FormData>({
@@ -36,17 +39,27 @@ export default function ContactForm() {
 		setFeedback(null);
 
 		try {
-			await new Promise((res) => setTimeout(res, 1000));
+			await contactApi.insert({
+				name: form.name,
+				email: form.email,
+				subject: form.subject,
+				message: form.message,
+			});
 
 			setFeedback("Message envoyé avec succès");
+
 			setForm({
 				name: "",
 				email: "",
 				subject: "",
 				message: "",
 			});
-		} catch {
-			setFeedback("Erreur lors de l'envoi du message");
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				setFeedback(error.message);
+			} else {
+				setFeedback("Erreur lors de l'envoi du message");
+			}
 		} finally {
 			setLoading(false);
 		}

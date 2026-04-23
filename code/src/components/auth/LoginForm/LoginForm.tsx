@@ -3,8 +3,8 @@
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import type { User } from "../../../../models/user";
 import SecurityAPiService from "../../../services/api_security_service";
-import styles from "./LoginForm.module.css";
 import SecurityService from "../../../services/security_service";
+import styles from "./LoginForm.module.css";
 
 type LoginFormProps = {
 	onSuccess?: (user: User) => void;
