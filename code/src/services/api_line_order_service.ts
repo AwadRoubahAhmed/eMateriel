@@ -52,6 +52,31 @@ class ApiLineOrderService {
 		});
 		return await response.json();
 	};
+
+	public findByOrderAndProduct = async (
+		orderId: number,
+		productId: number,
+	): Promise<ApiResponse<Line_order>> => {
+		const response = await fetch(
+			`${this.baseUrl}/find?orderId=${orderId}&productId=${productId}`,
+		);
+		return await response.json();
+	};
+
+	public incrementQty = async (
+		id: number,
+		qty: number,
+		total: number
+	): Promise<ApiResponse<Line_order>> => {
+		const response = await fetch(`${this.baseUrl}/${id}/increment`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ qty, total }),
+		});
+		return await response.json();
+	};
 }
 
 export default ApiLineOrderService;

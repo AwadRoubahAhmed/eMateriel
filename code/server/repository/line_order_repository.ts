@@ -162,6 +162,39 @@ class Line_order_Repository {
 			return error;
 		}
 	};
+
+	public findByOrderAndProduct = async (
+		order_id: number,
+		product_id: number,
+	) => {
+		const connection = await new MySQLService().connect();
+
+		const sql = `
+		SELECT *
+		FROM ${process.env.MYSQL_DATABASE}.${this.table}
+		WHERE order_id = :order_id AND product_id = :product_id
+		LIMIT 1;
+	`;
+
+		const [rows] = await connection.execute(sql, { order_id, product_id });
+
+		return (rows as Line_order[]).shift() ?? null;
+	};
+
+	public incrementQty = async (id: number, qty: number, total: number) => {
+		const connection = await new MySQLService().connect();
+
+		const sql = `
+		UPDATE ${process.env.MYSQL_DATABASE}.${this.table}
+		SET qty = qty + :qty,
+		    total = total + :total
+		WHERE id = :id;
+	`;
+
+		await connection.execute(sql, { id, qty, total });
+
+		return true;
+	};
 }
 
 export default Line_order_Repository;

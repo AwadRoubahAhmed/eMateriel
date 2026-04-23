@@ -163,7 +163,7 @@ class Orders_Repository {
 
 		const [rows] = await connection.execute(sql, { user_id });
 
-		return (rows as Orders[]).shift();
+		return (rows as Orders[]).shift() ?? null;
 	};
 }
 

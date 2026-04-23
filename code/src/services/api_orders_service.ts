@@ -52,6 +52,13 @@ class ApiOrdersService {
 		});
 		return await response.json();
 	};
+
+	public selectUserCart = async (
+		userId: number,
+	): Promise<ApiResponse<Orders>> => {
+		const response = await fetch(`${this.baseUrl}/user/${userId}`);
+		return await response.json();
+	};
 }
 
 export default ApiOrdersService;

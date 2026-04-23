@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import type { Orders } from "../../../models/orders";
 import type { Product } from "../../../models/product";
 import Seo from "../../components/Seo";
 import { useAuth } from "../../context/AuthContext";
@@ -87,39 +88,55 @@ export default function ProductDetail() {
 	const handleAddToCart = async () => {
 		if (!product) return;
 
+		if (!userId) {
+			navigate("/auth");
+			return;
+		}
+
 		const ordersService = new ApiOrdersService();
 		const lineService = new ApiLineOrderService();
 
-		let order = null;
+		try {
+			// 1. récupérer panier utilisateur
+			const res = await ordersService.selectUserCart(userId);
+			let order: Orders | null = res.data ?? null;
 
-		// 1. si user connecté → chercher son dernier order
-		if (userId) {
-			const res = await ordersService.selectAll();
+			// 2. créer panier si inexistant
+			if (!order) {
+				const created = await ordersService.create({
+					user_id: userId,
+					total: 0,
+				});
 
-			order = res.data
-				?.filter((o) => o.user_id === userId)
-				.sort((a, b) => b.id - a.id)[0];
+				order = created.data ?? null;
+			}
+
+			// 3. sécurité stricte TS
+			if (!order) return;
+
+			// 4. vérifier si produit déjà dans panier
+			const existingLine = await lineService.findByOrderAndProduct(
+				order.id,
+				product.id,
+			);
+
+			// 5. update ou create
+			if (existingLine?.data) {
+				await lineService.incrementQty(existingLine.data.id, 1, product.price);
+			} else {
+				await lineService.create({
+					order_id: order.id,
+					product_id: product.id,
+					qty: 1,
+					total: product.price,
+				});
+			}
+
+			// 6. redirect
+			navigate("/panier");
+		} catch (error) {
+			console.error("Erreur add to cart:", error);
 		}
-
-		// 2. si pas d'order → créer (comme tu fais déjà)
-		if (!order) {
-			const created = await ordersService.create({
-				user_id: userId ?? null,
-				total: 0,
-			});
-
-			order = created.data;
-		}
-
-		// 3. ajouter produit
-		await lineService.create({
-			order_id: order.id,
-			product_id: product.id,
-			qty: 1,
-			total: product.price,
-		});
-
-		navigate("/panier");
 	};
 	return (
 		<>

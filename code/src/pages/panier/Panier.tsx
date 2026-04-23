@@ -14,7 +14,7 @@ export default function Panier() {
 
 	const [lines, setLines] = useState<Line_order[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [orderId, setOrderId] = useState<number | null>(null);
+	const [_orderId, setOrderId] = useState<number | null>(null);
 
 	// userId propre
 	const userId = user?.id;
@@ -36,9 +36,8 @@ export default function Panier() {
 				const lineService = new ApiLineOrderService();
 
 				// récupérer commandes
-				const ordersRes = await ordersService.selectAll();
-
-				const order = ordersRes.data?.find((o) => o.user_id === userId);
+				const orderRes = await ordersService.selectUserCart(userId);
+				const order = orderRes.data ?? null;
 
 				if (!order) {
 					setLines([]);
@@ -63,7 +62,7 @@ export default function Panier() {
 		};
 
 		fetchCart();
-	}, [userId, navigate]);
+	}, [userId]);
 
 	// supprimer item
 	const handleRemove = async (id: number) => {
@@ -74,6 +73,53 @@ export default function Panier() {
 			setLines((prev) => prev.filter((l) => l.id !== id));
 		} catch (err) {
 			console.error("Erreur suppression :", err);
+		}
+	};
+
+	const lineService = new ApiLineOrderService();
+
+	const handleIncrease = async (line: Line_order) => {
+		try {
+			await lineService.incrementQty(line.id, 1, line.product?.price ?? 0);
+
+			setLines((prev) =>
+				prev.map((l) =>
+					l.id === line.id
+						? {
+								...l,
+								qty: l.qty + 1,
+								total: l.total + (l.product?.price ?? 0),
+							}
+						: l,
+				),
+			);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const handleDecrease = async (line: Line_order) => {
+		try {
+			if (line.qty <= 1) {
+				await handleRemove(line.id);
+				return;
+			}
+
+			await lineService.incrementQty(line.id, -1, -(line.product?.price ?? 0));
+
+			setLines((prev) =>
+				prev.map((l) =>
+					l.id === line.id
+						? {
+								...l,
+								qty: l.qty - 1,
+								total: l.total - (l.product?.price ?? 0),
+							}
+						: l,
+				),
+			);
+		} catch (error) {
+			console.error(error);
 		}
 	};
 
@@ -95,39 +141,41 @@ export default function Panier() {
 			) : lines.length === 0 ? (
 				<p>Votre panier est vide 🛒</p>
 			) : (
-				<>
-					<div className={styles.list}>
-						{lines.map((line) => (
-							<div key={line.id} className={styles.card}>
-								<div>
-									<h3>{line.product?.name}</h3>
-									<p>Quantité : {line.qty}</p>
-									<p>{line.total} €</p>
+				<div className={styles.list}>
+					{lines.map((line) => (
+						<div key={line.id} className={styles.card}>
+							<div>
+								<h3>{line.product?.name}</h3>
+
+								<div className={styles.qtyControls}>
+									<button type="button" onClick={() => handleDecrease(line)}>
+										-
+									</button>
+
+									<span>{line.qty}</span>
+
+									<button type="button" onClick={() => handleIncrease(line)}>
+										+
+									</button>
 								</div>
+
+								<p>{line.total} €</p>
+							</div>
+
+							<div className={styles.footer}>
+								<h2>Total : {total} €</h2>
 
 								<button
 									type="button"
-									onClick={() => handleRemove(line.id)}
-									className={styles.delete}
+									className={styles.pay}
+									onClick={() => navigate("/checkout")}
 								>
-									Supprimer
+									Passer commande
 								</button>
 							</div>
-						))}
-					</div>
-
-					<div className={styles.footer}>
-						<h2>Total : {total} €</h2>
-
-						<button
-							type="button"
-							className={styles.pay}
-							onClick={() => alert("Commande validée")}
-						>
-							Passer commande
-						</button>
-					</div>
-				</>
+						</div>
+					))}
+				</div>
 			)}
 		</section>
 	);
