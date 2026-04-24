@@ -62,8 +62,8 @@ CREATE TABLE orders (
     image VARCHAR(255) NOT NULL,
     total DECIMAL(10,2) NOT NULL,
     description TEXT,
-    user_id INT UNSIGNED,
-    payment_method_id INT UNSIGNED,
+    user_id INT UNSIGNED NULL,
+    payment_method_id INT UNSIGNED NULL,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (payment_method_id) REFERENCES payment_method(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;

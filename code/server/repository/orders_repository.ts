@@ -35,7 +35,7 @@ class Orders_Repository {
 
 				order.payment_method = (await new Payment_method_Repository().selectOne(
 					{
-						id: order.payment_methode_id ?? undefined,
+						id: order.payment_method_id ?? undefined,
 					},
 				)) as Payment_methode;
 
@@ -71,7 +71,7 @@ class Orders_Repository {
 				id: order.user_id ?? undefined,
 			})) as User;
 			order.payment_method = (await new Payment_method_Repository().selectOne({
-				id: order.payment_methode_id ?? undefined,
+				id: order.payment_method_id ?? undefined,
 			})) as Payment_methode;
 
 			return order;
@@ -81,20 +81,34 @@ class Orders_Repository {
 	};
 
 	// CREATE
-	public create = async (data: Partial<Orders>): Promise<number | unknown> => {
-		const connection = await new MySQLService().connect();
-		const sql = `
-			INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-			(user_id, payment_methode_id, total)
-			VALUES (:user_id, :payment_methode_id, :total);
-		`;
+	// public create = async (data: Partial<Orders>): Promise<number | null> => {
+	// 	const connection = await new MySQLService().connect();
+	// 	const sql = `
+	// 		INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
+	// 		(name, image, user_id, payment_method_id, total)
+	// 		VALUES (:name, :image, :user_id, :payment_method_id, :total);
+	// 	`;
 
-		try {
-			const [result] = await connection.execute<ResultSetHeader>(sql, data);
-			return result.insertId;
-		} catch (error) {
-			return error;
-		}
+	// 	try {
+	// 		const [result] = await connection.execute<ResultSetHeader>(sql, data);
+	// 		return result.insertId;
+	// 	} catch (error) {
+	// 		throw error;
+	// 	}
+	// };
+
+	public create = async (data: Partial<Orders>): Promise<number> => {
+		const connection = await new MySQLService().connect();
+
+		const sql = `
+        INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
+        (name, image, user_id, payment_method_id, total)
+        VALUES (:name, :image, :user_id, :payment_method_id, :total);
+    `;
+
+		const [result] = await connection.execute<ResultSetHeader>(sql, data);
+
+		return result.insertId;
 	};
 
 	// UPDATE
@@ -105,7 +119,7 @@ class Orders_Repository {
 		const connection = await new MySQLService().connect();
 		const sql = `
 			UPDATE ${process.env.MYSQL_DATABASE}.${this.table}
-			SET user_id = :user_id, payment_methode_id = :payment_methode_id, total = :total
+			SET name = :name, image = :image, user_id = :user_id, payment_method_id = :payment_method_id, total = :total
 			WHERE id = :id;
 		`;
 
@@ -154,16 +168,25 @@ class Orders_Repository {
 		const connection = await new MySQLService().connect();
 
 		const sql = `
-		SELECT *
+		SELECT * 
 		FROM ${process.env.MYSQL_DATABASE}.${this.table}
 		WHERE user_id = :user_id
 		ORDER BY id DESC
 		LIMIT 1;
 	`;
 
-		const [rows] = await connection.execute(sql, { user_id });
+		try {
+			const [rows] = await connection.execute<RowDataPacket[]>(sql, {
+				user_id,
+			});
 
-		return (rows as Orders[]).shift() ?? null;
+			const result = (rows as Orders[])[0];
+
+			return result ?? null;
+		} catch (error) {
+			console.log("selectUserCart ERROR:", error);
+			return null;
+		}
 	};
 }
 

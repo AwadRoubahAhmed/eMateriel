@@ -8,9 +8,9 @@ type Orders = {
 	image: string;
 	total: number;
 	description: string;
-	user_id: number | null;
+	user_id?: number | null;
 	user: User;
-	payment_methode_id: number;
+	payment_method_id?: number | null;
 	payment_method: Payment_methode;
 
 	line_order_ids: string;

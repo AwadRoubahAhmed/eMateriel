@@ -85,8 +85,8 @@ class Line_order_Repository {
 
 		const sql = `
 			INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-			(order_id, product_id, quantity, price)
-			VALUES (:order_id, :product_id, :quantity, :price);
+			(order_id, product_id, qty, price, total)
+			VALUES (:order_id, :product_id, :qty, :price, :total);
 		`;
 
 		try {
@@ -108,8 +108,9 @@ class Line_order_Repository {
 			SET
 				order_id = :order_id,
 				product_id = :product_id,
-				quantity = :quantity,
-				price = :price
+				qty = :qty,
+				price = :price,
+				total = :total
 			WHERE id = :id;
 		`;
 

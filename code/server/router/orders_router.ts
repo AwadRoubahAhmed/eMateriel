@@ -7,6 +7,9 @@ class Orders_router {
 	public getRoutes = () => {
 		//create a get router it will be only accessible in get method
 		this.router.get("/", new Orders_Controller().index);
+
+		this.router.get("/find", new Orders_Controller().findByOrderAndProduct);
+
 		this.router.get("/:id", new Orders_Controller().selectOne);
 
 		this.router.post("/", new Orders_Controller().create);

@@ -55,9 +55,11 @@ class ApiOrdersService {
 
 	public selectUserCart = async (
 		userId: number,
-	): Promise<ApiResponse<Orders>> => {
+	): Promise<ApiResponse<Orders | null>> => {
 		const response = await fetch(`${this.baseUrl}/user/${userId}`);
-		return await response.json();
+		const json = await response.json();
+
+		return json.data ? json : { ...json, data: null };
 	};
 }
 

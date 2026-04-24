@@ -9,15 +9,27 @@ const Guard = ({ roles, children }: GuardProps) => {
 	//useNavigate permet de créer une redirection
 	const navigate = useNavigate();
 	//verifier le role à l'affichage du composant / page
+	// useEffect(() => {
+	// 	//recuperer les utilisateurs
+	// 	const user = new SecurityService().getUser();
+	// 	//si le role n'est pas utiliser
+	// 	if (roles.indexOf(user?.role?.name as string) === -1) {
+	// 		//redirection vers une page react
+	// 		navigate("/");
+	// 	}
+	// }, [roles.indexOf, navigate]);
 	useEffect(() => {
-		//recuperer les utilisateurs
 		const user = new SecurityService().getUser();
-		//si le role n'est pas utiliser
-		if (roles.indexOf(user?.role?.name as string) === -1) {
-			//redirection vers une page react
+
+		if (!user?.role?.name) {
+			navigate("/");
+			return;
+		}
+
+		if (!roles.includes(user.role.name)) {
 			navigate("/");
 		}
-	}, [roles.indexOf, navigate]);
+	}, [roles, navigate]);
 	return <>{children}</>;
 };
 

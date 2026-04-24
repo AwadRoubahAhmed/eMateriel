@@ -14,10 +14,9 @@ import styles from "./ProductDetail.module.css";
 
 export default function ProductDetail() {
 	const { id } = useParams<{ id: string }>();
-	const navigate = useNavigate();
-
 	const { user } = useAuth();
-	const userId = user?.id;
+
+	const navigate = useNavigate();
 
 	const [product, setProduct] = useState<Product | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -41,101 +40,156 @@ export default function ProductDetail() {
 	if (!product) return <p>Produit introuvable</p>;
 
 	// const handleAddToCart = async () => {
-	// 	if (!userId) {
-	// 		navigate("/auth");
-	// 		return;
-	// 	}
+	// 	if (!product) return;
+
+	// 	const ordersService = new ApiOrdersService();
+	// 	const lineService = new ApiLineOrderService();
 
 	// 	try {
-	// 		const ordersService = new ApiOrdersService();
-	// 		const lineService = new ApiLineOrderService();
+	// 		const userId = user?.id ?? null;
 
-	// 		// 1️⃣ récupérer toutes les commandes
-	// 		const ordersRes = await ordersService.selectAll();
+	// 		let order: Orders | null = null;
 
-	// 		// 2️⃣ trouver la commande de l'utilisateur
-	// 		let order = ordersRes.data?.find((o) => o.user_id === userId);
+	// 		// 1️ récupérer panier existant
+	// 		if (userId) {
+	// 			const res = await ordersService.selectUserCart(userId);
+	// 			order = res.data ?? null;
+	// 		} else {
+	// 			const res = await ordersService.selectAll();
+	// 			order = res.data?.find((o) => o.user_id === null) ?? null;
+	// 		}
 
-	// 		// 3️⃣ si pas de commande → création
+	// 		console.log("ORDER =", order);
+
+	// 		// 2️ créer panier SI PAS EXISTANT
 	// 		if (!order) {
 	// 			const created = await ordersService.create({
 	// 				name: "Panier",
-	// 				description: "Panier utilisateur",
-	// 				total: 0,
+	// 				image: "cart.png",
 	// 				user_id: userId,
+	// 				payment_method_id: null,
+	// 				total: 0,
 	// 			});
 
-	// 			if (!created.data) return;
+	// 			const orderId = created.data?.id;
 
-	// 			order = created.data;
+	// 			if (!orderId) {
+	// 				console.error("Order creation failed", created);
+	// 				return;
+	// 			}
+
+	// 			// IMPORTANT : récupérer ordre complet (propre + relations)
+	// 			const fullOrder = await ordersService.selectOne(orderId);
+
+	// 			order = fullOrder.data ?? null;
 	// 		}
 
-	// 		// 4️⃣ ajouter produit dans line_order
-	// 		await lineService.create({
-	// 			order_id: order.id,
-	// 			product_id: product.id,
-	// 			qty: 1,
-	// 			total: product.price,
-	// 		});
+	// 		if (!order) return;
 
-	// 		// 5️⃣ redirect panier
+	// 		console.log("FINAL ORDER =", order);
+
+	// 		// 3️ vérifier si produit déjà dans le panier
+	// 		const existingLine = await lineService.findByOrderAndProduct(
+	// 			order.id,
+	// 			product.id,
+	// 		);
+
+	// 		// 4️ update ou create ligne
+	// 		if (existingLine?.data) {
+	// 			await lineService.incrementQty(
+	// 				existingLine.data.id,
+	// 				1,
+	// 				Number(product.price),
+	// 			);
+	// 		} else {
+	// 			await lineService.create({
+	// 				order_id: order.id,
+	// 				product_id: product.id,
+	// 				qty: 1,
+	// 				total: Number(product.price),
+	// 			});
+	// 		}
+
+	// 		// 5️ redirect
 	// 		navigate("/panier");
-	// 	} catch (err) {
-	// 		console.error("Erreur ajout panier:", err);
+	// 	} catch (error) {
+	// 		console.error("ADD TO CART ERROR:", error);
 	// 	}
 	// };
-
 	const handleAddToCart = async () => {
 		if (!product) return;
-
-		if (!userId) {
-			navigate("/auth");
-			return;
-		}
 
 		const ordersService = new ApiOrdersService();
 		const lineService = new ApiLineOrderService();
 
 		try {
-			// 1. récupérer panier utilisateur
-			const res = await ordersService.selectUserCart(userId);
-			let order: Orders | null = res.data ?? null;
+			const userId = user?.id ?? null;
 
-			// 2. créer panier si inexistant
+			let order: Orders | null = null;
+
+			// 1️ Récupérer panier existant
+			if (userId) {
+				const res = await ordersService.selectUserCart(userId);
+				order = res.data ?? null;
+			} else {
+				const res = await ordersService.selectAll();
+				order = res.data?.find((o) => o.user_id === null) ?? null;
+			}
+
+			console.log("ORDER EXISTANT =", order);
+
+			// 2️ Créer panier si inexistant
 			if (!order) {
 				const created = await ordersService.create({
+					name: "Panier",
+					image: "cart.png",
 					user_id: userId,
+					payment_method_id: null,
 					total: 0,
 				});
 
-				order = created.data ?? null;
+				// TON BACKEND RENVOIE { data: { id } }
+				const orderId = created.data?.id;
+
+				if (!orderId) {
+					console.error("❌ Order creation failed", created);
+					return;
+				}
+
+				// 3️ Re-fetch propre (important pour relations user/payment/lines)
+				const fullOrder = await ordersService.selectOne(orderId);
+
+				order = fullOrder.data ?? null;
 			}
 
-			// 3. sécurité stricte TS
 			if (!order) return;
 
-			// 4. vérifier si produit déjà dans panier
+			console.log("FINAL ORDER =", order);
+
+			// 4️ Vérifier si produit déjà dans panier
 			const existingLine = await lineService.findByOrderAndProduct(
 				order.id,
 				product.id,
 			);
 
-			// 5. update ou create
+			const price = Number(product.price);
+
+			// 5️ Update ou create line_order
 			if (existingLine?.data) {
-				await lineService.incrementQty(existingLine.data.id, 1, product.price);
+				await lineService.incrementQty(existingLine.data.id, 1, price);
 			} else {
 				await lineService.create({
 					order_id: order.id,
 					product_id: product.id,
 					qty: 1,
-					total: product.price,
+					total: price,
 				});
 			}
 
-			// 6. redirect
+			// 6️ redirect
 			navigate("/panier");
 		} catch (error) {
-			console.error("Erreur add to cart:", error);
+			console.error("ADD TO CART ERROR:", error);
 		}
 	};
 	return (
