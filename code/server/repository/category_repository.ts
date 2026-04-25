@@ -12,7 +12,6 @@ class Category_Repository {
 	public selectAll = async (): Promise<Category[] | unknown> => {
 		//connexion au serveur MySQL
 		const connection = await new MySQLService().connect();
-		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
 		const sql = `
             SELECT
 			${this.table}.*, 
@@ -48,28 +47,20 @@ class Category_Repository {
 	//selectionner un enregistrement
 	public selectOne = async (
 		data: Partial<Category>,
-	): Promise<Category[] | unknown> => {
-		//connexion au serveur MySQL
+	): Promise<Category | unknown> => {
 		const connection = await new MySQLService().connect();
-		//requete SQL "SELECT reservation_status.* FROM profit_dev.reservation_status;"
-		//variable de requete : precedée d'un ":", suivi du nom de la variable
-		//quand je fais des requetes avec des variables : "requete préparés" :securité donc la requete est executée si elle ne represente pas de risque de securite
+
 		const sql = `
-            SELECT ${this.table}.*
-            FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			JOIN ${process.env.MYSQL_DATABASE}.product
-			ON ${this.table}.id = product.category_id
-			WHERE ${this.table}.id = :id
-			; 
-        `;
-		// try / catch : tente et recupere moi resultat et ou l'erreur
+		SELECT *
+		FROM ${process.env.MYSQL_DATABASE}.${this.table}
+		WHERE id = :id;
+	`;
+
 		try {
-			//execute la requette
-			// si la requete possede des variables, utiliser le parametre de la methode
 			const [query] = await connection.execute(sql, data);
-			//recuperer le premier indice d'un array
+
 			const resultat = (query as Category[]).shift();
-			//Retourner les resultats
+
 			return resultat;
 		} catch (error) {
 			return error;

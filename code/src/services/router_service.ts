@@ -65,14 +65,15 @@ class RouterService {
 							{
 								id: "mentions_legales",
 								path: "mentions-legales",
-								lazy: () =>
-									import("../pages/MentionsLegales/MentionsLegales"),
+								lazy: () => import("../pages/MentionsLegales/MentionsLegales"),
 							},
 							{
 								id: "politique-confidentialite",
 								path: "politique-confidentialite",
 								lazy: () =>
-									import("../pages/PolitiqueConfidentialite/PolitiqueConfidentialite"),
+									import(
+										"../pages/PolitiqueConfidentialite/PolitiqueConfidentialite"
+									),
 							},
 							{
 								id: "faqs",
@@ -115,6 +116,28 @@ class RouterService {
 								id: "admin-product-delete",
 								path: "product/delete/:id",
 								lazy: () => import("../pages/admin/product/delete"),
+							},
+							{
+								id: "admin-category-home",
+								path: "categories",
+								lazy: () =>
+									import("../pages/admin/categories/AdminCategoryHome"),
+							},
+							{
+								id: "admin-category-form",
+								path: "category/form",
+								lazy: () =>
+									import("../pages/admin/categories/AdminCategoryForm"),
+							},
+							{
+								id: "admin-category-update",
+								path: "category/update/:id",
+								lazy: () => import("../pages/admin/categories/Update"),
+							},
+							{
+								id: "admin-category-delete",
+								path: "category/delete/:id",
+								lazy: () => import("../pages/admin/categories/Delete"),
 							},
 						],
 					},

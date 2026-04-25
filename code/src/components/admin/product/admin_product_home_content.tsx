@@ -12,6 +12,10 @@ const AdminProductHomeContent = () => {
 	const [products, setProducts] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(true);
 
+	// 🔥 popup state
+	const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+	const [loadingDelete, setLoadingDelete] = useState(false);
+
 	useEffect(() => {
 		const fetchProducts = async () => {
 			const res = await new ApiProductService().selectAll();
@@ -23,45 +27,37 @@ const AdminProductHomeContent = () => {
 		fetchProducts();
 	}, []);
 
-	// Comportements
-	// const handleDelete = async (id: number) => {
-	// 	const security = new SecurityService();
-	// 	const token = security.getToken();
+	const handleDelete = async () => {
+		if (confirmDeleteId === null) return;
 
-	// 	console.log("DELETE token:", token);
-	// 	console.log("DELETE id:", id);
+		const idToDelete = confirmDeleteId; // 🔥 important
 
-	// 	const res = await new ApiProductService().delete(id, token ?? undefined);
-
-	// 	if (res.status === 200) {
-	// 		console.log("Produit supprimé);
-
-	// 		// mise à jour du state (SANS reload)
-	// 		setProducts((prev) => prev.filter((p) => p.id !== id));
-	// 	} else {
-	// 		console.error("Erreur delete:", res.message);
-	// 	}
-	// };
-
-	const handleDelete = async (id: number) => {
 		const security = new SecurityService();
 		const token = security.getToken();
 
 		if (!token) {
-			console.log("Aucun token disponible, veuillez vous connecter !");
+			alert("Non autorisé");
 			return;
 		}
 
-		try {
-			const res = await new ApiProductService().delete(id, token);
-			console.log("Delete res:", res);
+		setLoadingDelete(true);
 
-			// Optionnel : retirer le produit de la liste front
-			setProducts(products.filter((p) => p.id !== id));
+		try {
+			const res = await new ApiProductService().delete(idToDelete, token);
+
+			console.log("DELETE RESULT:", res);
+
+			if (res.status === 200) {
+				setProducts((prev) => prev.filter((p) => p.id !== idToDelete));
+			}
 		} catch (error) {
-			console.log("Erreur delete:", error);
+			console.log("DELETE ERROR:", error);
+		} finally {
+			setLoadingDelete(false);
+			setConfirmDeleteId(null);
 		}
 	};
+
 	return (
 		<div className={styles.AdminProductHomeContent}>
 			<Title title="Gestion des Produits" />
@@ -73,7 +69,7 @@ const AdminProductHomeContent = () => {
 			</div>
 
 			{loading ? (
-				<p>Chargement des produits...</p>
+				<p>Chargement...</p>
 			) : (
 				<div className={styles.productsGrid}>
 					{products.map((product) => (
@@ -83,12 +79,13 @@ const AdminProductHomeContent = () => {
 								alt={product.name}
 								className={styles.productImage}
 							/>
+
 							<div className={styles.productInfo}>
 								<h3>{product.name}</h3>
-								<p>ID: {product.id}</p>
 								<p>Prix: {product.price} €</p>
 								<p>Stock: {product.stock}</p>
 							</div>
+
 							<div className={styles.productActions}>
 								<Link
 									to={`/admin/product/update/${product.id}`}
@@ -96,22 +93,47 @@ const AdminProductHomeContent = () => {
 								>
 									Modifier
 								</Link>
-								{/* <Link
-									to={`/admin/product/delete/${product.id}`}
-									className={styles.deleteBtn}
-								>
-									Supprimer
-								</Link> */}
+
 								<button
 									type="button"
-									onClick={() => handleDelete(product.id)}
 									className={styles.deleteBtn}
+									onClick={() => setConfirmDeleteId(product.id)}
 								>
 									Supprimer
 								</button>
 							</div>
 						</div>
 					))}
+				</div>
+			)}
+
+			{/* POPUP CONFIRM DELETE */}
+			{confirmDeleteId && (
+				<div className={styles.modalOverlay}>
+					<div className={styles.modal}>
+						<h3>Confirmer la suppression</h3>
+						<p>Voulez-vous supprimer ce produit ?</p>
+
+						<div className={styles.modalActions}>
+							<button
+								type="button"
+								className={styles.cancelBtn}
+								onClick={() => setConfirmDeleteId(null)}
+								disabled={loadingDelete}
+							>
+								Annuler
+							</button>
+
+							<button
+								type="button"
+								className={styles.confirmBtn}
+								onClick={handleDelete}
+								disabled={loadingDelete}
+							>
+								{loadingDelete ? "Suppression..." : "Confirmer"}
+							</button>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>

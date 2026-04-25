@@ -77,7 +77,10 @@ class Product_Controller {
 	};
 
 	public delete = async (req: Request, res: Response) => {
-		const resultat = await new Product_Repository().delete(req.body);
+		const resultat = await new Product_Repository().delete({
+			id: Number(req.params.id),
+		});
+
 		if (resultat instanceof Error) {
 			return res.status(400).json({
 				status: 400,
@@ -85,6 +88,7 @@ class Product_Controller {
 					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
 			});
 		}
+
 		res.status(200).json({ status: 200, message: "Deleted", data: resultat });
 	};
 }
