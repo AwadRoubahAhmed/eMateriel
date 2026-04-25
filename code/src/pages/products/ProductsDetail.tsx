@@ -50,7 +50,7 @@ export default function ProductDetail() {
 
 	// 		let order: Orders | null = null;
 
-	// 		// 1️ récupérer panier existant
+	// 		// 1️ Récupérer panier existant
 	// 		if (userId) {
 	// 			const res = await ordersService.selectUserCart(userId);
 	// 			order = res.data ?? null;
@@ -59,9 +59,9 @@ export default function ProductDetail() {
 	// 			order = res.data?.find((o) => o.user_id === null) ?? null;
 	// 		}
 
-	// 		console.log("ORDER =", order);
+	// 		console.log("ORDER EXISTANT =", order);
 
-	// 		// 2️ créer panier SI PAS EXISTANT
+	// 		// 2️ Créer panier si inexistant
 	// 		if (!order) {
 	// 			const created = await ordersService.create({
 	// 				name: "Panier",
@@ -71,6 +71,7 @@ export default function ProductDetail() {
 	// 				total: 0,
 	// 			});
 
+	// 			// TON BACKEND RENVOIE { data: { id } }
 	// 			const orderId = created.data?.id;
 
 	// 			if (!orderId) {
@@ -78,7 +79,7 @@ export default function ProductDetail() {
 	// 				return;
 	// 			}
 
-	// 			// IMPORTANT : récupérer ordre complet (propre + relations)
+	// 			// 3️ Re-fetch propre (important pour relations user/payment/lines)
 	// 			const fullOrder = await ordersService.selectOne(orderId);
 
 	// 			order = fullOrder.data ?? null;
@@ -88,34 +89,33 @@ export default function ProductDetail() {
 
 	// 		console.log("FINAL ORDER =", order);
 
-	// 		// 3️ vérifier si produit déjà dans le panier
+	// 		// 4️ Vérifier si produit déjà dans panier
 	// 		const existingLine = await lineService.findByOrderAndProduct(
 	// 			order.id,
 	// 			product.id,
 	// 		);
 
-	// 		// 4️ update ou create ligne
+	// 		const price = product.price;
+
+	// 		// 5️ Update ou create line_order
 	// 		if (existingLine?.data) {
-	// 			await lineService.incrementQty(
-	// 				existingLine.data.id,
-	// 				1,
-	// 				Number(product.price),
-	// 			);
+	// 			await lineService.incrementQty(existingLine.data.id, 1, price);
 	// 		} else {
 	// 			await lineService.create({
 	// 				order_id: order.id,
 	// 				product_id: product.id,
 	// 				qty: 1,
-	// 				total: Number(product.price),
+	// 				total: price,
 	// 			});
 	// 		}
 
-	// 		// 5️ redirect
+	// 		// 6️ redirect
 	// 		navigate("/panier");
 	// 	} catch (error) {
 	// 		console.error("ADD TO CART ERROR:", error);
 	// 	}
 	// };
+
 	const handleAddToCart = async () => {
 		if (!product) return;
 
@@ -127,7 +127,7 @@ export default function ProductDetail() {
 
 			let order: Orders | null = null;
 
-			// 1️ Récupérer panier existant
+			// 1. récupérer panier
 			if (userId) {
 				const res = await ordersService.selectUserCart(userId);
 				order = res.data ?? null;
@@ -136,9 +136,7 @@ export default function ProductDetail() {
 				order = res.data?.find((o) => o.user_id === null) ?? null;
 			}
 
-			console.log("ORDER EXISTANT =", order);
-
-			// 2️ Créer panier si inexistant
+			// 2. créer panier si besoin
 			if (!order) {
 				const created = await ordersService.create({
 					name: "Panier",
@@ -148,35 +146,26 @@ export default function ProductDetail() {
 					total: 0,
 				});
 
-				// TON BACKEND RENVOIE { data: { id } }
 				const orderId = created.data?.id;
+				if (!orderId) return;
 
-				if (!orderId) {
-					console.error("❌ Order creation failed", created);
-					return;
-				}
-
-				// 3️ Re-fetch propre (important pour relations user/payment/lines)
 				const fullOrder = await ordersService.selectOne(orderId);
-
 				order = fullOrder.data ?? null;
 			}
 
 			if (!order) return;
 
-			console.log("FINAL ORDER =", order);
+			const price = product.price;
 
-			// 4️ Vérifier si produit déjà dans panier
-			const existingLine = await lineService.findByOrderAndProduct(
+			// 3. chercher si ligne existe déjà
+			const existing = await lineService.findByOrderAndProduct(
 				order.id,
 				product.id,
 			);
 
-			const price = Number(product.price);
-
-			// 5️ Update ou create line_order
-			if (existingLine?.data) {
-				await lineService.incrementQty(existingLine.data.id, 1, price);
+			// 4. update ou create
+			if (existing.data) {
+				await lineService.incrementQty(existing.data.id, 1, price);
 			} else {
 				await lineService.create({
 					order_id: order.id,
@@ -186,12 +175,12 @@ export default function ProductDetail() {
 				});
 			}
 
-			// 6️ redirect
 			navigate("/panier");
 		} catch (error) {
-			console.error("ADD TO CART ERROR:", error);
+			console.error(error);
 		}
 	};
+
 	return (
 		<>
 			<Seo

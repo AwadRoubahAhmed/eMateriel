@@ -78,6 +78,39 @@ class Line_order_Repository {
 		}
 	};
 
+	public selectByOrder = async (order_id: number) => {
+		const connection = await new MySQLService().connect();
+
+		console.log("ORDER ID BACKEND =", order_id);
+
+		const sql = `
+		SELECT line_order.*, product.*
+        FROM line_order
+        JOIN product ON product.id = line_order.product_id
+        WHERE order_id = :order_id
+	`;
+
+		const [rows] = await connection.execute(sql, { order_id });
+
+		const formatted = (rows as any[]).map((row) => ({
+			id: row.id,
+			qty: row.qty,
+			total: row.total,
+			order_id: row.order_id,
+			product_id: row.product_id,
+			product: {
+				id: row.product_id,
+				name: row.name,
+				image: row.image,
+				price: row.price,
+				description: row.description,
+				stock: row.stock,
+				category_id: row.category_id,
+			},
+		}));
+		return formatted;
+	};
+
 	public create = async (
 		data: Partial<Line_order>,
 	): Promise<number | unknown> => {
@@ -85,8 +118,8 @@ class Line_order_Repository {
 
 		const sql = `
 			INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-			(order_id, product_id, qty, price, total)
-			VALUES (:order_id, :product_id, :qty, :price, :total);
+			(order_id, product_id, qty, total)
+			VALUES (:order_id, :product_id, :qty, :total);
 		`;
 
 		try {
@@ -109,7 +142,6 @@ class Line_order_Repository {
 				order_id = :order_id,
 				product_id = :product_id,
 				qty = :qty,
-				price = :price,
 				total = :total
 			WHERE id = :id;
 		`;
@@ -128,6 +160,8 @@ class Line_order_Repository {
 
 	public delete = async (id: number): Promise<boolean | unknown> => {
 		const connection = await new MySQLService().connect();
+
+		console.log("ORDER ID =", id);
 
 		const sql = `
 			DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table}

@@ -16,6 +16,11 @@ class ApiLineOrderService {
 		return await response.json();
 	};
 
+	public selectByOrder = async (orderId: number) => {
+		const response = await fetch(`${this.baseUrl}/order/${orderId}`);
+		return await response.json();
+	};
+
 	// CREATE
 	public create = async (
 		data: Partial<Line_order>,
@@ -53,20 +58,31 @@ class ApiLineOrderService {
 		return await response.json();
 	};
 
-	public findByOrderAndProduct = async (
-		orderId: number,
-		productId: number,
-	): Promise<ApiResponse<Line_order>> => {
-		const response = await fetch(
+	async findByOrderAndProduct(orderId: number, productId: number) {
+		const res = await fetch(
 			`${this.baseUrl}/find?orderId=${orderId}&productId=${productId}`,
 		);
-		return await response.json();
-	};
+
+		const data = await res.json();
+
+		if (!res.ok) {
+			return {
+				data: null,
+				status: res.status,
+				message: data?.message ?? "Error",
+			};
+		}
+
+		return {
+			data: data.data ?? null,
+			status: res.status,
+		};
+	}
 
 	public incrementQty = async (
 		id: number,
 		qty: number,
-		total: number
+		total: number,
 	): Promise<ApiResponse<Line_order>> => {
 		const response = await fetch(`${this.baseUrl}/${id}/increment`, {
 			method: "PUT",

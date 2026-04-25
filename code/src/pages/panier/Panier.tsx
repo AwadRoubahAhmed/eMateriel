@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { Line_order } from "../../../models/line_order";
 import { useAuth } from "../../context/AuthContext";
 import ApiLineOrderService from "../../services/api_line_order_service";
@@ -10,7 +10,7 @@ import styles from "./Panier.module.css";
 
 export default function Panier() {
 	const { user } = useAuth();
-	// const navigate = useNavigate();
+	const navigate = useNavigate();
 	const [_orderId, setOrderId] = useState<number | null>(null);
 
 	const [lines, setLines] = useState<Line_order[]>([]);
@@ -33,9 +33,6 @@ export default function Panier() {
 				if (userId) {
 					const res = await ordersService.selectUserCart(userId);
 					order = res.data ?? null;
-				} else {
-					const res = await ordersService.selectAll();
-					order = res.data?.find((o) => o.user_id === null) ?? null;
 				}
 
 				if (!order) {
@@ -45,9 +42,8 @@ export default function Panier() {
 
 				setOrderId(order.id);
 
-				const linesRes = await lineService.selectAll();
-
-				setLines(linesRes.data?.filter((l) => l.order_id === order.id) ?? []);
+				const linesRes = await lineService.selectByOrder(order.id);
+				setLines(linesRes.data ?? []);
 			} catch (err) {
 				console.error(err);
 			} finally {
@@ -56,7 +52,7 @@ export default function Panier() {
 		};
 
 		fetchCart();
-	}, [user]);
+	}, [user?.id]);
 
 	const handleRemove = async (id: number) => {
 		try {
@@ -116,9 +112,7 @@ export default function Panier() {
 		}
 	};
 
-	// const total = useMemo(() => {
-	// 	return lines.reduce((sum, l) => sum + (l.total ?? 0), 0);
-	// }, [lines]);
+	const totalPanier = lines.reduce((sum, l) => sum + Number(l.total ?? 0), 0);
 
 	if (loading) return <p>Chargement du panier...</p>;
 
@@ -126,50 +120,70 @@ export default function Panier() {
 		<section className={styles.section}>
 			<h1 className={styles.title}>Mon Panier</h1>
 
-			{lines.map((line) => (
-				<div key={line.id} className={styles.card}>
-					<div className={styles.imageWrapper}>
-						<img
-							src={`/images/${line.product?.image}`}
-							alt={line.product?.name}
-						/>
-					</div>
-
-					<div className={styles.content}>
-						<h2>{line.product?.name}</h2>
-
-						<p>
-							Catégorie : {line.product?.category?.name ?? "Non renseignée"}
-						</p>
-
-						<p>{line.product?.description}</p>
-
-						<p>{line.product?.price} €</p>
-
-						<p>
-							{line.product?.stock > 0
-								? `En stock : ${line.product.stock}`
-								: "Rupture de stock"}
-						</p>
-
-						<div className={styles.qtyControls}>
-							<button type="button" onClick={() => handleDecrease(line)}>
-								-
-							</button>
-							<span>{line.qty}</span>
-							<button type="button" onClick={() => handleIncrease(line)}>
-								+
-							</button>
+			{lines.map((line) => {
+				return (
+					<div key={line.id} className={styles.card}>
+						<div className={styles.imageWrapper}>
+							<img
+								src={
+									line.product?.image
+										? line.product.image.startsWith("http")
+											? line.product.image
+											: `/images/${line.product.image}`
+										: "/images/default.png"
+								}
+								alt={line.product?.name ?? "produit"}
+							/>
 						</div>
 
-						<p>Total : {line.total} €</p>
+						<div className={styles.content}>
+							<h2>{line.product?.name}</h2>
 
-						<button type="button" onClick={() => handleRemove(line.id)}>
-							Supprimer
-						</button>
+							<p>
+								Catégorie : {line.product?.category?.name ?? "Non renseignée"}
+							</p>
+
+							<p>{line.product?.description}</p>
+
+							<p>{line.product?.price} €</p>
+
+							<p>
+								{line.product?.stock > 0
+									? `En stock : ${line.product.stock}`
+									: "Rupture de stock"}
+							</p>
+
+							<div className={styles.qtyControls}>
+								<button type="button" onClick={() => handleDecrease(line)}>
+									-
+								</button>
+								<span>{line.qty}</span>
+								<button type="button" onClick={() => handleIncrease(line)}>
+									+
+								</button>
+							</div>
+
+							<p>Total : {line.total} €</p>
+
+							<button type="button" onClick={() => handleRemove(line.id)}>
+								Supprimer
+							</button>
+						</div>
 					</div>
-				</div>
-			))}
+				);
+			})}
+
+			<div className={styles.totalBox}>
+				<h2>Total panier : {totalPanier.toFixed(2)} €</h2>
+			</div>
+
+			<button
+				type="button"
+				className={styles.checkoutButton}
+				onClick={() => navigate("/checkout")}
+			>
+				Passer à la commande
+			</button>
 		</section>
 	);
 }

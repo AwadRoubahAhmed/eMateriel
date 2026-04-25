@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import Line_order_Repository from "../repository/line_order_repository";
 import Orders_Repository from "../repository/orders_repository";
 
 class Orders_Controller {
@@ -145,24 +144,22 @@ class Orders_Controller {
 		res.status(200).json({ status: 200, message: "Order deleted" });
 	};
 
-	public findByOrderAndProduct = async (req: Request, res: Response) => {
-		const orderId = Number(req.query.orderId);
-		const productId = Number(req.query.productId);
+	public getUserCart = async (req: Request, res: Response) => {
+		const user_id = Number(req.params.user_id);
 
-		const result = await new Line_order_Repository().findByOrderAndProduct(
-			orderId,
-			productId,
-		);
+		const order = await new Orders_Repository().getOrCreateCart(user_id);
 
-		if (result instanceof Error) {
-			return res.status(400).json({ status: 400, message: result.message });
+		if (order instanceof Error) {
+			return res.status(400).json({
+				status: 400,
+				message: order.message,
+			});
 		}
 
-		if (!result) {
-			return res.status(404).json({ status: 404, message: "Not found" });
-		}
-
-		return res.status(200).json({ status: 200, data: result });
+		return res.status(200).json({
+			status: 200,
+			data: order,
+		});
 	};
 }
 

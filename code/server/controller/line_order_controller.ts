@@ -51,8 +51,21 @@ class Line_order_Controller {
 		});
 	};
 
+	public selectByOrder = async (req: Request, res: Response) => {
+		const order_id = Number(req.params.order_id);
+
+		const resultat = await new Line_order_Repository().selectByOrder(order_id);
+
+		res.status(200).json({
+			status: 200,
+			data: resultat,
+		});
+	};
+
 	public create = async (req: Request, res: Response) => {
 		const resultat = await new Line_order_Repository().create(req.body);
+
+		console.log("BODY RECEIVED:", req.body);
 
 		if (resultat instanceof Error) {
 			res.status(400).json({
@@ -101,6 +114,8 @@ class Line_order_Controller {
 	public delete = async (req: Request, res: Response) => {
 		const id = Number(req.params.id);
 
+		console.log("DELETE LINE ID =", id);
+
 		const resultat = await new Line_order_Repository().delete(id);
 
 		if (resultat instanceof Error) {
@@ -124,6 +139,45 @@ class Line_order_Controller {
 			status: 200,
 			message: "Line order deleted",
 		});
+	};
+
+	public findByOrderAndProduct = async (req: Request, res: Response) => {
+		const orderId = Number(req.query.orderId);
+		const productId = Number(req.query.productId);
+
+		const result = await new Line_order_Repository().findByOrderAndProduct(
+			orderId,
+			productId,
+		);
+
+		if (result instanceof Error) {
+			return res.status(400).json({ status: 400, message: result.message });
+		}
+
+		if (!result) {
+			return res.status(404).json({ status: 404, message: "Not found" });
+		}
+
+		return res.status(200).json({ status: 200, data: result });
+	};
+
+	public incrementQty = async (req: Request, res: Response) => {
+		const id = Number(req.params.id);
+		const { qty, total } = req.body;
+
+		try {
+			await new Line_order_Repository().incrementQty(id, qty, total);
+
+			res.status(200).json({
+				status: 200,
+				message: "updated",
+			});
+		} catch (error) {
+			res.status(400).json({
+				status: 400,
+				message: "error",
+			});
+		}
 	};
 }
 
