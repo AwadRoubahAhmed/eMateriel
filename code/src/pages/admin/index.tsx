@@ -19,13 +19,13 @@ const AdminHome = () => {
 				<Title title="AdminHome" />
 
 				<div className={styles.AdminButtons}>
-					<Link to={"/admin/products"}>Produits</Link>
+					<Link className={styles.AdminProduct} to={"/admin/products"}>
+						Produits
+					</Link>
 
-					<Link to={"/admin/products"}>Categories</Link>
-
-					<Link to={"/admin/products"}>User</Link>
-
-					<Link to={"/admin/products"}>Commandes</Link>
+					<Link className={styles.AdminCategory} to={"/admin/categories"}>
+						Catégories
+					</Link>
 				</div>
 			</section>
 		</>

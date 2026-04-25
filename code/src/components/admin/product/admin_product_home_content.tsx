@@ -34,7 +34,7 @@ const AdminProductHomeContent = () => {
 	// 	const res = await new ApiProductService().delete(id, token ?? undefined);
 
 	// 	if (res.status === 200) {
-	// 		console.log("Produit supprimé ✅");
+	// 		console.log("Produit supprimé);
 
 	// 		// mise à jour du state (SANS reload)
 	// 		setProducts((prev) => prev.filter((p) => p.id !== id));

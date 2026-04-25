@@ -13,6 +13,19 @@
 	gap: 2rem;
 	margin-top: 2rem;
 }
+.AdminButtons > a {
+	text-decoration: none;
+}
+.AdminProduct {
+	background-color: #2563eb;
+	color: white;
+	padding: 2rem;
+}
+.AdminCategory {
+	background-color: #2563eb;
+	color: white;
+	padding: 2rem;
+}
 .AdminProductDelete {
 	padding: 2rem;
 }
