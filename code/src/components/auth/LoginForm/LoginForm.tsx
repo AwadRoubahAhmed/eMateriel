@@ -4,6 +4,8 @@ import { type ChangeEvent, type FormEvent, useState } from "react";
 import type { User } from "../../../../models/user";
 import SecurityAPiService from "../../../services/api_security_service";
 import SecurityService from "../../../services/security_service";
+import { authErrors } from "../../../utils/authErrors";
+import { isValidEmail, isValidPassword } from "../../../utils/validators";
 import styles from "./LoginForm.module.css";
 
 type LoginFormProps = {
@@ -25,10 +27,51 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 		setForm({ ...form, [e.target.name]: e.target.value });
 	};
 
+	// const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+	// 	e.preventDefault();
+	// 	setLoading(true);
+	// 	setError("");
+
+	// 	try {
+	// 		const res = await api.login(form);
+
+	// 		if (res.status !== 200 || !res.data) {
+	// 			throw new Error(res.message);
+	// 		}
+
+	// 		const security = new SecurityService();
+	// 		security.setToken(res.token);
+
+	// 		onSuccess?.(res.data);
+	// 	} catch (err: unknown) {
+	// 		if (err instanceof Error) {
+	// 			setError(err.message);
+	// 		} else {
+	// 			setError("Erreur serveur");
+	// 		}
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
+
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setLoading(true);
 		setError("");
+
+		// VALIDATION EMAIL
+		if (!isValidEmail(form.email)) {
+			setError(authErrors.email);
+			setLoading(false);
+			return;
+		}
+
+		// VALIDATION PASSWORD
+		if (!isValidPassword(form.password)) {
+			setError(authErrors.password);
+			setLoading(false);
+			return;
+		}
 
 		try {
 			const res = await api.login(form);
@@ -42,11 +85,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
 			onSuccess?.(res.data);
 		} catch (err: unknown) {
-			if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("Erreur serveur");
-			}
+			setError(err instanceof Error ? err.message : "Erreur serveur");
 		} finally {
 			setLoading(false);
 		}

@@ -80,7 +80,7 @@ export default function NavList({
 					À propos
 				</NavLink>
 			</li>
-			{new SecurityService().getUser()?.role.name === "Administrateur" ? (
+			{new SecurityService().getUser()?.role?.name === "Administrateur" ? (
 				<li>
 					<NavLink
 						to={"/admin/dashboard"}

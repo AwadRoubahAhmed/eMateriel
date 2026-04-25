@@ -3,6 +3,8 @@
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import type { User } from "../../../../models/user";
 import SecurityAPiService from "../../../services/api_security_service";
+import { authErrors } from "../../../utils/authErrors";
+import { isValidEmail, isValidPassword } from "../../../utils/validators";
 import styles from "./RegisterForm.module.css";
 
 type RegisterFormProps = {
@@ -40,6 +42,20 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 		e.preventDefault();
 		setLoading(true);
 		setError("");
+
+		// VALIDATION EMAIL
+		if (!isValidEmail(form.email)) {
+			setError(authErrors.email);
+			setLoading(false);
+			return;
+		}
+
+		// VALIDATION PASSWORD
+		if (!isValidPassword(form.password)) {
+			setError(authErrors.password);
+			setLoading(false);
+			return;
+		}
 
 		try {
 			const res = await api.register(form);
@@ -88,9 +104,22 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
 			{error && <p className={styles.error}>{error}</p>}
 
-			<button type="submit" disabled={loading}>
+			<button
+				type="submit"
+				disabled={
+					loading ||
+					!isValidEmail(form.email) ||
+					!isValidPassword(form.password)
+				}
+			>
 				{loading ? "Inscription..." : "S'inscrire"}
 			</button>
+			{(!isValidEmail(form.email) || !isValidPassword(form.password)) && (
+				<p className={styles.helper}>
+					Veuillez entrer un email valide et un mot de passe d’au moins 6
+					caractères.
+				</p>
+			)}
 		</form>
 	);
 }
