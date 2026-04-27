@@ -18,12 +18,12 @@ class SecurityService {
 
 	//getter/setter(accesseur/mutateur)
 	public getUser = (): User | null => {
-		"use server";
+		//"use server";
 		return SecurityService.user;
 	};
 
 	public setUser = (value: User | null) => {
-		"use server";
+		//"use server";
 		SecurityService.user = value;
 	};
 
