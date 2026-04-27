@@ -145,6 +145,8 @@ class Line_order_Controller {
 		const orderId = Number(req.query.orderId);
 		const productId = Number(req.query.productId);
 
+		console.log("QUERY RECEIVED =", req.query);
+
 		const result = await new Line_order_Repository().findByOrderAndProduct(
 			orderId,
 			productId,

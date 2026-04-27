@@ -8,10 +8,9 @@ class AuthorizationMiddlewere {
 
 	public authorize = (roles: string[]) => {
 		return async (req: Request, res: Response, next: NextFunction) => {
-			//eécuperation du jwt dans l'en tete Authorization
+			//récuperation du jwt dans l'en tete Authorization
 
 			const token = req.header("authorization")?.split("Bearer ")[1];
-			// console.log(token);
 
 			//vérification de la validité du jwt
 			try {

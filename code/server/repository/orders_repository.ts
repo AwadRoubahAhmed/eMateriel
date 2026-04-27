@@ -164,74 +164,94 @@ class Orders_Repository {
 		}
 	};
 
-	// public selectUserCart = async (user_id: number) => {
-	// 	const connection = await new MySQLService().connect();
-
-	// 	const sql = `
-	// 	SELECT *
-	// 	FROM ${process.env.MYSQL_DATABASE}.${this.table}
-	// 	WHERE user_id = :user_id
-	// 	ORDER BY id DESC
-	// 	LIMIT 1;
-	// `;
-
-	// 	try {
-	// 		const [rows] = await connection.execute<RowDataPacket[]>(sql, {
-	// 			user_id,
-	// 		});
-
-	// 		const result = (rows as Orders[])[0];
-
-	// 		return result ?? null;
-	// 	} catch (error) {
-	// 		console.log("selectUserCart ERROR:", error);
-	// 		return null;
-	// 	}
-	// };
-
 	public selectUserCart = async (userId: number) => {
 		const connection = await new MySQLService().connect();
 
 		const sql = `
-		SELECT *
-		FROM orders
-		WHERE user_id = :userId
-		LIMIT 1;
-	`;
+	        SELECT *
+	        FROM orders
+	        WHERE user_id = :userId
+	        ORDER BY id DESC
+	        LIMIT 1;
+`;
 
 		const [rows] = await connection.execute(sql, { userId });
 
 		return (rows as Orders[]).shift() ?? null;
 	};
 
-	public getOrCreateCart = async (userId: number) => {
+	// public getOrCreateCart = async (userId: number) => {
+	// 	const connection = await new MySQLService().connect();
+
+	// 	// 1. chercher panier existant
+	// 	const sql = `
+	// 	SELECT *
+	// 	FROM ${process.env.MYSQL_DATABASE}.orders
+	// 	WHERE user_id = :userId
+	// 	LIMIT 1;
+	// `;
+
+	// 	const [rows] = await connection.execute(sql, { userId });
+
+	// 	let order = (rows as any[]).shift();
+
+	// 	// 2. si aucun panier → on le crée
+	// 	if (!order) {
+	// 		const insert = `
+	// 		INSERT INTO ${process.env.MYSQL_DATABASE}.orders (user_id)
+	// 		VALUES (:userId);
+	// 	`;
+
+	// 		const [result] = await connection.execute<any>(insert, { userId });
+
+	// 		order = {
+	// 			id: result.insertId,
+	// 			user_id: userId,
+	// 		};
+	// 	}
+
+	// 	return order;
+	// };
+
+	public getOrCreateCart = async (userId: number | null) => {
 		const connection = await new MySQLService().connect();
 
-		// 1. chercher panier existant
-		const sql = `
-		SELECT *
-		FROM ${process.env.MYSQL_DATABASE}.orders
-		WHERE user_id = :userId
-		LIMIT 1;
-	`;
+		// CAS USER CONNECTÉ
+		if (userId) {
+			const [rows] = await connection.execute(
+				`SELECT * FROM orders WHERE user_id = :userId LIMIT 1`,
+				{ userId },
+			);
 
-		const [rows] = await connection.execute(sql, { userId });
+			let order = (rows as any[]).shift();
+
+			if (!order) {
+				const [result] = await connection.execute<any>(
+					`INSERT INTO orders (user_id, name, image, total)
+				 VALUES (:userId, 'Panier', 'cart.png', 0)`,
+					{ userId },
+				);
+
+				order = { id: result.insertId, user_id: userId };
+			}
+
+			return order;
+		}
+
+		// CAS INVITÉ (IMPORTANT)
+		const [rows] = await connection.execute(
+			`SELECT * FROM orders WHERE user_id IS NULL ORDER BY id DESC LIMIT 1`,
+		);
 
 		let order = (rows as any[]).shift();
 
-		// 2. si aucun panier → on le crée
 		if (!order) {
-			const insert = `
-			INSERT INTO ${process.env.MYSQL_DATABASE}.orders (user_id)
-			VALUES (:userId);
-		`;
+			const [result] = await connection.execute<any>(
+				`INSERT INTO orders (user_id, name, image, total)
+			 VALUES (NULL, 'Panier invité', 'cart.png', 0)`,
+			);
 
-			const [result] = await connection.execute<any>(insert, { userId });
-
-			order = {
-				id: result.insertId,
-				user_id: userId,
-			};
+			order = { id: result.insertId, user_id: null };
 		}
 
 		return order;

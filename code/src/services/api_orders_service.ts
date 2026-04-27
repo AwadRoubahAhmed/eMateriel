@@ -53,13 +53,19 @@ class ApiOrdersService {
 		return await response.json();
 	};
 
-	public selectUserCart = async (
-		userId: number,
-	): Promise<ApiResponse<Orders | null>> => {
-		const response = await fetch(`${this.baseUrl}/user/${userId}`);
-		const json = await response.json();
+	// public selectUserCart = async (
+	// 	userId: number,
+	// ): Promise<ApiResponse<Orders | null>> => {
+	// 	const response = await fetch(`${this.baseUrl}/user/${userId}`);
+	// 	const json = await response.json();
 
-		return json.data ? json : { ...json, data: null };
+	// 	return json.data ? json : { ...json, data: null };
+	// };
+
+	public selectUserCart = async (userId: number | null) => {
+		const response = await fetch(`${this.baseUrl}/user/${userId ?? "null"}`);
+
+		return await response.json();
 	};
 }
 

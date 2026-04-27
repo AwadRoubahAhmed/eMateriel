@@ -145,7 +145,14 @@ class Orders_Controller {
 	};
 
 	public getUserCart = async (req: Request, res: Response) => {
-		const user_id = Number(req.params.user_id);
+		const rawId = req.params.user_id;
+
+		const user_id =
+			rawId === "0" || rawId === "null" || rawId === "undefined"
+				? null
+				: Number(rawId);
+
+		console.log("USER ID =", user_id);
 
 		const order = await new Orders_Repository().getOrCreateCart(user_id);
 

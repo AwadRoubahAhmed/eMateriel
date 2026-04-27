@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Line_order } from "../../../models/line_order";
+import type { Orders } from "../../../models/orders";
 import { useAuth } from "../../context/AuthContext";
 import ApiLineOrderService from "../../services/api_line_order_service";
 import ApiOrdersService from "../../services/api_orders_service";
@@ -11,8 +12,8 @@ import styles from "./Panier.module.css";
 export default function Panier() {
 	const { user } = useAuth();
 	const navigate = useNavigate();
-	const [_orderId, setOrderId] = useState<number | null>(null);
 
+	const [_orderId, setOrderId] = useState<number | null>(null);
 	const [lines, setLines] = useState<Line_order[]>([]);
 	const [loading, setLoading] = useState(true);
 
@@ -23,16 +24,27 @@ export default function Panier() {
 			try {
 				setLoading(true);
 
+				const ordersService = new ApiOrdersService();
+				const lineService = new ApiLineOrderService(); // ✔️ ici
+
 				const userId = user?.id ?? null;
 
-				const ordersService = new ApiOrdersService();
-				const lineService = new ApiLineOrderService();
+				let order: Orders | null = null;
 
-				let order = null;
-
+				// ✔️ panier user
 				if (userId) {
 					const res = await ordersService.selectUserCart(userId);
 					order = res.data ?? null;
+				}
+
+				// ✔️ panier guest fallback
+				if (!order) {
+					const res = await ordersService.selectAll();
+
+					order =
+						res.data?.find(
+							(o) => o.user_id === null || o.user_id === undefined,
+						) ?? null;
 				}
 
 				if (!order) {
@@ -42,10 +54,12 @@ export default function Panier() {
 
 				setOrderId(order.id);
 
+				// ✔️ fetch lignes
 				const linesRes = await lineService.selectByOrder(order.id);
 				setLines(linesRes.data ?? []);
 			} catch (err) {
-				console.error(err);
+				console.error("CART ERROR:", err);
+				setLines([]);
 			} finally {
 				setLoading(false);
 			}
@@ -72,11 +86,7 @@ export default function Panier() {
 			setLines((prev) =>
 				prev.map((l) =>
 					l.id === line.id
-						? {
-								...l,
-								qty: l.qty + 1,
-								total: l.total + price,
-							}
+						? { ...l, qty: l.qty + 1, total: l.total + price }
 						: l,
 				),
 			);
@@ -99,11 +109,7 @@ export default function Panier() {
 			setLines((prev) =>
 				prev.map((l) =>
 					l.id === line.id
-						? {
-								...l,
-								qty: l.qty - 1,
-								total: l.total - price,
-							}
+						? { ...l, qty: l.qty - 1, total: l.total - price }
 						: l,
 				),
 			);
@@ -120,8 +126,10 @@ export default function Panier() {
 		<section className={styles.section}>
 			<h1 className={styles.title}>Mon Panier</h1>
 
-			{lines.map((line) => {
-				return (
+			{lines.length === 0 ? (
+				<p>Votre panier est vide</p>
+			) : (
+				lines.map((line) => (
 					<div key={line.id} className={styles.card}>
 						<div className={styles.imageWrapper}>
 							<img
@@ -147,12 +155,6 @@ export default function Panier() {
 
 							<p>{line.product?.price} €</p>
 
-							<p>
-								{line.product?.stock > 0
-									? `En stock : ${line.product.stock}`
-									: "Rupture de stock"}
-							</p>
-
 							<div className={styles.qtyControls}>
 								<button type="button" onClick={() => handleDecrease(line)}>
 									-
@@ -170,8 +172,8 @@ export default function Panier() {
 							</button>
 						</div>
 					</div>
-				);
-			})}
+				))
+			)}
 
 			<div className={styles.totalBox}>
 				<h2>Total panier : {totalPanier.toFixed(2)} €</h2>

@@ -8,6 +8,8 @@ class Orders_router {
 		//create a get router it will be only accessible in get method
 		this.router.get("/", new Orders_Controller().index);
 
+		this.router.get("/user/:user_id", new Orders_Controller().getUserCart);
+
 		this.router.get("/:id", new Orders_Controller().selectOne);
 
 		this.router.post("/", new Orders_Controller().create);
@@ -16,7 +18,6 @@ class Orders_router {
 
 		this.router.delete("/:id", new Orders_Controller().delete);
 
-		this.router.get("/user/:user_id", new Orders_Controller().getUserCart);
 		return this.router;
 	};
 }

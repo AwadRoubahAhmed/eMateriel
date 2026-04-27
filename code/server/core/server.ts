@@ -64,6 +64,8 @@ class Server {
 
 		this.router.use("/api/user", new User_router().getRoutes());
 
+		console.log("LINE ORDER ROUTER LOADED");
+
 		this.router.use("/api/line_order", new Line_order_router().getRoutes());
 
 		this.router.use("/api/contact", new ContactRouter().getRoutes());
