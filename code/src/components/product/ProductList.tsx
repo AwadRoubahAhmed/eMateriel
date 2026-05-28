@@ -12,9 +12,14 @@ export default function ProductList() {
 
 	useEffect(() => {
 		const fetchProducts = async () => {
-			const result = await new ApiProductService().selectAll();
-			setProducts(result.data ?? []);
-			setLoading(false);
+			try {
+				const result = await new ApiProductService().selectAll();
+				setProducts(result.data ?? []);
+			} catch (error) {
+				console.error("Erreur API produits :", error);
+			} finally {
+				setLoading(false);
+			}
 		};
 		fetchProducts();
 	}, []);
