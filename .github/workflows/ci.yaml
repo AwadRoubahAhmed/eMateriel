@@ -20,6 +20,10 @@ jobs:
       - name: Cloner le repository
         uses: actions/checkout@v4
 
+      - name: Créer le fichier d'environnement de test
+        working-directory: code
+        run: cp .env.test.example .env.test
+
       - name: Installer les dépendances
         working-directory: code
         run: npm ci

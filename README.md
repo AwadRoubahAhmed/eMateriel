@@ -67,6 +67,11 @@ Tables MySQL : `role`, `user`, `category`, `product`, `orders`, `line_order`, `p
 Prérequis : Docker et Docker Compose.
 
 ```bash
+# 0. Créer les fichiers d'environnement à partir des modèles
+#    (puis remplacer VITE_JWT_SECRET par une valeur aléatoire)
+cp code/.env.development.example code/.env.development
+cp code/.env.test.example code/.env.test
+
 # 1. Démarrer MySQL, MongoDB et le conteneur Node
 docker compose -f docker-compose.dev.yaml up -d
 
