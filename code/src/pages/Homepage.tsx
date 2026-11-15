@@ -4,8 +4,8 @@ import Delivery from "../components/delivery/Delivery";
 import Hero from "../components/hero/Hero";
 import ProductList from "../components/product/ProductList";
 import Seo from "../components/Seo";
+import { Link } from "react-router-dom";
 import Title from "../components/title/Title";
-import styles from "./Homepage.module.css";
 
 export default async function Homepage() {
 	// une sélection : le catalogue complet est sur /products
@@ -18,13 +18,16 @@ export default async function Homepage() {
 				path="/"
 			/>
 			<Hero />
-			<div className={styles.delivery}>
-				<Delivery />
-			</div>
+			<Delivery />
 			<CategorySection />
 			<section aria-labelledby="selection-title">
 				<Title title="Notre sélection" id="selection-title" />
 				<ProductList products={products} />
+				<p style={{ textAlign: "center", marginBottom: "3rem" }}>
+					<Link to="/products" className="btn btn-secondary">
+						Voir tout le catalogue
+					</Link>
+				</p>
 			</section>
 		</>
 	);

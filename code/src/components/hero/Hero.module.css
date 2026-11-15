@@ -1,121 +1,135 @@
 .hero {
-	display: flex;
-	flex-direction: column;
-	border: 1px solid #e5e7eb;
-	padding: 40px 20px;
-	gap: 30px;
-	background: #afc5f3;
-}
-
-/* LEFT */
-.leftSide {
-	width: 100%;
-	display: flex;
+	position: relative;
+	display: grid;
+	grid-template-columns: 1.05fr 1fr;
 	align-items: center;
-	justify-content: center;
+	gap: 2.5rem;
+	margin-top: 1.5rem;
+	padding: clamp(2rem, 5vw, 4rem);
+	border-radius: 28px;
+	background:
+		radial-gradient(80% 120% at 100% 0%, rgba(96, 165, 250, 0.35), transparent 60%),
+		linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%);
+	color: #ffffff;
+	overflow: hidden;
+	isolation: isolate;
 }
 
-.contentWrapper {
-	max-width: 500px;
-	color: #333333;
+/* motif discret en fond */
+.hero::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+	background-size: 22px 22px;
+	mask-image: linear-gradient(90deg, transparent, #000 70%);
 }
 
 .content {
 	display: flex;
-	align-items: center;
-	gap: 1rem;
-	margin-bottom: 10px;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1.1rem;
+	animation: rise 0.7s var(--ease) both;
 }
 
-.divider {
-	width: 30px;
-	height: 2px;
-	background-color: #1f2937;
-}
-
-.title {
-	font-weight: 500;
-	font-size: 0.9rem;
-	letter-spacing: 1px;
+.eyebrow {
+	padding: 0.35rem 0.8rem;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.08);
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
 	text-transform: uppercase;
 }
 
 .heading {
-	font-size: 2rem;
-	font-weight: 700;
-	line-height: 1.2;
-	margin: 10px 0 20px;
+	font-size: clamp(2.1rem, 5vw, 3.6rem);
+	font-weight: 800;
+	line-height: 1.05;
+	letter-spacing: -0.035em;
 }
 
-.textContent {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-}
-.textContent a {
-	text-decoration: none;
+.accent {
+	display: block;
+	background: linear-gradient(90deg, #bfdbfe, #ffffff);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
 }
 
-/* CTA BUTTON */
+.lead {
+	max-width: 32rem;
+	color: #dbeafe;
+	font-size: 1.05rem;
+	line-height: 1.6;
+}
+
 .cta {
-	background: #1d4ed8;
-	color: white;
-	padding: 10px 20px;
-	border: none;
-	cursor: pointer;
-	font-size: 0.9rem;
-	font-weight: 600;
-	transition: all 0.3s ease;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+	margin-top: 0.4rem;
+	padding: 0.9rem 1.5rem;
+	border-radius: 999px;
+	background: #ffffff;
+	color: #1e3a8a;
+	font-weight: 700;
+	text-decoration: none;
+	box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.45);
+	transition:
+		transform 0.25s var(--ease),
+		box-shadow 0.25s var(--ease),
+		gap 0.25s var(--ease);
 }
 
 .cta:hover {
-	background: #5579c4;
 	transform: translateY(-2px);
+	gap: 0.8rem;
+	box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.55);
 }
 
-/* RIGHT */
-.rightSide {
-	width: 100%;
+.cta:focus-visible {
+	outline: 3px solid #bfdbfe;
+	outline-offset: 3px;
+}
+
+.visual {
 	display: flex;
 	justify-content: center;
+	animation: rise 0.9s 0.1s var(--ease) both;
 }
 
-.image {
+.visual img {
 	width: 100%;
-	max-width: 500px;
+	max-width: 520px;
 	height: auto;
-	object-fit: contain;
-	border-top-left-radius: 2rem;
-	border-bottom-right-radius: 2rem;
+	border-radius: 20px;
+	box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.6);
+	transform: perspective(1000px) rotateY(-6deg);
+	transition: transform 0.6s var(--ease);
 }
 
-/* TABLET */
-@media (min-width: 640px) {
+.hero:hover .visual img {
+	transform: perspective(1000px) rotateY(0deg);
+}
+
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+}
+
+@media (max-width: 900px) {
 	.hero {
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-		padding: 60px;
+		grid-template-columns: 1fr;
+		border-radius: 22px;
+		text-align: left;
 	}
-
-	.leftSide,
-	.rightSide {
-		width: 50%;
-	}
-
-	.heading {
-		font-size: 2.5rem;
-	}
-}
-
-/* DESKTOP */
-@media (min-width: 1024px) {
-	.heading {
-		font-size: 3.5rem;
-	}
-
-	.cta {
-		font-size: 1rem;
-		padding: 12px 28px;
+	.visual img {
+		transform: none;
 	}
 }

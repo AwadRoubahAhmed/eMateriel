@@ -49,7 +49,7 @@ export default function ProductDetail({ loaderData }: { loaderData: { product: P
 
 					<div className={styles.meta}>
 						<span className={styles.price}>{formatPrice(product.price)}</span>
-						<span className={styles.stock}>
+						<span className={product.stock > 0 ? styles.stock : styles.stockOut}>
 							{product.stock > 0 ? `En stock (${product.stock})` : "Rupture de stock"}
 						</span>
 					</div>

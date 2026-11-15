@@ -21,7 +21,7 @@ export default function AdminLayout() {
 			<meta name="robots" content="noindex, nofollow" />
 			<Navbar />
 			<RequireAuth admin>
-				<div className={styles.wrapper}>
+				<div className={`shell ${styles.wrapper}`}>
 					<nav className={styles.sidebar} aria-label="Administration">
 						<ul>
 							{LINKS.map(({ to, label, end }) => (

@@ -6,7 +6,9 @@ class Category_Repository {
 	public selectAll = async (): Promise<Category[]> => {
 		const db = await new MySQLService().connect();
 		const [rows] = await db.execute<RowDataPacket[]>(
-			"SELECT * FROM category ORDER BY name",
+			`SELECT category.*, COUNT(product.id) AS product_count
+			 FROM category LEFT JOIN product ON product.category_id = category.id
+			 GROUP BY category.id ORDER BY category.name`,
 		);
 		return rows as Category[];
 	};

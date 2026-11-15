@@ -14,7 +14,7 @@ export default function RouteError() {
 	return (
 		<>
 			<Navbar />
-			<main id="main-content">
+			<main id="main-content" className="shell">
 				{notFound ? (
 					<NotFound message="Ce produit ou cette page n'existe pas (ou plus)." />
 				) : (

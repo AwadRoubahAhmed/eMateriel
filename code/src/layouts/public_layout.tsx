@@ -8,7 +8,7 @@ export default function PublicLayout() {
 	return (
 		<>
 			<Navbar />
-			<main id="main-content">
+			<main id="main-content" className="shell">
 				<Outlet />
 			</main>
 			<Footer />
