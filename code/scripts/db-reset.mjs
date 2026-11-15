@@ -24,7 +24,7 @@ export const resetDatabase = async (env = process.env) => {
 		await connection.query(
 			`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; USE \`${database}\`;`,
 		);
-		for (const file of ["schema.sql", "seed.sql"]) {
+		for (const file of ["schema.sql", "seed.sql", "test-users.sql"]) {
 			await connection.query(await fs.readFile(path.join(root, "mysql", file), "utf8"));
 		}
 	} finally {

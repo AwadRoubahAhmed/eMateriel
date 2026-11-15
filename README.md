@@ -78,7 +78,7 @@ npm run db:reset
 npm run dev
 ```
 
-Comptes de **test** créés par `mysql/seed.sql` (à ne jamais charger en production) :
+Comptes de **test** créés par `mysql/test-users.sql` (chargé par `db:reset`, jamais en production) :
 `admin@emateriel.test` / `Admin-Test-2026` et `client@emateriel.test` / `Client-Test-2026`.
 
 Paiement de test : mettre une clé `sk_test_…` dans `STRIPE_SECRET_KEY`, puis payer avec la carte de test Stripe `4242 4242 4242 4242` (date future, CVC quelconque).
@@ -99,6 +99,8 @@ NODE_ENV=production npm start
 ```
 
 Variables à définir chez l'hébergeur : `NODE_ENV=production`, `SITE_URL`, `MYSQL_*`, `JWT_SECRET` (32 caractères minimum), `STRIPE_SECRET_KEY`, `UPLOAD_DIR`, et au build `VITE_SITE_URL` (+ `VITE_CF_ANALYTICS_TOKEN` pour la mesure d'audience). Les informations légales de l'éditeur se complètent dans `code/src/data/legal.ts`.
+
+Premier démarrage : avec `DB_AUTO_INIT=true`, le serveur crée les tables et le catalogue de démonstration si la base est vide, puis le compte administrateur défini par `ADMIN_EMAIL` / `ADMIN_PASSWORD`. Les comptes de test (`mysql/test-users.sql`) ne sont jamais chargés en production. Point d'entrée Node : `code/app.js`.
 
 ## Ce que ce projet m'a appris
 

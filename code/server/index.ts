@@ -19,6 +19,11 @@ process.on("uncaughtException", (error: NodeJS.ErrnoException) => {
 	process.exit(1);
 });
 
+if (process.env.DB_AUTO_INIT === "true") {
+	const { initDatabase } = await import("./service/db_init_service");
+	await initDatabase();
+}
+
 // Un seul serveur Node : API + site React (pratique pour Hostinger).
 const app = new Server().startServer();
 const production = process.env.NODE_ENV === "production";
