@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import argon2 from "argon2";
 import mysql, { type RowDataPacket } from "mysql2/promise";
 import { passwordSchema } from "../validation/schemas";
+import { hashPassword } from "./password_service";
 
 // Premier démarrage en production (DB_AUTO_INIT=true) : crée les tables et le catalogue de
 // démonstration si la base est vide, puis le compte admin (ADMIN_EMAIL / ADMIN_PASSWORD).
@@ -31,7 +31,7 @@ export const initDatabase = async (env = process.env) => {
 			passwordSchema.parse(env.ADMIN_PASSWORD);
 			await connection.execute(
 				"INSERT INTO user (email, password, firstname, role_id) VALUES (?, ?, 'Admin', 1)",
-				[env.ADMIN_EMAIL.trim().toLowerCase(), await argon2.hash(env.ADMIN_PASSWORD)],
+				[env.ADMIN_EMAIL.trim().toLowerCase(), await hashPassword(env.ADMIN_PASSWORD)],
 			);
 			console.log(`Compte administrateur créé : ${env.ADMIN_EMAIL}`);
 		}

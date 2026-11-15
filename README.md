@@ -28,7 +28,7 @@ Application e-commerce full stack réalisée pendant ma formation de développeu
 | Back-end | Node.js 22, Express 5, TypeScript (tsx), un seul serveur pour l'API et le site |
 | Base de données | **MySQL** (MariaDB compatible) |
 | Paiement | Stripe Checkout (API HTTP, mode test uniquement) |
-| Sécurité | Argon2, JWT (`jose`, 2 h), rôles vérifiés par l'API, Helmet (CSP, HSTS), limitation des tentatives, HTTPS forcé, upload d'images contrôlé |
+| Sécurité | mots de passe hachés (scrypt), JWT (`jose`, 2 h), rôles vérifiés par l'API, Helmet (CSP, HSTS), limitation des tentatives, HTTPS forcé, upload d'images contrôlé |
 | Tests | Vitest + Supertest : 53 tests d'intégration de l'API sur une vraie base MySQL |
 | CI | GitHub Actions : types, build, tests à chaque push et pull request |
 
@@ -105,7 +105,7 @@ Premier démarrage : avec `DB_AUTO_INIT=true`, le serveur crée les tables et le
 ## Ce que ce projet m'a appris
 
 - Concevoir une base relationnelle avec Merise, puis l'exploiter depuis une API en couches.
-- Sécuriser une application : hachage Argon2, JWT, autorisation par rôle côté serveur, validation Zod, prix recalculés côté serveur.
+- Sécuriser une application : hachage des mots de passe (scrypt), JWT, autorisation par rôle côté serveur, validation Zod, prix recalculés côté serveur.
 - Gérer un vrai parcours d'achat : panier, stock en transaction, paiement Stripe.
 - Mettre en place une intégration continue qui vérifie les types, construit et teste le projet à chaque push.
 

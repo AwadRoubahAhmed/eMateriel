@@ -1,11 +1,11 @@
-import argon2 from "argon2";
 import type { Request, Response } from "express";
-import JwtService from "../service/jwt_service";
 import SecurityRepository from "../repository/security_repository";
+import JwtService from "../service/jwt_service";
+import { hashPassword, verifyPassword } from "../service/password_service";
 
 // Utilisé quand l'email n'existe pas : même temps de réponse qu'avec un vrai compte
 const DUMMY_HASH =
-	"$argon2id$v=19$m=65536,t=3,p=4$bFqs/vYRUiR3I6/I4gcUpw$ZSWuaH6dAj0YeXx/5nik4yu0vgNMbfB4uhJP57n1JHY";
+	"scrypt$16384$8$1$VPkEC+IDujrede5gijI8cQ==$bBeejhY6KkCTwh3JLp8gu5YS7v8CrkVw8lhxgcFtuhMZ7Mz2BrjBBECVGL372jHFAIuF1S6NXkO/402lvNGG/w==";
 
 class SecurityController {
 	private repository = new SecurityRepository();
@@ -15,14 +15,14 @@ class SecurityController {
 			res.status(409).json({ status: 409, message: "Un compte existe déjà avec cet email" });
 			return;
 		}
-		const password = await argon2.hash(req.body.password);
+		const password = await hashPassword(req.body.password);
 		const id = await this.repository.register({ ...req.body, password });
 		res.status(201).json({ status: 201, message: "Compte créé", data: { id } });
 	};
 
 	public login = async (req: Request, res: Response) => {
 		const user = await this.repository.selectOneByEmail(req.body.email);
-		const valid = await argon2.verify(user?.password ?? DUMMY_HASH, req.body.password);
+		const valid = await verifyPassword(user?.password ?? DUMMY_HASH, req.body.password);
 
 		// message identique que l'email ou le mot de passe soit faux
 		if (!user || !valid) {
