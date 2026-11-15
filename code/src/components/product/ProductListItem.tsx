@@ -1,36 +1,40 @@
-"use client";
-
 import { Link } from "react-router-dom";
-import type { ProductListItemProps } from "../../models/props/ProductListItemProps";
+import type { Product } from "../../../models/product";
+import { formatPrice, productImage } from "../../utils/format";
 import styles from "./ProductListItem.module.css";
 
-export default function ProductListItem({ data }: ProductListItemProps) {
+export default function ProductListItem({ data }: { data: Product }) {
 	return (
-		<article className={styles.container} aria-label={`Produit ${data.name}`}>
-			{/* IMAGE EN HAUT */}
+		<article className={styles.container}>
 			<div className={styles.imageWrapper}>
-				<img src={`/images/${data.image}`} alt={data.name} loading="lazy" />
+				<img
+					src={productImage(data.image)}
+					alt={data.name}
+					loading="lazy"
+					decoding="async"
+					width="300"
+					height="300"
+				/>
 			</div>
 
-			{/* CONTENU AU MILIEU */}
 			<div className={styles.textWrapper}>
-				<h2 className={styles.title}>{data.name}</h2>
-
-				<span className={styles.category}>
-					Catégorie : {data.category?.name ?? "Non renseignée"}
-				</span>
-
+				<h3 className={styles.title}>{data.name}</h3>
+				<span className={styles.category}>{data.category?.name ?? "Sans catégorie"}</span>
 				<p className={styles.description}>{data.description}</p>
 
 				<div className={styles.meta}>
-					<span className={styles.price}>{data.price} €</span>
+					<span className={styles.price}>{formatPrice(data.price)}</span>
 					<span className={styles.stock}>
-						{data.stock > 0 ? `En stock : ${data.stock}` : "Rupture de stock"}
+						{data.stock > 0 ? "En stock" : "Rupture de stock"}
 					</span>
 				</div>
 
-				<Link to={`/products/${data.id}`} className={styles.detailButton}>
-					Voir les détails
+				<Link
+					to={`/products/${data.id}`}
+					className={styles.detailButton}
+					aria-label={`Voir le produit ${data.name}`}
+				>
+					Voir le produit
 				</Link>
 			</div>
 		</article>

@@ -1,6 +1,0 @@
-{
-  "name": "My App - MongoDB service",
-  "service": "mongodb",
-  "dockerComposeFile": "../../docker-compose.dev.yaml",
-  "workspaceFolder": "/app"
-}

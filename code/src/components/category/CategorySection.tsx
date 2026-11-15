@@ -1,14 +1,19 @@
-"use client";
-
+import Category_Repository from "../../../server/repository/category_repository";
 import styles from "../../pages/category/Category.module.css";
 import Title from "../title/Title";
-import CategoryList from "./CategoryList";
+import CategoryItem from "./CategoryItem";
 
-export default function CategorySection() {
+// Composant serveur : les catégories sont lues en base au rendu (visibles par les moteurs)
+export default async function CategorySection() {
+	const categories = await new Category_Repository().selectAll();
 	return (
-		<section className={styles.section}>
-			<Title title="Nos Catégories" />
-			<CategoryList />
+		<section className={styles.section} aria-labelledby="categories-title">
+			<Title title="Nos catégories" id="categories-title" />
+			<div className={styles.grid}>
+				{categories.map((category) => (
+					<CategoryItem key={category.id} data={category} />
+				))}
+			</div>
 		</section>
 	);
 }

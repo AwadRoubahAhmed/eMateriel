@@ -1,7 +1,7 @@
 .footer {
 	background: #00003e;
 	padding: 40px 60px;
-	font-family: sans-serif;
+	
 	color: white;
 }
 .footerTop {
@@ -142,5 +142,26 @@
 	}
 	.footerBottom {
 		font-size: 12px;
+	}
+}
+
+.linkButton {
+	padding: 0;
+	background: none;
+	border: 0;
+	color: #ffffff;
+	font: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.links a {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+	.footer {
+		padding: 32px 16px;
 	}
 }

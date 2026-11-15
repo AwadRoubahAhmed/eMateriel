@@ -1,82 +1,34 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { data } from "react-router";
+import type { Category as CategoryType } from "../../../models/category";
 import type { Product } from "../../../models/product";
-import ProductListItem from "../../components/product/ProductListItem";
+import Category_Repository from "../../../server/repository/category_repository";
+import Product_Repository from "../../../server/repository/product_repository";
+import ProductList from "../../components/product/ProductList";
 import Seo from "../../components/Seo";
-import ApiProductService from "../../services/api_product_service";
-import styles from "./Category.module.css";
-import ApiCategoryService from "../../services/api_category_service";
 import Title from "../../components/title/Title";
 
-export default function Category() {
-	const { id } = useParams();
-	const [products, setProducts] = useState<Product[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [categoryName, setCategoryName] = useState("");
+export const loader = async ({ params }: { params: { id?: string } }) => {
+	const id = Number(params.id);
+	const category = Number.isInteger(id) && id > 0 ? await new Category_Repository().selectOne(id) : null;
+	if (!category) throw data("Catégorie introuvable", { status: 404 });
+	return { category, products: await new Product_Repository().selectAll(id) };
+};
 
-	// useEffect(() => {
-	// 	if (!id) return;
-
-	// 	const fetchProducts = async () => {
-	// 		const productService = new ApiProductService();
-	// 		const res = await productService.selectAll();
-
-	// 		const filtered =
-	// 			res?.data?.filter(
-	// 				(product) => product.category_id.toString() === id,
-	// 			) ?? [];
-
-	// 		setProducts(filtered);
-	// 		setLoading(false);
-	// 	};
-
-	// 	fetchProducts();
-	// }, [id]);
-
-	useEffect(() => {
-		if (!id) return;
-
-		const fetchData = async () => {
-			const productService = new ApiProductService();
-			const categoryService = new ApiCategoryService();
-
-			const resProducts = await productService.selectAll();
-			const resCategory = await categoryService.selectOne(Number(id));
-
-			const filtered =
-				resProducts?.data?.filter(
-					(product) => product.category_id.toString() === id,
-				) ?? [];
-
-			setProducts(filtered);
-			setCategoryName(resCategory?.data?.name ?? "");
-			setLoading(false);
-		};
-
-		fetchData();
-	}, [id]);
-
-	if (loading) return <p className={styles.loading}>Chargement...</p>;
-
+export default function Category({
+	loaderData,
+}: {
+	loaderData: { category: CategoryType; products: Product[] };
+}) {
+	const { category, products } = loaderData;
 	return (
-		<>
+		<section className="page">
 			<Seo
-				title="Catégorie"
-				description="Produits par catégorie"
-				url={`/categories/${id}`}
+				title={category.name}
+				description={(category.description ?? "").slice(0, 155) || `${category.name} sur eMatériel.`}
+				path={`/categories/${category.id}`}
 			/>
-
-			<section className={styles.section}>
-				<Title title={categoryName} />
-
-				<div className={styles.products}>
-					{products.map((product) => (
-						<ProductListItem key={product.id} data={product} />
-					))}
-				</div>
-			</section>
-		</>
+			<Title title={category.name} as="h1" />
+			<ProductList products={products} />
+		</section>
 	);
 }

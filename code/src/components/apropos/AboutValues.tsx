@@ -18,7 +18,7 @@ export default function AboutValues() {
 
 				<div className={styles.card}>
 					<h3>Service</h3>
-					<p>Un support client rapide et efficace.</p>
+					<p>Une réponse à chaque message envoyé via le formulaire de contact.</p>
 				</div>
 			</div>
 		</div>

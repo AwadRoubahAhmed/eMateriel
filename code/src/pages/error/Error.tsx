@@ -1,17 +1,9 @@
-import Seo from "../../components/Seo";
+import { data } from "react-router";
+import NotFound from "./NotFound";
 
-export default function Error() {
-  return (
-    <section>
-      <Seo
-        title="eMatériel - Error"
-        description="La page erreur du site eMatériel."
-        url="/error"
-      />
-      
-      <h1>Not Found This Page !</h1>
+// adresse inconnue : statut HTTP 404 (et pas 200) pour les moteurs de recherche
+export const loader = () => data(null, { status: 404 });
 
-     
-    </section>
-  )
+export default function ErrorPage() {
+	return <NotFound />;
 }

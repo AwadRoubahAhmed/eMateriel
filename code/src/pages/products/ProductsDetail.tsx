@@ -1,158 +1,70 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import type { Orders } from "../../../models/orders";
+import { data, Link } from "react-router";
 import type { Product } from "../../../models/product";
+import Product_Repository from "../../../server/repository/product_repository";
+import AddToCart from "../../components/product/AddToCart";
 import Seo from "../../components/Seo";
-import { useAuth } from "../../context/AuthContext";
-import ApiLineOrderService from "../../services/api_line_order_service";
-import ApiOrdersService from "../../services/api_orders_service";
-import ApiProductService from "../../services/api_product_service";
+import { formatPrice, productImage } from "../../utils/format";
 import styles from "./ProductDetail.module.css";
 
-export default function ProductDetail() {
-	const { id } = useParams<{ id: string }>();
-	const { user } = useAuth();
+// produit inexistant → vraie erreur 404 (page « introuvable »)
+export const loader = async ({ params }: { params: { id?: string } }) => {
+	const id = Number(params.id);
+	const product = Number.isInteger(id) && id > 0 ? await new Product_Repository().selectOne(id) : null;
+	if (!product) throw data("Produit introuvable", { status: 404 });
+	return { product };
+};
 
-	const navigate = useNavigate();
-
-	const [product, setProduct] = useState<Product | null>(null);
-	const [loading, setLoading] = useState(true);
-
-	useEffect(() => {
-		const fetchProduct = async () => {
-			try {
-				const result = await new ApiProductService().selectOne(Number(id));
-				setProduct(result.data ?? null);
-			} catch (error) {
-				console.error(error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchProduct();
-	}, [id]);
-
-	if (loading) return <p>Chargement du produit...</p>;
-	if (!product) return <p>Produit introuvable</p>;
-
-	const handleAddToCart = async () => {
-		if (!product) return;
-
-		const ordersService = new ApiOrdersService();
-		const lineService = new ApiLineOrderService();
-
-		try {
-			const userId = user?.id ?? null;
-
-			let order: Orders | null = null;
-
-			// 1. récupérer panier existant
-			if (userId) {
-				const res = await ordersService.selectUserCart(userId);
-				order = res.data ?? null;
-			} else {
-				const res = await ordersService.selectAll();
-				order = res.data?.find((o) => o.user_id === null) ?? null;
-			}
-
-			// 2. créer panier si besoin
-			if (!order) {
-				const created = await ordersService.create({
-					name: "Panier",
-					image: "cart.png",
-					user_id: userId,
-					payment_method_id: null,
-					total: 0,
-				});
-
-				const orderId = created.data?.id;
-				if (!orderId) return;
-
-				const fullOrder = await ordersService.selectOne(orderId);
-				order = fullOrder.data ?? null;
-			}
-
-			if (!order) return;
-
-			const price = product.price;
-
-			// 3. CHECK PRODUIT DANS PANIER (FIX IMPORTANT)
-			const existing = await lineService.findByOrderAndProduct(
-				order.id,
-				product.id,
-			);
-
-			const existingLine = existing.status === 200 ? existing.data : null;
-
-			// 4. update ou create
-			if (existingLine) {
-				await lineService.incrementQty(existingLine.id, 1, price);
-			} else {
-				await lineService.create({
-					order_id: order.id,
-					product_id: product.id,
-					qty: 1,
-					total: price,
-				});
-			}
-
-			navigate("/panier");
-		} catch (error) {
-			console.error("ADD TO CART ERROR:", error);
-		}
-	};
+export default function ProductDetail({ loaderData }: { loaderData: { product: Product } }) {
+	const { product } = loaderData;
+	const description = (product.description ?? "").slice(0, 155);
 
 	return (
-		<>
+		<section className={styles.section}>
 			<Seo
-				title={`eMatériel - ${product.name}`}
-				description="Détail du produit"
-				url={`/products/${id}`}
+				title={product.name}
+				description={description || `${product.name} disponible sur eMatériel.`}
+				path={`/products/${product.id}`}
+				image={productImage(product.image)}
 			/>
 
-			<section className={styles.section}>
-				<Link to="/products" className={styles.backButton}>
-					<IoArrowBackCircleOutline />
-					Retour
-				</Link>
+			<Link to="/products" className={styles.backButton}>
+				<IoArrowBackCircleOutline aria-hidden="true" />
+				Retour aux produits
+			</Link>
 
-				<div className={styles.container}>
-					<div className={styles.imageWrapper}>
-						<img src={`/images/${product.image}`} alt={product.name} />
-					</div>
-
-					<div className={styles.content}>
-						<h1 className={styles.title}>{product.name}</h1>
-
-						<span className={styles.category}>
-							Catégorie : {product.category?.name ?? "Non renseignée"}
-						</span>
-
-						<p className={styles.description}>{product.description}</p>
-
-						<div className={styles.meta}>
-							<span className={styles.price}>{product.price} €</span>
-							<span className={styles.stock}>
-								{product.stock > 0
-									? `En stock : ${product.stock}`
-									: "Rupture de stock"}
-							</span>
-						</div>
-
-						<button
-							type="button"
-							className={styles.buyButton}
-							onClick={handleAddToCart}
-						>
-							Ajouter au panier
-						</button>
-					</div>
+			<div className={styles.container}>
+				<div className={styles.imageWrapper}>
+					<img src={productImage(product.image)} alt={product.name} width="600" height="600" />
 				</div>
-			</section>
-		</>
+
+				<div className={styles.content}>
+					<h1 className={styles.title}>{product.name}</h1>
+					{product.category && (
+						<Link to={`/categories/${product.category.id}`} className={styles.category}>
+							{product.category.name}
+						</Link>
+					)}
+					<p className={styles.description}>{product.description}</p>
+
+					<div className={styles.meta}>
+						<span className={styles.price}>{formatPrice(product.price)}</span>
+						<span className={styles.stock}>
+							{product.stock > 0 ? `En stock (${product.stock})` : "Rupture de stock"}
+						</span>
+					</div>
+
+					<AddToCart
+						product={{
+							product_id: product.id,
+							name: product.name,
+							price: product.price,
+							image: product.image,
+							stock: product.stock,
+						}}
+					/>
+				</div>
+			</div>
+		</section>
 	);
 }

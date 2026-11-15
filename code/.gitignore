@@ -1,2 +1,13 @@
 node_modules
 dist
+coverage
+tests/coverage
+
+# secrets : seuls les modèles *.example sont versionnés
+.env
+.env.*
+!.env.*.example
+
+# images envoyées pendant les tests
+tests/storage/images/*
+!tests/storage/images/iphone17proMax.png

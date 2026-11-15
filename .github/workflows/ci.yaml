@@ -1,42 +1,46 @@
-# nom du flux de travail / workflow
 name: emateriel ci workflow
 
-# déclenchement du workflow
-on: 
-  # déclenchement lorsqu'une branche est modifiée 
+on:
   push:
     branches: [master]
+  pull_request:
 
-# travaux / jobs / taches
 jobs:
-
-  # nom de la tache
-  CI: 
-    # choix de l'OS
+  CI:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: code
 
-    # étapes de la tache
     steps:
-      - name: Cloner le repository
+      - name: Cloner le dépôt
         uses: actions/checkout@v4
 
-      - name: Installer les dépendances
-        working-directory: code
-        run: npm ci
-      
-      - name: Compiler le projet React
-        working-directory: code
-        run: npm run build
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: code/package-lock.json
 
-      - name: Démarrer MYSQL et importer la base de données de tests
-        working-directory: code/mysql
-        run: |
-          sudo service mysql start
-          mysql -uroot -proot -e "CREATE DATABASE emateriel_test;"
-          mysql -uroot -proot emateriel_test < emateriel.test.sql
-          mysql -uroot -proot emateriel_test < insert.test.sql 
-          mysql -uroot -proot -e "SHOW DATABASES;"
-      
-      - name: Exécuter les tests
-        working-directory: code
-        run: npm run test
+      - name: Créer le fichier d'environnement de test
+        run: cp .env.test.example .env.test
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Vérifier les types TypeScript
+        run: npm run typecheck
+
+      - name: Compiler le site
+        run: npm run build
+        env:
+          VITE_SITE_URL: https://example.com
+
+      # MySQL est préinstallé sur le runner (root / root) ; la base de test
+      # est recréée automatiquement par tests/global-setup.ts
+      - name: Démarrer MySQL
+        run: sudo systemctl start mysql.service
+
+      - name: Exécuter les tests de l'API
+        run: npm test

@@ -1,20 +1,33 @@
 import type { Line_order } from "./line_order";
-import type { Payment_methode } from "./payment_methode";
-import type { User } from "./user";
+
+type OrderStatus = "en_attente" | "payee" | "expediee" | "livree" | "annulee";
 
 type Orders = {
 	id: number;
-	name: string;
-	image: string;
+	user_id: number;
+	user_email?: string;
+	status: OrderStatus;
 	total: number;
-	description: string;
-	user_id?: number | null;
-	user: User;
-	payment_method_id?: number | null;
-	payment_method: Payment_methode;
-
-	line_order_ids: string;
-	line_orders: Line_order[];
+	shipping_name: string;
+	shipping_address: string;
+	shipping_zip: string;
+	shipping_city: string;
+	shipping_phone: string;
+	stripe_session_id?: string | null;
+	created_at: string;
+	line_orders?: Line_order[];
 };
 
-export type { Orders };
+export type { Orders, OrderStatus };
+
+// Changements de statut autorisés (partagé API + back-office). Annulée et livrée sont
+// définitifs : le stock d'une annulation a déjà été rendu.
+const ORDER_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+	en_attente: ["payee", "annulee"],
+	payee: ["expediee", "annulee"],
+	expediee: ["livree"],
+	livree: [],
+	annulee: [],
+};
+
+export { ORDER_TRANSITIONS };

@@ -1,87 +1,43 @@
-import type { QueryResult, ResultSetHeader, RowDataPacket } from "mysql2";
-import type { Role } from "../../models/role";
-import type { User } from "../../models/user";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import MySQLService from "../service/mysql_service";
-import RoleRepository from "./role_repository";
+
+export type UserWithHash = {
+	id: number;
+	email: string;
+	password: string;
+	firstname: string | null;
+	lastname: string | null;
+	role: string;
+};
 
 class SecurityRepository {
-	private table = "user";
-
-	// REGISTER
-	public register = async (data: Partial<User>): Promise<User | Error> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-			INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-			(email, password, role_id)
-			VALUES (:email, :password, 2)
-		`;
-
-		try {
-			const [result] = await connection.execute<ResultSetHeader>(sql, data);
-
-			return {
-				id: result.insertId,
-				email: data.email,
-				password: data.password,
-				role_id: data.role_id,
-			} as User;
-		} catch (error) {
-			return error as Error;
-		}
+	// tout nouveau compte est Client (role_id 2)
+	public register = async (data: {
+		email: string;
+		password: string;
+		firstname?: string;
+		lastname?: string;
+	}) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			`INSERT INTO user (email, password, firstname, lastname, role_id)
+			 VALUES (:email, :password, :firstname, :lastname, 2)`,
+			{ firstname: null, lastname: null, ...data },
+		);
+		return result.insertId;
 	};
 
-	// CHECK EMAIL EXISTS
-	public isEmailUserExists = async (
-		data: Partial<User>,
-	): Promise<QueryResult[] | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-			SELECT id
-			FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			WHERE email = :email
-			LIMIT 1
-		`;
-
-		try {
-			const [rows] = await connection.execute<RowDataPacket[]>(sql, data);
-
-			return rows.length > 0;
-		} catch (error) {
-			return error as Error;
-		}
-	};
-
-	// GET USER BY EMAIL
+	// avec le hachage : réservé à la vérification du mot de passe
 	public selectOneByEmail = async (
-		data: Partial<User>,
-	): Promise<User | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-			SELECT *
-			FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			WHERE email = :email
-			LIMIT 1
-		`;
-
-		try {
-			const [rows] = await connection.execute<RowDataPacket[]>(sql, data);
-
-			if (rows.length === 0) return null;
-
-			const result = rows[0] as User;
-
-			// relation role
-			result.role = (await new RoleRepository().selectOne({
-				id: result.role_id,
-			})) as Role;
-
-			return result;
-		} catch (error) {
-			return error as Error;
-		}
+		email: string,
+	): Promise<UserWithHash | null> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			`SELECT user.id, user.email, user.password, user.firstname, user.lastname, role.name AS role
+			 FROM user JOIN role ON role.id = user.role_id WHERE user.email = :email`,
+			{ email },
+		);
+		return (rows[0] as UserWithHash) ?? null;
 	};
 }
 

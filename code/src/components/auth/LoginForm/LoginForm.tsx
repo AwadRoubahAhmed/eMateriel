@@ -1,130 +1,59 @@
 "use client";
 
-import { type ChangeEvent, type FormEvent, useState } from "react";
-import type { User } from "../../../../models/user";
-import SecurityAPiService from "../../../services/api_security_service";
-import SecurityService from "../../../services/security_service";
-import { authErrors } from "../../../utils/authErrors";
-import { isValidEmail, isValidPassword } from "../../../utils/validators";
-import styles from "./LoginForm.module.css";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { api, errorMessage } from "../../../services/api";
+import { login, type SessionUser } from "../../../services/security_service";
+import PasswordInput from "../PasswordInput";
 
-type LoginFormProps = {
-	onSuccess?: (user: User) => void;
-};
+type LoginValues = { email: string; password: string };
 
-export function LoginForm({ onSuccess }: LoginFormProps) {
-	const api = new SecurityAPiService();
-
-	const [form, setForm] = useState({
-		email: "",
-		password: "",
-	});
-
+export function LoginForm({ onSuccess }: { onSuccess: (user: SessionUser) => void }) {
 	const [error, setError] = useState("");
-	const [loading, setLoading] = useState(false);
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+	} = useForm<LoginValues>();
 
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setForm({ ...form, [e.target.name]: e.target.value });
-	};
-
-	// const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-	// 	e.preventDefault();
-	// 	setLoading(true);
-	// 	setError("");
-
-	// 	try {
-	// 		const res = await api.login(form);
-
-	// 		if (res.status !== 200 || !res.data) {
-	// 			throw new Error(res.message);
-	// 		}
-
-	// 		const security = new SecurityService();
-	// 		security.setToken(res.token);
-
-	// 		onSuccess?.(res.data);
-	// 	} catch (err: unknown) {
-	// 		if (err instanceof Error) {
-	// 			setError(err.message);
-	// 		} else {
-	// 			setError("Erreur serveur");
-	// 		}
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
-	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setLoading(true);
+	const onSubmit = async (values: LoginValues) => {
 		setError("");
-
-		// VALIDATION EMAIL
-		if (!isValidEmail(form.email)) {
-			setError(authErrors.email);
-			setLoading(false);
-			return;
-		}
-
-		// VALIDATION PASSWORD
-		if (!isValidPassword(form.password)) {
-			setError(authErrors.password);
-			setLoading(false);
-			return;
-		}
-
-		try {
-			const res = await api.login(form);
-
-			if (res.status !== 200 || !res.data) {
-				throw new Error(res.message);
-			}
-
-			const security = new SecurityService();
-			security.setToken(res.token);
-
-			onSuccess?.(res.data);
-		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "Erreur serveur");
-		} finally {
-			setLoading(false);
-		}
+		const result = await api<SessionUser>("/api/login", { method: "POST", body: values });
+		if (result.status !== 200 || !result.data || !result.token) return setError(errorMessage(result));
+		login({ token: result.token, user: result.data });
+		onSuccess(result.data);
 	};
 
 	return (
-		<form className={styles.form} onSubmit={handleSubmit}>
-			<div className={styles.field}>
-				<label htmlFor="email">Email</label>
-				<input
-					id="email"
-					name="email"
-					type="email"
-					required
-					value={form.email}
-					onChange={handleChange}
-				/>
-			</div>
-
-			<div className={styles.field}>
-				<label htmlFor="password">Mot de passe</label>
-				<input
-					id="password"
-					name="password"
-					type="password"
-					required
-					value={form.password}
-					onChange={handleChange}
-				/>
-			</div>
-
+		<form onSubmit={handleSubmit(onSubmit)} noValidate>
 			{error && (
-				<p className={styles.error} role="alert">
+				<p className="form-message error" role="alert">
 					{error}
 				</p>
 			)}
-
-			<button type="submit" disabled={loading}>
-				{loading ? "Connexion..." : "Se connecter"}
+			<div className="field">
+				<label htmlFor="login-email">Email</label>
+				<input
+					id="login-email"
+					type="email"
+					autoComplete="email"
+					aria-invalid={!!errors.email}
+					{...register("email", { required: "Email obligatoire" })}
+				/>
+				{errors.email && <span className="field-error">{errors.email.message}</span>}
+			</div>
+			<div className="field">
+				<label htmlFor="login-password">Mot de passe</label>
+				<PasswordInput
+					id="login-password"
+					autoComplete="current-password"
+					aria-invalid={!!errors.password}
+					{...register("password", { required: "Mot de passe obligatoire" })}
+				/>
+				{errors.password && <span className="field-error">{errors.password.message}</span>}
+			</div>
+			<button type="submit" className="btn" disabled={isSubmitting} style={{ width: "100%" }}>
+				{isSubmitting ? "Connexion…" : "Se connecter"}
 			</button>
 		</form>
 	);

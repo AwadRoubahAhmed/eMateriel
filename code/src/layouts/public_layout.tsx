@@ -2,13 +2,16 @@ import { Outlet } from "react-router-dom";
 import Footer from "../components/footer/Footer";
 import Navbar from "../components/navbar/Navbar";
 
-function public_layout() {
+export { default as ErrorBoundary } from "../pages/error/RouteError";
+
+export default function PublicLayout() {
 	return (
 		<>
 			<Navbar />
-			<Outlet />
+			<main id="main-content">
+				<Outlet />
+			</main>
 			<Footer />
 		</>
 	);
 }
-export default public_layout;

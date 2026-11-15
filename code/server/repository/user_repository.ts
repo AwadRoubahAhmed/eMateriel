@@ -1,83 +1,45 @@
-import type { Role } from "../../models/role";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import type { User } from "../../models/user";
 import MySQLService from "../service/mysql_service";
-import Role_Repository from "./role_repository";
+
+// jamais le hachage du mot de passe dans les réponses
+const PUBLIC_FIELDS = `
+	user.id, user.firstname, user.lastname, user.email, user.telephone,
+	user.adresse_livraison, user.adresse_facturation, user.role_id, user.created_at,
+	role.name AS role_name
+`;
+
+const withRole = (row: RowDataPacket) => {
+	const { role_name, ...user } = row;
+	return { ...user, role: { id: user.role_id, name: role_name } } as User;
+};
 
 class User_Repository {
-	//NOM DE LA TABLE SQL
-	private table = "user";
-	public selectAll = async (): Promise<User[] | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-            SELECT ${this.table}.*
-            FROM ${process.env.MYSQL_DATABASE}.${this.table};
-        `;
-
-		try {
-			const [query] = await connection.execute(sql);
-
-			// Boucler sur les resultats pour récupérer les clés étrangères;
-			for (let i = 0; i < (query as User[]).length; i++) {
-				const result = (query as User[])[i] as User;
-
-				// Clés étrangères
-				result.role = (await new Role_Repository().selectOne({
-					id: result.role_id,
-				})) as Role;
-			}
-
-			return query;
-		} catch (error) {
-			return error;
-		}
+	public selectAll = async (): Promise<User[]> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			`SELECT ${PUBLIC_FIELDS} FROM user JOIN role ON role.id = user.role_id ORDER BY user.id`,
+		);
+		return rows.map(withRole);
 	};
 
-	public selectOne = async (data: Partial<User>): Promise<User[] | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-            SELECT ${this.table}.*
-            FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			WHERE ${this.table}.id = :id
-			; 
-        `;
-
-		try {
-			const [query] = await connection.execute(sql, data);
-
-			const result = (query as User[]).shift() as User;
-
-			// Clés étrangères
-			result.role = (await new Role_Repository().selectOne({
-				id: result.role_id,
-			})) as Role;
-
-			//Retourner les resultats
-			return result;
-		} catch (error) {
-			return error;
-		}
+	public selectOne = async (id: number): Promise<User | null> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			`SELECT ${PUBLIC_FIELDS} FROM user JOIN role ON role.id = user.role_id WHERE user.id = :id`,
+			{ id },
+		);
+		return rows[0] ? withRole(rows[0]) : null;
 	};
-	// 	const connection = await new MySQLService().connect();
 
-	// 	const sql = `
-	//     INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-	//     (email, password, role_id)
-	//     VALUES (:email, :password, :role_id);
-	// `;
-
-	// 	try {
-	// 		const [result] = await connection.execute<ResultSetHeader>(sql, data);
-
-	// 		return {
-	// 			id: result.insertId,
-	// 			...data,
-	// 		} as User;
-	// 	} catch (error) {
-	// 		return error as Error;
-	// 	}
-	// };
+	public updateRole = async (id: number, role_id: number) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			"UPDATE user SET role_id = :role_id WHERE id = :id",
+			{ id, role_id },
+		);
+		return result.affectedRows > 0;
+	};
 }
 
 export default User_Repository;

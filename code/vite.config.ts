@@ -2,29 +2,23 @@ import react from "@vitejs/plugin-react";
 import rsc from "@vitejs/plugin-rsc";
 import { defineConfig, loadEnv } from "vite";
 
-export default defineConfig(({ mode }) => {
-	// modifier la configuration lorsque les tests sont exécutés avec GitHub Action
-	if (process.env.GITHUB_ACTIONS) {
-		// modifier l'hôte MySQL
-		process.env.MYSQL_HOST = "127.0.0.1";
-		// si le mot de passe MySQL en local n'est pas root
-		// process.env.MYSQL_PASSWORD = "127.0.0.1";
+export default defineConfig(({ command, mode }) => {
+	// liens canoniques et image de partage doivent être absolus : l'adresse du site est fixée au build
+	if (command === "build" && !loadEnv(mode, process.cwd(), "VITE_").VITE_SITE_URL) {
+		console.warn("\n⚠ VITE_SITE_URL non défini : URL canoniques et og:image seront relatives (définir VITE_SITE_URL=https://votre-domaine avant npm run build)\n");
 	}
 	return {
-		server: {
-			port: 5173,
-			strictPort: true,
-			host: true
-		},
 		test: {
-			// ne pas oublier de définir le troisième argument
-			// Chargée les variables d'environnement à partir du fichier .env
-
-			env: loadEnv(mode, process.cwd(), ""),
+			// les tests utilisent toujours .env.test (base emateriel_test)
+			env: loadEnv("test", process.cwd(), ""),
+			// recrée la base de test avant la suite
+			globalSetup: ["tests/global-setup.ts"],
+			// une seule base partagée : les fichiers de test passent l'un après l'autre
+			fileParallelism: false,
+			include: ["tests/**/*.test.ts"],
 
 			coverage: {
-				// Exclure les dossiers "node_modules" et "mongodb" des tests
-				exclude: ["node_modules", "mongodb", "server/index.ts"],
+				exclude: ["node_modules", "server/index.ts"],
 				// Inclure tous les fichiers TypeScript dans le dossier "server" pour les tests
 				include: ["server/**/*.ts"],
 

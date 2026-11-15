@@ -1,125 +1,112 @@
 "use client";
 
-import { type ChangeEvent, type FormEvent, useState } from "react";
-import type { User } from "../../../../models/user";
-import SecurityAPiService from "../../../services/api_security_service";
-import { authErrors } from "../../../utils/authErrors";
-import { isValidEmail, isValidPassword } from "../../../utils/validators";
-import styles from "./RegisterForm.module.css";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+import { api, errorMessage } from "../../../services/api";
+import { login, type SessionUser } from "../../../services/security_service";
+import PasswordInput from "../PasswordInput";
 
-type RegisterFormProps = {
-	onSuccess?: (user: User) => void;
-};
-
-type RegisterFormState = {
+type RegisterValues = {
+	firstname: string;
+	lastname: string;
 	email: string;
 	password: string;
-	role_id: number;
+	confirm: string;
 };
 
-export function RegisterForm({ onSuccess }: RegisterFormProps) {
-	const api = new SecurityAPiService();
+export function RegisterForm({ onSuccess }: { onSuccess: (user: SessionUser) => void }) {
+	const [error, setError] = useState("");
+	const {
+		register,
+		handleSubmit,
+		getValues,
+		formState: { errors, isSubmitting },
+	} = useForm<RegisterValues>();
 
-	const [form, setForm] = useState<RegisterFormState>({
-		email: "",
-		password: "",
-		role_id: 1,
-	});
-
-	const [error, setError] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(false);
-
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-
-		setForm({
-			...form,
-			[name]: name === "role_id" ? Number(value) : value,
-		});
-	};
-
-	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setLoading(true);
+	const onSubmit = async ({ confirm: _confirm, ...values }: RegisterValues) => {
 		setError("");
-
-		// VALIDATION EMAIL
-		if (!isValidEmail(form.email)) {
-			setError(authErrors.email);
-			setLoading(false);
-			return;
-		}
-
-		// VALIDATION PASSWORD
-		if (!isValidPassword(form.password)) {
-			setError(authErrors.password);
-			setLoading(false);
-			return;
-		}
-
-		try {
-			const res = await api.register(form);
-
-			if (res.status !== 201 || !res.data) {
-				throw new Error(res.message);
-			}
-
-			onSuccess?.(res.data);
-		} catch (err: unknown) {
-			if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("Erreur serveur");
-			}
-		} finally {
-			setLoading(false);
-		}
+		const created = await api("/api/register", { method: "POST", body: values });
+		if (created.status !== 201) return setError(errorMessage(created));
+		// connexion directe après inscription
+		const result = await api<SessionUser>("/api/login", {
+			method: "POST",
+			body: { email: values.email, password: values.password },
+		});
+		if (result.status !== 200 || !result.data || !result.token) return setError(errorMessage(result));
+		login({ token: result.token, user: result.data });
+		onSuccess(result.data);
 	};
 
 	return (
-		<form className={styles.form} onSubmit={handleSubmit}>
-			<div className={styles.field}>
-				<label htmlFor="email">Email</label>
-				<input
-					id="email"
-					name="email"
-					type="email"
-					value={form.email}
-					onChange={handleChange}
-					required
-				/>
-			</div>
-
-			<div className={styles.field}>
-				<label htmlFor="password">Mot de passe</label>
-				<input
-					id="password"
-					name="password"
-					type="password"
-					value={form.password}
-					onChange={handleChange}
-					required
-				/>
-			</div>
-
-			{error && <p className={styles.error}>{error}</p>}
-
-			<button
-				type="submit"
-				disabled={
-					loading ||
-					!isValidEmail(form.email) ||
-					!isValidPassword(form.password)
-				}
-			>
-				{loading ? "Inscription..." : "S'inscrire"}
-			</button>
-			{(!isValidEmail(form.email) || !isValidPassword(form.password)) && (
-				<p className={styles.helper}>
-					Veuillez entrer un email valide et un mot de passe d’au moins 6
-					caractères.
+		<form onSubmit={handleSubmit(onSubmit)} noValidate>
+			{error && (
+				<p className="form-message error" role="alert">
+					{error}
 				</p>
 			)}
+			<div className="field">
+				<label htmlFor="register-firstname">Prénom</label>
+				<input id="register-firstname" autoComplete="given-name" {...register("firstname", { maxLength: 150 })} />
+			</div>
+			<div className="field">
+				<label htmlFor="register-lastname">Nom</label>
+				<input id="register-lastname" autoComplete="family-name" {...register("lastname", { maxLength: 150 })} />
+			</div>
+			<div className="field">
+				<label htmlFor="register-email">Email</label>
+				<input
+					id="register-email"
+					type="email"
+					autoComplete="email"
+					aria-invalid={!!errors.email}
+					{...register("email", {
+						required: "Email obligatoire",
+						pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Email invalide" },
+					})}
+				/>
+				{errors.email && <span className="field-error">{errors.email.message}</span>}
+			</div>
+			<div className="field">
+				<label htmlFor="register-password">Mot de passe</label>
+				<PasswordInput
+					id="register-password"
+					autoComplete="new-password"
+					aria-describedby="password-help"
+					aria-invalid={!!errors.password}
+					{...register("password", {
+						required: "Mot de passe obligatoire",
+						minLength: { value: 8, message: "8 caractères minimum" },
+						validate: (v) => (/[A-Za-z]/.test(v) && /\d/.test(v)) || "Au moins une lettre et un chiffre",
+					})}
+				/>
+				<span id="password-help" style={{ fontSize: "0.9rem", color: "var(--muted)" }}>
+					8 caractères minimum, avec au moins une lettre et un chiffre.
+				</span>
+				{errors.password && <span className="field-error">{errors.password.message}</span>}
+			</div>
+			<div className="field">
+				<label htmlFor="register-confirm">Confirmer le mot de passe</label>
+				<PasswordInput
+					id="register-confirm"
+					autoComplete="new-password"
+					aria-invalid={!!errors.confirm}
+					{...register("confirm", {
+						validate: (v) => v === getValues("password") || "Les mots de passe ne correspondent pas",
+					})}
+				/>
+				{errors.confirm && <span className="field-error">{errors.confirm.message}</span>}
+			</div>
+			<p style={{ fontSize: "0.9rem", color: "var(--muted)", marginBottom: "1rem", lineHeight: 1.5 }}>
+				Vos données servent à gérer votre compte et vos commandes. Voir notre{" "}
+				<Link to="/politique-confidentialite" style={{ color: "var(--primary)" }}>
+					politique de confidentialité
+				</Link>
+				.
+			</p>
+			<button type="submit" className="btn" disabled={isSubmitting} style={{ width: "100%" }}>
+				{isSubmitting ? "Création du compte…" : "Créer mon compte"}
+			</button>
 		</form>
 	);
 }

@@ -1,3 +1,4 @@
+import type { ReactFormState } from "react-dom/client";
 import { createFromReadableStream } from "@vitejs/plugin-rsc/ssr";
 import { renderToReadableStream as renderHTMLToReadableStream } from "react-dom/server.edge";
 import {
@@ -7,13 +8,13 @@ import {
 
 export async function generateHTML(
 	request: Request,
-	fetchServer: (request: Request) => Promise<Response>,
+	serverResponse: Response,
 ): Promise<Response> {
 	return await routeRSCServerRequest({
 		// The incoming request.
 		request,
-		// How to call the React Server.
-		fetchServer,
+		// The React Server response (RSC payload) to render as HTML.
+		serverResponse,
 		// Provide the React Server touchpoints.
 		createFromReadableStream,
 		// Render the router to HTML.
@@ -27,7 +28,7 @@ export async function generateHTML(
 				<RSCStaticRouter getPayload={getPayload} />,
 				{
 					bootstrapScriptContent,
-					formState: payload.formState,
+					formState: (await payload.formState) as ReactFormState | undefined,
 				},
 			);
 		},

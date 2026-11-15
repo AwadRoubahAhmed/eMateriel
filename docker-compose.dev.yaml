@@ -1,6 +1,8 @@
+# Environnement de développement Docker (optionnel).
+# Dans le conteneur node, utiliser MYSQL_HOST=mysql dans .env.development.
 services:
   mysql:
-    image: mysql:9.5
+    image: mysql:8.4
     ports:
       - 3306:3306
     volumes:
@@ -12,28 +14,11 @@ services:
       MYSQL_ROOT_PASSWORD: root
 
   node:
-    image: node:25
+    image: node:22
     ports:
-      - 5000:5000 # liveserver
-      - 5173:5173
-      - 3000:3000 # API
+      - 3000:3000
     volumes:
       - ./code:/app
     tty: true
     working_dir: /app
-    restart: always
-
-  mongodb:
-    image: mongo:8.2
-    ports:
-      - 27017:27017
-    volumes:
-      - ./code/mongodb:/app
-      - ./mongodb-data:/data/db
-    # si mongoDB redémarre en permanence, changer le dossier cible
-    # - ./mongodb-data:/data
-    working_dir: /app
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
     restart: always

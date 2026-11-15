@@ -11,7 +11,7 @@ export default function AboutIntro() {
 
 			<p>
 				Notre mission est de rendre la technologie accessible à tous en offrant
-				des produits fiables, au meilleur prix, avec un service client réactif.
+				des produits fiables et un suivi de commande clair.
 			</p>
 		</div>
 	);

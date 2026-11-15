@@ -1,14 +1,11 @@
-import type { Orders } from "./orders";
-import type { Product } from "./product";
-
 type Line_order = {
 	id: number;
 	qty: number;
+	unit_price: number;
 	total: number;
+	product_name: string;
+	product_id: number | null;
 	order_id: number;
-	order: Orders;
-	product_id: number;
-	product: Product; 
 };
 
 export type { Line_order };

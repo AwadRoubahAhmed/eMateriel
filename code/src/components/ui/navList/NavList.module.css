@@ -5,7 +5,7 @@
 }
 
 .navLink {
-	color: #333333;
+	color: #111827;
 	text-decoration: none;
 	font-weight: 500;
 	position: relative;
@@ -19,7 +19,7 @@
 	left: 0;
 	width: 0;
 	height: 2px;
-	background-color: #2563eb;
+	background-color: #1d4ed8;
 	transition: width 0.3s ease;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .active {
-	color: #2563eb;
+	color: #1d4ed8;
 	font-weight: 600;
 }
 
@@ -42,32 +42,36 @@
 		position: fixed;
 		top: 72px;
 		left: 0;
-		width: 100%;
+		right: 0;
 		height: calc(100vh - 72px);
-		background-color: rgba(0, 0, 0, 0.85);
+		background-color: #ffffff;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		gap: 2.5rem;
 		transform: translateY(-12px) scale(0.96);
 		opacity: 0;
+		/* caché aussi pour le clavier et les lecteurs d'écran */
+		visibility: hidden;
 		pointer-events: none;
 		transition:
 			transform 0.35s ease,
-			opacity 0.35s ease;
+			opacity 0.35s ease,
+			visibility 0.35s;
 		z-index: 999;
 	}
 
 	.mobileOpen {
 		transform: translateY(0) scale(1);
 		opacity: 1;
+		visibility: visible;
 		pointer-events: auto;
 	}
 
 	.navLink {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #333333;
+		color: #111827;
 	}
 
 	.navLink:hover::after {
@@ -75,6 +79,6 @@
 	}
 
 	.active {
-		color: #2563eb;
+		color: #1d4ed8;
 	}
 }

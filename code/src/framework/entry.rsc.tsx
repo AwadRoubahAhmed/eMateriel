@@ -22,8 +22,8 @@ function fetchServer(request: Request) {
 		// The app routes.
 		routes: new RouterService().getRouter(),
 		// Encode the match with the React Server implementation.
-		generateResponse(match) {
-			return new Response(renderToReadableStream(match.payload), {
+		generateResponse(match, { onError, temporaryReferences }) {
+			return new Response(renderToReadableStream(match.payload, { onError, temporaryReferences }), {
 				status: match.statusCode,
 				headers: match.headers,
 			});
@@ -37,5 +37,5 @@ export default async function handler(request: Request) {
 		typeof import("./entry.ssr")
 	>("ssr", "index");
 
-	return ssr.generateHTML(request, fetchServer);
+	return ssr.generateHTML(request, await fetchServer(request));
 }

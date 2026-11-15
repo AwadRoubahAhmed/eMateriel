@@ -1,5 +1,3 @@
-"use client";
-
 import AboutIntro from "../../components/apropos/AboutIntro";
 import AboutValues from "../../components/apropos/AboutValues";
 import Seo from "../../components/Seo";
@@ -10,13 +8,13 @@ export default function Apropos() {
 	return (
 		<>
 			<Seo
-				title="eMatériel - À propos"
-				description="Découvrez notre entreprise spécialisée en matériel électronique"
-				url="/apropos"
+				title="À propos"
+				description="eMatériel, boutique en ligne de matériel électronique pour particuliers et professionnels."
+				path="/apropos"
 			/>
 
-			<section className={styles.container}>
-				<Title title="À propos de nous" />
+			<section className={`page ${styles.container}`}>
+				<Title title="À propos de nous" as="h1" />
 
 				<AboutIntro />
 				<AboutValues />

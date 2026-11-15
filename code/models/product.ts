@@ -1,6 +1,3 @@
-import type { Category } from "./category";
-import type { Notice } from "./notice";
-
 type Product = {
 	id: number;
 	name: string;
@@ -8,11 +5,8 @@ type Product = {
 	price: number;
 	description: string;
 	stock: number;
-	category_id: number;
-	category: Category;
-
-	notice_ids: string;
-	notices: Notice[];
-}; 
+	category_id: number | null;
+	category: { id: number; name: string } | null;
+};
 
 export type { Product };

@@ -1,53 +1,54 @@
-import styles from "./MentionsLegales.module.css";
+import { Link } from "react-router-dom";
+import Seo from "../../components/Seo";
+import { LEGAL } from "../../data/legal";
 
-const MentionsLegales = () => {
+export default function MentionsLegales() {
 	return (
-		<div className={styles.container}>
-			<h1>Propriété intellectuelle</h1>
+		<article className="page legal">
+			<Seo title="Mentions légales" description="Mentions légales du site eMatériel." path="/mentions-legales" />
+			<h1>Mentions légales</h1>
 
-			<section>
-				<p>
-					L’ensemble du contenu présent sur ce site (textes, structure, éléments graphiques, code source, maquettes et créations originales) est protégé par les règles relatives à la propriété intellectuelle.
-				</p>
-				<p>
-					Toute reproduction, représentation, modification ou diffusion, totale ou partielle, sans autorisation préalable, est interdite, sauf usage strictement privé ou pédagogique dans les limites prévues par la loi.
-				</p>
-			</section>
+			<h2>Éditeur du site</h2>
+			<p>
+				{LEGAL.editor}, {LEGAL.legalForm}
+				<br />
+				SIRET : {LEGAL.siret}
+				<br />
+				TVA : {LEGAL.vat}
+				<br />
+				Adresse : {LEGAL.address}
+				<br />
+				Email : {LEGAL.email}
+				<br />
+				Directeur de la publication : {LEGAL.publicationDirector}
+			</p>
 
-			<section>
-				<h2>Crédits visuels</h2>
-				<p>
-					Certaines images utilisées sur ce site proviennent de banques d’images libres d’utilisation, notamment Unsplash et Freepik, ainsi que des sites officiels des associations présentées.
-				</p>
-				<p>
-					Les visuels des associations sont utilisés à titre illustratif dans le cadre de ce projet pédagogique. En cas de mise en ligne publique du site, les autorisations nécessaires, crédits ou remplacements de visuels devront être vérifiés et complétés si besoin.
-				</p>
-			</section>
+			<h2>Hébergeur</h2>
+			<p>
+				{LEGAL.host.name}, {LEGAL.host.address}. Site : {LEGAL.host.site}
+			</p>
 
-			<section>
-				<h2>Responsabilité</h2>
-				<p>
-					Compawny a pour objectif de mettre en avant des associations, des actions solidaires et des possibilités d’adoption en lien avec la protection animale.
-				</p>
-				<p>
-					Les informations publiées sur le site sont fournies à titre informatif. Malgré le soin apporté à leur sélection et à leur mise à jour, l’éditrice ne peut garantir l’exactitude, l’exhaustivité ou l’actualité permanente de l’ensemble des contenus.
-				</p>
-				<p>
-					Le site ne saurait être tenu responsable des actions, services, engagements, disponibilités ou conditions proposés par les associations et structures référencées.
-				</p>
-			</section>
+			<h2>Propriété intellectuelle</h2>
+			<p>
+				Les textes, la structure et le code du site sont protégés par le droit d'auteur. Les marques
+				et visuels de produits appartiennent à leurs propriétaires respectifs et sont utilisés pour
+				présenter les articles vendus. Toute reproduction sans autorisation est interdite.
+			</p>
 
-			<section>
-				<h2>Données personnelles</h2>
-				<p>
-					Les informations éventuellement transmises via les formulaires du site sont utilisées uniquement dans le cadre du fonctionnement du projet et ne sont pas cédées à des tiers.
-				</p>
-				<p>
-					Conformément à la réglementation applicable à la protection des données personnelles, toute personne peut demander des informations, une rectification ou une suppression des données la concernant via le formulaire de contact du site.
-				</p>
-			</section>
-		</div>
+			<h2>Données personnelles et cookies</h2>
+			<p>
+				Le traitement de vos données est décrit dans la{" "}
+				<Link to="/politique-confidentialite">politique de confidentialité</Link>. Vous pouvez modifier
+				vos choix de cookies à tout moment via le lien « Gérer les cookies » en bas de page.
+			</p>
+
+			<h2>Conditions de vente et d'utilisation</h2>
+			<p>
+				Les achats sont régis par les <Link to="/cgv">conditions générales de vente</Link> et l'usage du
+				site par les <Link to="/cgu">conditions générales d'utilisation</Link>.
+			</p>
+
+			<p>Dernière mise à jour : {LEGAL.lastUpdate}</p>
+		</article>
 	);
-};
-
-export default MentionsLegales;
+}

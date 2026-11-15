@@ -1,95 +1,89 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 import type { Request, Response } from "express";
-import type { Product } from "../../models/product";
+import { fileTypeFromFile } from "file-type";
+import { IMAGES_DIR } from "../core/paths";
 import Product_Repository from "../repository/product_repository";
-import FileService from "../service/file_service";
+import { idParam } from "../validation/schemas";
+
+const ALLOWED = ["jpg", "png", "webp"];
+
+// Vérifie le vrai contenu du fichier (pas seulement son extension) puis le renomme
+const saveImage = async (file: Express.Multer.File) => {
+	const type = await fileTypeFromFile(file.path);
+	if (!type || !ALLOWED.includes(type.ext)) {
+		await fs.rm(file.path, { force: true });
+		return null;
+	}
+	const name = `${file.filename}.${type.ext}`;
+	await fs.rename(file.path, path.join(file.destination, name));
+	return name;
+};
+
+const notFound = (res: Response) =>
+	res.status(404).json({ status: 404, message: "Produit introuvable" });
+
+const badImage = (res: Response) =>
+	res.status(400).json({ status: 400, message: "Image invalide (JPEG, PNG ou WebP)" });
 
 class Product_Controller {
-	public index = async (_req: Request, res: Response) => {
-		const resultat = await new Product_Repository().selectAll();
-		if (resultat instanceof Error) {
-			return res.status(400).json({
-				status: 400,
-				message:
-					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
-			});
-		}
-		res.status(200).json({ status: 200, message: "ok", data: resultat });
+	private repository = new Product_Repository();
+
+	public index = async (req: Request, res: Response) => {
+		const category = req.query.category ? idParam.parse(req.query.category) : undefined;
+		res.json({ status: 200, message: "ok", data: await this.repository.selectAll(category) });
 	};
 
 	public selectOne = async (req: Request, res: Response) => {
-		const resultat = await new Product_Repository().selectOne(req.params);
-		if (resultat instanceof Error) {
-			return res.status(400).json({ status: 400, message: resultat.message });
-		}
-		if (!resultat) {
-			return res
-				.status(404)
-				.json({ status: 404, message: "Product not found" });
-		}
-		res.status(200).json({ status: 200, message: "ok", data: resultat });
+		const product = await this.repository.selectOne(idParam.parse(req.params.id));
+		if (!product) return void notFound(res);
+		res.json({ status: 200, message: "ok", data: product });
 	};
 
 	public insert = async (req: Request, res: Response) => {
-		const file = (req.files as Express.Multer.File[])?.[0];
-		const fileService = new FileService();
-		const fullname = file ? await fileService.rename(file) : null;
-
-		const resultat = await new Product_Repository().insert({
-			...req.body,
-			image: fullname,
-		});
-		if (resultat instanceof Error) {
-			return res.status(400).json({
-				status: 400,
-				message:
-					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
-			});
+		if (!req.file) {
+			res.status(400).json({ status: 400, message: "Image obligatoire" });
+			return;
 		}
-		res.status(201).json({ status: 201, message: "ok", data: resultat });
+		const image = await saveImage(req.file);
+		if (!image) return void badImage(res);
+		const id = await this.repository.insert({ ...req.body, image });
+		res.status(201).json({ status: 201, message: "Produit créé", data: { id } });
 	};
 
 	public update = async (req: Request, res: Response) => {
-		const file = (req.files as Express.Multer.File[])?.[0];
-		const fileService = new FileService();
-
-		let fullname: string | undefined;
-		if (file) {
-			fullname = await fileService.rename(file);
-		} else {
-			const existing = (await new Product_Repository().selectOne(
-				req.body,
-			)) as Product;
-			fullname = existing?.image;
+		const id = idParam.parse(req.params.id);
+		const existing = await this.repository.selectOne(id);
+		if (!existing) {
+			if (req.file) await fs.rm(req.file.path, { force: true });
+			return void notFound(res);
 		}
-
-		const resultat = await new Product_Repository().update({
-			...req.body,
-			image: fullname,
-		});
-		if (resultat instanceof Error) {
-			return res.status(400).json({
-				status: 400,
-				message:
-					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
-			});
+		let image = existing.image;
+		if (req.file) {
+			const saved = await saveImage(req.file);
+			if (!saved) return void badImage(res);
+			image = saved;
 		}
-		res.status(200).json({ status: 200, message: "Updated", data: resultat });
+		await this.repository.update(id, { ...req.body, image });
+		// ancienne image supprimée si plus aucun produit ne l'utilise
+		if (image !== existing.image && !(await this.repository.isImageUsed(existing.image))) {
+			await fs.rm(path.join(IMAGES_DIR, path.basename(existing.image)), { force: true });
+		}
+		res.json({ status: 200, message: "Produit modifié" });
+	};
+
+	public updateStock = async (req: Request, res: Response) => {
+		if (!(await this.repository.updateStock(idParam.parse(req.params.id), req.body.stock))) {
+			return void notFound(res);
+		}
+		res.json({ status: 200, message: "Stock modifié" });
 	};
 
 	public delete = async (req: Request, res: Response) => {
-		const resultat = await new Product_Repository().delete({
-			id: Number(req.params.id),
-		});
-
-		if (resultat instanceof Error) {
-			return res.status(400).json({
-				status: 400,
-				message:
-					process.env.NODE_ENV === "production" ? "Error" : resultat.message,
-			});
+		if (!(await this.repository.delete(idParam.parse(req.params.id)))) {
+			return void notFound(res);
 		}
-
-		res.status(200).json({ status: 200, message: "Deleted", data: resultat });
+		res.json({ status: 200, message: "Produit supprimé" });
 	};
 }
 

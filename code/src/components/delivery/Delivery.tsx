@@ -1,67 +1,31 @@
-import { FaPercent } from "react-icons/fa";
+import { FaUndo } from "react-icons/fa";
 import { GrDeliver, GrSecure } from "react-icons/gr";
-import { MdAccessTime } from "react-icons/md";
+import { MdOutlineMail } from "react-icons/md";
 import styles from "./Delivery.module.css";
+
+// Engagements réellement tenus par le site (pas de promesse non vérifiée)
+const ITEMS = [
+	{ icon: GrSecure, title: "Paiement sécurisé", text: "Paiement par carte via Stripe, vos données bancaires ne passent pas par nos serveurs." },
+	{ icon: GrDeliver, title: "Suivi de commande", text: "Retrouvez l'état de chaque commande dans votre espace « Mes commandes »." },
+	{ icon: FaUndo, title: "14 jours pour changer d'avis", text: "Droit de rétractation de 14 jours après réception, voir nos CGV." },
+	{ icon: MdOutlineMail, title: "Une question ?", text: "Écrivez-nous via le formulaire de contact, nous vous répondons par email." },
+];
 
 export default function Delivery() {
 	return (
-		<section className={styles.wrapper}>
+		<section className={styles.wrapper} aria-label="Nos engagements">
 			<div className={styles.grid}>
-				<div className={styles.deliveryWrapper}>
-					<div className={styles.card}>
-						<p>
-							<FaPercent size={25} />
-						</p>
-						<div>
-							<h4 className={styles.title}>Paiements sécurisés</h4>
-							<p className={styles.text}>
-								Chaque semaine, de nouvelles soldes.
-							</p>
+				{ITEMS.map(({ icon: Icon, title, text }) => (
+					<div className={styles.deliveryWrapper} key={title}>
+						<div className={styles.card}>
+							<Icon size={25} aria-hidden="true" />
+							<div>
+								<h3 className={styles.title}>{title}</h3>
+								<p className={styles.text}>{text}</p>
+							</div>
 						</div>
 					</div>
-				</div>
-
-				<div className={styles.deliveryWrapper}>
-					<div className={styles.card}>
-						<p>
-							<GrDeliver size={25} />
-						</p>
-						<div>
-							<h4 className={styles.title}>Livraison gratuit</h4>
-							<p className={styles.text}>
-								100% gratuit pour tous les commandes.
-							</p>
-						</div>
-					</div>
-				</div>
-
-				<div className={styles.deliveryWrapper}>
-					<div className={styles.card}>
-						<p>
-							<MdAccessTime size={25} />
-						</p>
-						<div>
-							<h4 className={styles.title}>
-								Assitance de qualité 24h/24 et 7j/7
-							</h4>
-							<p className={styles.text}>
-								Nous accordons une grande importance à vos expériences.
-							</p>
-						</div>
-					</div>
-				</div>
-
-				<div className={styles.deliveryWrapper}>
-					<div className={styles.card}>
-						<p>
-							<GrSecure size={25} />
-						</p>
-						<div>
-							<h4 className={styles.title}>Paiements sécurisés</h4>
-							<p className={styles.text}>Méthode de paiement 100% sécuriée.</p>
-						</div>
-					</div>
-				</div>
+				))}
 			</div>
 		</section>
 	);

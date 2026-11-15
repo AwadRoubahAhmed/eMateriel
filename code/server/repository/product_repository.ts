@@ -1,230 +1,97 @@
-import type { QueryResult } from "mysql2";
-import type { Category } from "../../models/category";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import type { Product } from "../../models/product";
 import MySQLService from "../service/mysql_service";
-import Category_Repository from "./category_repository";
+
+export type ProductInput = Pick<
+	Product,
+	"name" | "image" | "price" | "description" | "stock" | "category_id"
+>;
+
+// produit + nom de sa catégorie en une seule requête
+const SELECT = `
+	SELECT product.*, category.name AS category_name
+	FROM product
+	LEFT JOIN category ON category.id = product.category_id
+`;
+
+const withCategory = (row: RowDataPacket) => {
+	const { category_name, ...product } = row;
+	return {
+		...product,
+		category: product.category_id
+			? { id: product.category_id, name: category_name }
+			: null,
+	} as Product;
+};
 
 class Product_Repository {
-	private table = "product";
-	public selectAll = async (): Promise<Product[] | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-            SELECT ${this.table}.*,
-			GROUP_CONCAT(notice.id) AS notice_ids
-            FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice 
-			ON ${this.table}.id = notice.product_id
-			GROUP BY ${this.table}.id
-			; 
-        `;
-
-		try {
-			const [query] = await connection.execute(sql);
-
-			// Boucler sur les resultats pour récupérer les clés étrangères;
-			for (let i = 0; i < (query as Product[]).length; i++) {
-				const result = (query as Product[])[i];
-
-				// Clés étrangères
-				result.category = (await new Category_Repository().selectOne({
-					id: result.category_id,
-				})) as Category;
-			}
-			return query;
-		} catch (error) {
-			return error;
-		}
+	public selectAll = async (categoryId?: number): Promise<Product[]> => {
+		const db = await new MySQLService().connect();
+		const [rows] = categoryId
+			? await db.execute<RowDataPacket[]>(
+					`${SELECT} WHERE product.category_id = :categoryId ORDER BY product.id`,
+					{ categoryId },
+				)
+			: await db.execute<RowDataPacket[]>(`${SELECT} ORDER BY product.id`);
+		return rows.map(withCategory);
 	};
 
-	public selectOne = async (
-		data: Partial<Product>,
-	): Promise<Product[] | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-            SELECT ${this.table}.*
-            FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice
-			ON ${this.table}.id = notice.product_id
-			WHERE ${this.table}.id = :id
-			; 
-        `;
-
-		try {
-			const [query] = await connection.execute(sql, data);
-
-			const result = (query as Product[]).shift() as Product;
-
-			if (!result) return null;
-
-			// Clés étrangères category_id
-			result.category = (await new Category_Repository().selectOne({
-				id: result.category_id,
-			})) as Category;
-
-			return result;
-		} catch (error) {
-			return error;
-		}
+	public selectOne = async (id: number): Promise<Product | null> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			`${SELECT} WHERE product.id = :id`,
+			{ id },
+		);
+		return rows[0] ? withCategory(rows[0]) : null;
 	};
 
-	public selectInList = async (list: string): Promise<Product[] | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-            SELECT ${this.table}.*,
-			GROUP_CONCAT(notice.id) AS notice_ids
-            FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			LEFT JOIN ${process.env.MYSQL_DATABASE}.notice
-			ON ${this.table}.id = notice.product_id
-			WHERE  ${this.table}.id IN (${list})
-			GROUP BY ${this.table}.id
-			;
-        `;
-
-		try {
-			const [query] = await connection.execute(sql);
-
-			return query;
-		} catch (error) {
-			return error;
-		}
+	public insert = async (data: ProductInput) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			`INSERT INTO product (name, image, price, description, stock, category_id)
+			 VALUES (:name, :image, :price, :description, :stock, :category_id)`,
+			data,
+		);
+		return result.insertId;
 	};
 
-	public insert = async (
-		data: Partial<Product>,
-	): Promise<QueryResult | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-            INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-			(id, name, image, price, description, stock, category_id)
-			VALUES  
-			(NULL, :name, :image, :price, :description, :stock, :category_id)
-            ;
-        `;
-
-		try {
-			const [query] = await connection.execute(sql, data);
-
-			return query;
-		} catch (error) {
-			return error;
-		}
+	public update = async (id: number, data: ProductInput) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			`UPDATE product SET name = :name, image = :image, price = :price,
+			 description = :description, stock = :stock, category_id = :category_id
+			 WHERE id = :id`,
+			{ ...data, id },
+		);
+		return result.affectedRows > 0;
 	};
 
-	public update = async (
-		data: Partial<Product>,
-	): Promise<QueryResult | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-            UPDATE ${process.env.MYSQL_DATABASE}.${this.table}
-			SET  
-			   ${this.table}.name = :name, 
-			    ${this.table}.image = :image, 
-			    ${this.table}.price = :price, 
-			    ${this.table}.description = :description, 
-			    ${this.table}.stock = :stock, 
-			    ${this.table}.category_id = :category_id
-			WHERE 
-			   ${this.table}.id = :id
-            ;
-        `;
-
-		try {
-			const [query] = await connection.execute(sql, data);
-
-			return query;
-		} catch (error) {
-			return error;
-		}
+	public isImageUsed = async (image: string) => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			"SELECT 1 FROM product WHERE image = :image LIMIT 1",
+			{ image },
+		);
+		return rows.length > 0;
 	};
 
-	// public delete = async (
-	// 	data: Partial<Product>,
-	// ): Promise<QueryResult | unknown> => {
-	// 	const connection = await new MySQLService().connect();
+	public updateStock = async (id: number, stock: number) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			"UPDATE product SET stock = :stock WHERE id = :id",
+			{ id, stock },
+		);
+		return result.affectedRows > 0;
+	};
 
-	// 	let sql = `
-	//         DELETE FROM ${process.env.MYSQL_DATABASE}.notice
-	// 		  WHERE
-	// 		   notice.product_id = :id
-	//         ;
-	//     `;
-
-	// 	try {
-	// 		// demarer la transaction
-	// 		connection.beginTransaction();
-
-	// 		// execute la premiere requette (Delete notice);
-	// 		await connection.execute(sql, data);
-
-	// 		// Supprime les lignes de commande associées au produit
-	// 		sql = `
-	//         DELETE FROM ${process.env.MYSQL_DATABASE}.line_order
-	// 		  WHERE
-	// 		   line_order.product_id = :id
-	//         ;
-	//     `;
-	// 		// execute la deuxieme requette (Delete line_order);
-	// 		await connection.execute(sql, data);
-
-	// 		// Supprime le produit lui-même
-	// 		sql = `
-	//          DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table}
-	// 	        WHERE
-	// 		   ${this.table}.id = :id
-	// 	    ;
-	//     `;
-	// 		// execute la troisieme requette (Delete product);
-	// 		const [query] = await connection.execute(sql, data);
-
-	// 		connection.commit();
-
-	// 		return query;
-	// 	} catch (error) {
-	// 		// annuler la transaction en cas d'erreur;
-	// 		connection.rollback();
-	// 		return error;
-	// 	}
-	// };
-
-	public delete = async (
-		data: Partial<Product>,
-	): Promise<QueryResult | unknown> => {
-		const connection = await new MySQLService().connect();
-
-		try {
-			// démarrer la transaction
-			await connection.beginTransaction();
-
-			// Supprimer les notices associées
-			await connection.execute(
-				`DELETE FROM ${process.env.MYSQL_DATABASE}.notice WHERE notice.product_id = ?`,
-				[data.id],
-			);
-
-			// Supprimer les lignes de commande associées
-			await connection.execute(
-				`DELETE FROM ${process.env.MYSQL_DATABASE}.line_order WHERE line_order.product_id = ?`,
-				[data.id],
-			);
-
-			// Supprimer le produit lui-même
-			const [query] = await connection.execute(
-				`DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table} WHERE ${this.table}.id = ?`,
-				[data.id],
-			);
-
-			await connection.commit();
-
-			return query;
-		} catch (error) {
-			await connection.rollback();
-			return error;
-		}
+	// les lignes de commande gardent nom et prix (product_id passe à NULL)
+	public delete = async (id: number) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			"DELETE FROM product WHERE id = :id",
+			{ id },
+		);
+		return result.affectedRows > 0;
 	};
 }
 

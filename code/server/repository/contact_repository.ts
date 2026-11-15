@@ -1,35 +1,44 @@
-import type { InsertOneResult } from "mongodb";
-import MongodbService from "../service/mongodb_service";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
+import type { Contact } from "../../models/contact";
+import MySQLService from "../service/mysql_service";
 
 class ContactRepository {
-	// Nom de la table collection
-	private collection = "contact";
-
-	// Selectionner tous les documents
-	public selectAll = async (): Promise<Document[] | unknown> => {
-		// connexion au server Mongodb
-		const connection = await new MongodbService().connect();
-
-		// Selection d'une collection
-		const collection = connection?.db().collection(this.collection);
-
-		const results = collection?.find().toArray();
-
-		return results;
+	public selectAll = async (): Promise<Contact[]> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			"SELECT * FROM contact ORDER BY created_at DESC, id DESC",
+		);
+		return rows as Contact[];
 	};
 
 	public insert = async (
-		data: InsertOneResult,
-	): Promise<InsertOneResult | unknown> => {
-		// connexion au server Mongodb
-		const connection = await new MongodbService().connect();
+		data: Pick<Contact, "name" | "email" | "subject" | "message">,
+	) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			`INSERT INTO contact (name, email, subject, message)
+			 VALUES (:name, :email, :subject, :message)`,
+			data,
+		);
+		return result.insertId;
+	};
 
-		// Selection d'une collection
-		const collection = connection?.db().collection(this.collection);
+	public markRead = async (id: number, is_read: boolean) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			"UPDATE contact SET is_read = :is_read WHERE id = :id",
+			{ id, is_read },
+		);
+		return result.affectedRows > 0;
+	};
 
-		const results = collection?.insertOne(data);
-
-		return results;
+	public delete = async (id: number) => {
+		const db = await new MySQLService().connect();
+		const [result] = await db.execute<ResultSetHeader>(
+			"DELETE FROM contact WHERE id = :id",
+			{ id },
+		);
+		return result.affectedRows > 0;
 	};
 }
 

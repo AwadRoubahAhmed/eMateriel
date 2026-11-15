@@ -1,78 +1,80 @@
-import cors from "cors";
-import express, { type Express, type Router } from "express";
-import Category_router from "../router/category_router";
-import ContactRouter from "../router/contact_router";
-import Homepage_router from "../router/homepage_router";
-import Line_order_router from "../router/line_order_router";
-import Notice_router from "../router/notice_router";
-import Orders_router from "../router/orders_router";
-import Payment_method_router from "../router/payment_method_router";
-import Product_router from "../router/products_router";
-import Role_router from "../router/role_router";
-import SecurityRouter from "../router/security_router";
-import User_router from "../router/user_router";
+import express, { type ErrorRequestHandler, type Express } from "express";
+import helmet from "helmet";
+import multer from "multer";
+import { ZodError } from "zod";
+import { createApiRouter } from "../router/api_router";
+import { createSeoRouter } from "../router/seo_router";
+import { IMAGES_DIR } from "./paths";
+
+export { IMAGES_DIR } from "./paths";
 
 class Server {
-	//properties
-	// instancier une application Express
 	private app: Express = express();
-	private router: Router = express.Router();
 
-	//constructor
 	constructor() {
-		//middlewares
-		// parser le corps des requetes HTTP en JSON
-		this.app.use(express.json());
+		const production = process.env.NODE_ENV === "production";
 
-		// CORS : autoriser l'accès aux données entre origines (protocole, sous-domaine, port)
+		// nombre de proxys devant l'app (Hostinger : 1 ; +1 si Cloudflare en proxy) : l'IP
+		// utilisée par les limiteurs de tentatives doit être celle du visiteur, pas falsifiable
+		this.app.set("trust proxy", Number(process.env.TRUST_PROXY ?? 1));
+		this.app.disable("x-powered-by");
+
+		// HTTPS forcé en production, vers l'adresse officielle (jamais l'en-tête Host reçu)
+		if (production && process.env.FORCE_HTTPS !== "false") {
+			const site = (process.env.SITE_URL ?? "").replace(/\/$/, "");
+			this.app.use((req, res, next) => {
+				if (req.secure) return next();
+				res.redirect(301, `${site}${req.originalUrl}`);
+			});
+		}
+
 		this.app.use(
-			cors({
-				origin: process.env.ORIGINS?.split(","),
+			helmet({
+				// shortcut: 'unsafe-inline' car le rendu React (RSC) injecte des scripts en ligne ;
+				// passer à un nonce par requête si on veut durcir la CSP.
+				contentSecurityPolicy: production
+					? {
+							directives: {
+								"script-src": ["'self'", "'unsafe-inline'", "https://static.cloudflareinsights.com"],
+								"connect-src": ["'self'", "https://cloudflareinsights.com"],
+								"img-src": ["'self'", "data:"],
+								"form-action": ["'self'", "https://checkout.stripe.com"],
+							},
+						}
+					: false,
+				crossOriginEmbedderPolicy: false,
 			}),
 		);
 
-		//connect router to application
-		// lier l'application Express au routeur
-		this.app.use(this.router);
+		this.app.use(express.json({ limit: "100kb" }));
 
-		//call routers
-		// définir la liste des routeurs
-		this.routerList();
+		// images produits (hors du dossier public de Vite : ce sont des données, pas du code)
+		this.app.use("/images", express.static(IMAGES_DIR, { maxAge: "7d", fallthrough: false }));
+
+		this.app.use(createSeoRouter());
+		this.app.use("/api", createApiRouter());
+		this.app.use("/api", this.errorHandler);
 	}
-	//methods
 
-	//router list that conatain all lists
-	// liste des routeurs
-	private routerList = () => {
-		this.router.use("/api", new Homepage_router().getRoutes());
-
-		this.router.use("/api/category", new Category_router().getRoutes());
-
-		this.router.use("/api/product", new Product_router().getRoutes());
-
-		this.router.use("/api/orders", new Orders_router().getRoutes());
-
-		this.router.use(
-			"/api/payment_method",
-			new Payment_method_router().getRoutes(),
-		);
-		this.router.use("/api/notice", new Notice_router().getRoutes());
-
-		this.router.use("/api/role", new Role_router().getRoutes());
-
-		this.router.use("/api", new SecurityRouter().getRoutes());
-
-		this.router.use("/api/user", new User_router().getRoutes());
-
-		console.log("LINE ORDER ROUTER LOADED");
-
-		this.router.use("/api/line_order", new Line_order_router().getRoutes());
-
-		this.router.use("/api/contact", new ContactRouter().getRoutes());
+	// toute erreur non prévue → 500 sans détail technique côté client
+	private errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
+		if (error instanceof ZodError) {
+			res.status(400).json({ status: 400, message: "Paramètre invalide" });
+			return;
+		}
+		if (error instanceof multer.MulterError) {
+			res.status(400).json({ status: 400, message: "Fichier refusé (5 Mo maximum)" });
+			return;
+		}
+		if (error?.type === "entity.parse.failed" || error?.type === "entity.too.large") {
+			res.status(400).json({ status: 400, message: "Requête invalide" });
+			return;
+		}
+		console.error(error);
+		res.status(500).json({ status: 500, message: "Erreur serveur" });
 	};
-	//start server
-	public startServer = () => {
-		return this.app;
-	};
+
+	public startServer = () => this.app;
 }
+
 export default Server;

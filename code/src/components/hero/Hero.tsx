@@ -1,7 +1,7 @@
-"use client";
+
 
 import { Link } from "react-router-dom";
-import heroImage from "../../../public/images/hero_shop.png";
+import heroImage from "../../assets/images/hero_shop.webp";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
@@ -11,7 +11,7 @@ export default function Hero() {
 				<div className={styles.contentWrapper}>
 					<div className={styles.content}>
 						<span className={styles.divider}></span>
-						<p className={styles.title}>NOS MEILLEURS VENTES</p>
+						<p className={styles.title}>MATÉRIEL HIGH-TECH</p>
 					</div>
 
 					<h1 className={styles.heading}>
@@ -31,7 +31,7 @@ export default function Hero() {
 				<img
 					className={styles.image}
 					src={heroImage}
-					alt="Produits tendances"
+					alt="Smartphone, ordinateur portable et accessoires"
 				/>
 			</div>
 		</section>

@@ -1,92 +1,45 @@
 import argon2 from "argon2";
 import type { Request, Response } from "express";
-import * as jose from "jose"; // pour le JWT
-import type { User } from "../../models/user";
+import JwtService from "../service/jwt_service";
 import SecurityRepository from "../repository/security_repository";
 
+// Utilisé quand l'email n'existe pas : même temps de réponse qu'avec un vrai compte
+const DUMMY_HASH =
+	"$argon2id$v=19$m=65536,t=3,p=4$bFqs/vYRUiR3I6/I4gcUpw$ZSWuaH6dAj0YeXx/5nik4yu0vgNMbfB4uhJP57n1JHY";
+
 class SecurityController {
-	private securityRepository = new SecurityRepository();
+	private repository = new SecurityRepository();
 
-	public register = async (
-		req: Request,
-		res: Response,
-	): Promise<undefined | Response> => {
-		const hash = await argon2.hash(req.body.password);
-		req.body = { ...req.body, password: hash };
-		const results = await this.securityRepository.register(req.body);
-
-		if (results instanceof Error) {
-			return res.status(400).json({
-				status: 400,
-				message:
-					process.env.NODE_ENV === "production" ? "Error" : results.message,
-			});
+	public register = async (req: Request, res: Response) => {
+		if (await this.repository.selectOneByEmail(req.body.email)) {
+			res.status(409).json({ status: 409, message: "Un compte existe déjà avec cet email" });
+			return;
 		}
-
-		return res.status(201).json({
-			status: 201,
-			message: "Created",
-			data: results,
-		});
+		const password = await argon2.hash(req.body.password);
+		const id = await this.repository.register({ ...req.body, password });
+		res.status(201).json({ status: 201, message: "Compte créé", data: { id } });
 	};
 
 	public login = async (req: Request, res: Response) => {
-		// Vérifier que l'email existe
-		let results = await this.securityRepository.isEmailUserExists(req.body);
+		const user = await this.repository.selectOneByEmail(req.body.email);
+		const valid = await argon2.verify(user?.password ?? DUMMY_HASH, req.body.password);
 
-		if (results instanceof Error) {
-			return res.status(400).json({
-				status: 400,
-				message:
-					process.env.NODE_ENV === "production" ? "Error" : results.message,
-			});
+		// message identique que l'email ou le mot de passe soit faux
+		if (!user || !valid) {
+			res.status(401).json({ status: 401, message: "Email ou mot de passe incorrect" });
+			return;
 		}
 
-		if (!results) {
-			return res.status(403).json({
-				status: 403,
-				message:
-					process.env.NODE_ENV === "production"
-						? "Error"
-						: "Forbidden - User email not exists",
-			});
-		}
-
-		// Récupérer l'utilisateur par son email
-		results = await this.securityRepository.selectOneByEmail(req.body);
-
-		// Vérifier le mot de passe
-		const passwordIsValid = await argon2.verify(
-			(results as User).password,
-			req.body.password,
-		);
-
-		if (!passwordIsValid) {
-			return res.status(401).json({
-				status: 401,
-				message:
-					process.env.NODE_ENV === "production"
-						? "Error"
-						: "Unauthorized - Invalid password",
-			});
-		}
-
-		// Générer un JWT
-		const secret = new TextEncoder().encode(process.env.VITE_JWT_SECRET);
-		const token = await new jose.SignJWT({
-			id: (results as User).id,
-			email: (results as User).email,
-			role: (results as User).role,
-		})
-			.setProtectedHeader({ alg: "HS256", typ: "JWT" })
-			.setExpirationTime("2h")
-			.sign(secret);
-
-		// Renvoyer le token avec l'utilisateur
-		return res.status(200).json({
+		const token = await new JwtService().sign({
+			id: user.id,
+			email: user.email,
+			role: user.role,
+		});
+		const { password: _hash, ...publicUser } = user;
+		res.status(200).json({
 			status: 200,
-			message: "Ok User",
-			data: results,
+			message: "Connecté",
+			data: { ...publicUser, role: { name: user.role } },
 			token,
 		});
 	};

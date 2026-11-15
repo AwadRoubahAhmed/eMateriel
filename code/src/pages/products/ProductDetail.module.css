@@ -21,7 +21,7 @@
 	align-items: center;
 	gap: 0.5rem;
 	font-size: 1.2rem;
-	color: #2563eb;
+	color: #1d4ed8;
 	text-decoration: none;
 	font-weight: 600;
 	transition: color 0.2s ease;
@@ -63,7 +63,7 @@
 
 .category {
 	font-size: 0.9rem;
-	color: #6b7280;
+	color: #4b5563;
 	font-style: italic;
 }
 
@@ -78,7 +78,7 @@
 	gap: 2rem;
 	font-size: 1.2rem;
 	font-weight: 600;
-	color: #2563eb;
+	color: #1d4ed8;
 }
 
 .price {
@@ -86,7 +86,7 @@
 }
 
 .stock {
-	color: #6b7280;
+	color: #4b5563;
 	font-weight: 400;
 }
 
@@ -94,7 +94,7 @@
 .buyButton {
 	margin-top: 1rem;
 	padding: 1rem;
-	background-color: #2563eb;
+	background-color: #1d4ed8;
 	color: #fff;
 	border: none;
 	border-radius: 8px;

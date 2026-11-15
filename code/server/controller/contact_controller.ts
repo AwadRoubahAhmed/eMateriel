@@ -1,33 +1,32 @@
 import type { Request, Response } from "express";
 import ContactRepository from "../repository/contact_repository";
+import { idParam } from "../validation/schemas";
 
 class ContactController {
-	// Méthode relié à la route en GET située dans le routeur
-	public index = async (_req: Request, res: Response) => {
-		// Récupération des relultats de la rêquete
-		const results = await new ContactRepository().selectAll();
+	private repository = new ContactRepository();
 
-		// renvoyer une reponse avec un code de status HTTP et au format json
-		res.status(200).json({
-			status: 200,
-			message: "OK",
-			data: results,
-		});
+	public index = async (_req: Request, res: Response) => {
+		res.json({ status: 200, message: "ok", data: await this.repository.selectAll() });
 	};
 
 	public insert = async (req: Request, res: Response) => {
-		// Insertion
-		const results = await new ContactRepository().insert({
-			...req.body,
-			date: new Date(),
-		});
+		const { website, ...message } = req.body;
+		// champ piège rempli = robot : on fait semblant d'accepter, sans rien enregistrer
+		if (!website) await this.repository.insert(message);
+		res.status(201).json({ status: 201, message: "Message envoyé" });
+	};
 
-		// renvoyer une reponse avec un code de status HTTP et au format json
-		res.status(201).json({
-			status: 201,
-			message: "Created",
-			data: results,
-		});
+	public markRead = async (req: Request, res: Response) => {
+		const ok = await this.repository.markRead(idParam.parse(req.params.id), req.body.is_read !== false);
+		if (!ok) return void res.status(404).json({ status: 404, message: "Message introuvable" });
+		res.json({ status: 200, message: "Message mis à jour" });
+	};
+
+	public delete = async (req: Request, res: Response) => {
+		if (!(await this.repository.delete(idParam.parse(req.params.id)))) {
+			return void res.status(404).json({ status: 404, message: "Message introuvable" });
+		}
+		res.json({ status: 200, message: "Message supprimé" });
 	};
 }
 

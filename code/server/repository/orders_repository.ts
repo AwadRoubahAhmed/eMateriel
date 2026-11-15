@@ -1,261 +1,194 @@
-import type { ResultSetHeader, RowDataPacket } from "mysql2";
+import type { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import type { Line_order } from "../../models/line_order";
-import type { Orders } from "../../models/orders";
-import type { Payment_methode } from "../../models/payment_methode";
-import type { User } from "../../models/user";
-
+import { ORDER_TRANSITIONS, type Orders, type OrderStatus } from "../../models/orders";
 import MySQLService from "../service/mysql_service";
-import Line_order_Repository from "./line_order_repository";
-import Payment_method_Repository from "./payment_method_repository";
-import User_Repository from "./user_repository";
+
+export type OrderItem = { product_id: number; qty: number };
+export type Shipping = {
+	name: string;
+	address: string;
+	zip: string;
+	city: string;
+	phone: string;
+};
+
+// erreur métier → réponse 409 (stock insuffisant, produit supprimé…)
+export class OrderError extends Error {}
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+export const TRANSITIONS = ORDER_TRANSITIONS;
+
+// au-delà, un client doit payer ou annuler avant de recommander (pas de stock bloqué en masse)
+export const MAX_PENDING_PER_USER = 2;
+
+const restoreStock = async (connection: PoolConnection, orderId: number) => {
+	await connection.execute(
+		`UPDATE product JOIN line_order ON line_order.product_id = product.id
+		 SET product.stock = product.stock + line_order.qty
+		 WHERE line_order.order_id = :orderId`,
+		{ orderId },
+	);
+};
 
 class Orders_Repository {
-	private table = "orders";
-
-	// SELECT ALL
-	public selectAll = async (): Promise<Orders[] | unknown> => {
-		const connection = await new MySQLService().connect();
-		const sql = `
-			SELECT ${this.table}.*,
-			GROUP_CONCAT(line_order.id) AS line_order_ids
-			FROM ${process.env.MYSQL_DATABASE}.${this.table}
-			LEFT JOIN ${process.env.MYSQL_DATABASE}.line_order
-			ON ${this.table}.id = line_order.order_id
-			GROUP BY ${this.table}.id;
-		`;
-
-		try {
-			const [rows] = await connection.execute<RowDataPacket[]>(sql);
-			const results = rows as Orders[];
-
-			for (const order of results) {
-				order.user = (await new User_Repository().selectOne({
-					id: order.user_id ?? undefined,
-				})) as User;
-
-				order.payment_method = (await new Payment_method_Repository().selectOne(
-					{
-						id: order.payment_method_id ?? undefined,
-					},
-				)) as Payment_methode;
-
-				order.line_orders = (await new Line_order_Repository().selectInList(
-					order.line_order_ids,
-				)) as Line_order[];
-			}
-
-			return results;
-		} catch (error) {
-			return error;
+	// Crée la commande : prix relus en base (jamais ceux du navigateur),
+	// stock vérifié et réservé dans la même transaction.
+	public create = async (
+		userId: number,
+		items: OrderItem[],
+		shipping: Shipping,
+	) => {
+		// fusionner les doublons (même produit deux fois)
+		const qtyById = new Map<number, number>();
+		for (const { product_id, qty } of items) {
+			qtyById.set(product_id, (qtyById.get(product_id) ?? 0) + qty);
 		}
-	};
+		const ids = [...qtyById.keys()];
 
-	// SELECT ONE
-	public selectOne = async (
-		data: Partial<Orders>,
-	): Promise<Orders | unknown> => {
-		const connection = await new MySQLService().connect();
-		const sql = `
-			SELECT ${this.table}.* 
-			FROM ${process.env.MYSQL_DATABASE}.${this.table} 
-			WHERE id = :id;
-		`;
+		return new MySQLService().transaction(async (connection) => {
+			const placeholders = ids.map((_, i) => `:p${i}`).join(",");
+			const params = Object.fromEntries(ids.map((id, i) => [`p${i}`, id]));
+			// FOR UPDATE : bloque ces lignes jusqu'à la fin de la transaction (pas de survente)
+			const [rows] = await connection.execute<RowDataPacket[]>(
+				`SELECT id, name, price, stock FROM product WHERE id IN (${placeholders}) FOR UPDATE`,
+				params,
+			);
 
-		try {
-			const [rows] = await connection.execute<RowDataPacket[]>(sql, data);
-			const order = (rows as Orders[]).shift();
-
-			if (!order) return null;
-
-			order.user = (await new User_Repository().selectOne({
-				id: order.user_id ?? undefined,
-			})) as User;
-			order.payment_method = (await new Payment_method_Repository().selectOne({
-				id: order.payment_method_id ?? undefined,
-			})) as Payment_methode;
-
-			return order;
-		} catch (error) {
-			return error;
-		}
-	};
-
-	// CREATE
-	// public create = async (data: Partial<Orders>): Promise<number | null> => {
-	// 	const connection = await new MySQLService().connect();
-	// 	const sql = `
-	// 		INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-	// 		(name, image, user_id, payment_method_id, total)
-	// 		VALUES (:name, :image, :user_id, :payment_method_id, :total);
-	// 	`;
-
-	// 	try {
-	// 		const [result] = await connection.execute<ResultSetHeader>(sql, data);
-	// 		return result.insertId;
-	// 	} catch (error) {
-	// 		throw error;
-	// 	}
-	// };
-
-	public create = async (data: Partial<Orders>): Promise<number> => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-        INSERT INTO ${process.env.MYSQL_DATABASE}.${this.table}
-        (name, image, user_id, payment_method_id, total)
-        VALUES (:name, :image, :user_id, :payment_method_id, :total);
-    `;
-
-		const [result] = await connection.execute<ResultSetHeader>(sql, data);
-
-		return result.insertId;
-	};
-
-	// UPDATE
-	public update = async (
-		id: number,
-		data: Partial<Orders>,
-	): Promise<boolean | unknown> => {
-		const connection = await new MySQLService().connect();
-		const sql = `
-			UPDATE ${process.env.MYSQL_DATABASE}.${this.table}
-			SET name = :name, image = :image, user_id = :user_id, payment_method_id = :payment_method_id, total = :total
-			WHERE id = :id;
-		`;
-
-		try {
-			const [result] = await connection.execute<ResultSetHeader>(sql, {
-				...data,
-				id,
+			const lines = ids.map((id) => {
+				const product = rows.find((r) => r.id === id);
+				const qty = qtyById.get(id) as number;
+				if (!product) throw new OrderError(`Produit ${id} introuvable`);
+				if (product.stock < qty) {
+					throw new OrderError(
+						`Stock insuffisant pour « ${product.name} » (${product.stock} disponible(s))`,
+					);
+				}
+				return {
+					product_id: id,
+					product_name: product.name as string,
+					unit_price: Number(product.price),
+					qty,
+					total: round2(Number(product.price) * qty),
+				};
 			});
-			return result.affectedRows > 0;
-		} catch (error) {
-			return error;
-		}
-	};
+			const total = round2(lines.reduce((sum, l) => sum + l.total, 0));
 
-	// DELETE
-	public delete = async (id: number): Promise<boolean | unknown> => {
-		const connection = await new MySQLService().connect();
-		const sql = `DELETE FROM ${process.env.MYSQL_DATABASE}.${this.table} WHERE id = :id;`;
-
-		try {
-			const [result] = await connection.execute<ResultSetHeader>(sql, { id });
-			return result.affectedRows > 0;
-		} catch (error) {
-			return error;
-		}
-	};
-
-	// SELECT IN LIST
-	public selectInList = async (list: string): Promise<Orders[] | unknown> => {
-		const connection = await new MySQLService().connect();
-		const sql = `
-			SELECT ${this.table}.* 
-			FROM ${process.env.MYSQL_DATABASE}.${this.table} 
-			WHERE id IN (${list});
-		`;
-
-		try {
-			const [rows] = await connection.execute<RowDataPacket[]>(sql);
-			return rows as Orders[];
-		} catch (error) {
-			return error;
-		}
-	};
-
-	public selectUserCart = async (userId: number) => {
-		const connection = await new MySQLService().connect();
-
-		const sql = `
-	        SELECT *
-	        FROM orders
-	        WHERE user_id = :userId
-	        ORDER BY id DESC
-	        LIMIT 1;
-`;
-
-		const [rows] = await connection.execute(sql, { userId });
-
-		return (rows as Orders[]).shift() ?? null;
-	};
-
-	// public getOrCreateCart = async (userId: number) => {
-	// 	const connection = await new MySQLService().connect();
-
-	// 	// 1. chercher panier existant
-	// 	const sql = `
-	// 	SELECT *
-	// 	FROM ${process.env.MYSQL_DATABASE}.orders
-	// 	WHERE user_id = :userId
-	// 	LIMIT 1;
-	// `;
-
-	// 	const [rows] = await connection.execute(sql, { userId });
-
-	// 	let order = (rows as any[]).shift();
-
-	// 	// 2. si aucun panier → on le crée
-	// 	if (!order) {
-	// 		const insert = `
-	// 		INSERT INTO ${process.env.MYSQL_DATABASE}.orders (user_id)
-	// 		VALUES (:userId);
-	// 	`;
-
-	// 		const [result] = await connection.execute<any>(insert, { userId });
-
-	// 		order = {
-	// 			id: result.insertId,
-	// 			user_id: userId,
-	// 		};
-	// 	}
-
-	// 	return order;
-	// };
-
-	public getOrCreateCart = async (userId: number | null) => {
-		const connection = await new MySQLService().connect();
-
-		// CAS USER CONNECTÉ
-		if (userId) {
-			const [rows] = await connection.execute(
-				`SELECT * FROM orders WHERE user_id = :userId LIMIT 1`,
-				{ userId },
+			const [order] = await connection.execute<ResultSetHeader>(
+				`INSERT INTO orders (user_id, total, shipping_name, shipping_address, shipping_zip,
+				 shipping_city, shipping_phone, payment_method_id)
+				 VALUES (:userId, :total, :name, :address, :zip, :city, :phone, 1)`,
+				{ userId, total, ...shipping },
 			);
 
-			let order = (rows as any[]).shift();
-
-			if (!order) {
-				const [result] = await connection.execute<any>(
-					`INSERT INTO orders (user_id, name, image, total)
-				 VALUES (:userId, 'Panier', 'cart.png', 0)`,
-					{ userId },
+			for (const line of lines) {
+				await connection.execute(
+					`INSERT INTO line_order (qty, unit_price, total, product_name, product_id, order_id)
+					 VALUES (:qty, :unit_price, :total, :product_name, :product_id, :orderId)`,
+					{ ...line, orderId: order.insertId },
 				);
-
-				order = { id: result.insertId, user_id: userId };
+				await connection.execute(
+					"UPDATE product SET stock = stock - :qty WHERE id = :product_id",
+					line,
+				);
 			}
 
-			return order;
-		}
+			return { id: order.insertId, total, lines };
+		});
+	};
 
-		// CAS INVITÉ (IMPORTANT)
-		const [rows] = await connection.execute(
-			`SELECT * FROM orders WHERE user_id IS NULL ORDER BY id DESC LIMIT 1`,
+	public selectAll = async (): Promise<Orders[]> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			`SELECT orders.*, user.email AS user_email FROM orders
+			 JOIN user ON user.id = orders.user_id ORDER BY orders.id DESC`,
 		);
+		return rows as Orders[];
+	};
 
-		let order = (rows as any[]).shift();
+	public selectByUser = async (userId: number): Promise<Orders[]> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			"SELECT * FROM orders WHERE user_id = :userId ORDER BY id DESC",
+			{ userId },
+		);
+		const orders = rows as Orders[];
+		for (const order of orders) order.line_orders = await this.selectLines(order.id);
+		return orders;
+	};
 
-		if (!order) {
-			const [result] = await connection.execute<any>(
-				`INSERT INTO orders (user_id, name, image, total)
-			 VALUES (NULL, 'Panier invité', 'cart.png', 0)`,
-			);
-
-			order = { id: result.insertId, user_id: null };
-		}
-
+	public selectOne = async (id: number): Promise<Orders | null> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			`SELECT orders.*, user.email AS user_email FROM orders
+			 JOIN user ON user.id = orders.user_id WHERE orders.id = :id`,
+			{ id },
+		);
+		const order = rows[0] as Orders | undefined;
+		if (!order) return null;
+		order.line_orders = await this.selectLines(id);
 		return order;
 	};
+
+	public selectLines = async (orderId: number): Promise<Line_order[]> => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			"SELECT * FROM line_order WHERE order_id = :orderId ORDER BY id",
+			{ orderId },
+		);
+		return rows as Line_order[];
+	};
+
+	public countPending = async (userId: number) => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			"SELECT COUNT(*) AS n FROM orders WHERE user_id = :userId AND status = 'en_attente'",
+			{ userId },
+		);
+		return Number(rows[0].n);
+	};
+
+	// commandes en attente plus anciennes que la durée de vie d'une page de paiement Stripe
+	public selectStalePending = async (olderThanMinutes: number) => {
+		const db = await new MySQLService().connect();
+		const [rows] = await db.execute<RowDataPacket[]>(
+			`SELECT id, stripe_session_id FROM orders
+			 WHERE status = 'en_attente' AND created_at < NOW() - INTERVAL :minutes MINUTE`,
+			{ minutes: olderThanMinutes },
+		);
+		return rows as { id: number; stripe_session_id: string | null }[];
+	};
+
+	public setStripeSession = async (id: number, sessionId: string) => {
+		const db = await new MySQLService().connect();
+		await db.execute(
+			"UPDATE orders SET stripe_session_id = :sessionId WHERE id = :id",
+			{ id, sessionId },
+		);
+	};
+
+	// Changement de statut ; une annulation remet les produits en stock.
+	public setStatus = async (id: number, status: OrderStatus) =>
+		new MySQLService().transaction(async (connection) => {
+			const [rows] = await connection.execute<RowDataPacket[]>(
+				"SELECT status FROM orders WHERE id = :id FOR UPDATE",
+				{ id },
+			);
+			if (!rows[0]) return false;
+			const current = rows[0].status as OrderStatus;
+			if (current === status) return true;
+			if (!TRANSITIONS[current].includes(status)) {
+				throw new OrderError(
+					`Passage impossible de « ${current} » à « ${status} »`,
+				);
+			}
+			if (status === "annulee") await restoreStock(connection, id);
+			await connection.execute("UPDATE orders SET status = :status WHERE id = :id", {
+				id,
+				status,
+			});
+			return true;
+		});
 }
 
 export default Orders_Repository;
