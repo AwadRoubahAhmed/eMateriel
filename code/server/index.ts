@@ -6,6 +6,11 @@ import Server from "./core/server";
 import OrderPaymentService from "./service/order_payment_service";
 import StripeService, { SESSION_TTL_SECONDS } from "./service/stripe_service";
 
+// Hostinger nomme les accès à la base DB_* : on les reprend si MYSQL_* n'est pas défini
+for (const [mysqlKey, dbKey] of [["MYSQL_HOST", "DB_HOST"], ["MYSQL_PORT", "DB_PORT"], ["MYSQL_DATABASE", "DB_NAME"], ["MYSQL_USER", "DB_USER"], ["MYSQL_PASSWORD", "DB_PASSWORD"]]) {
+	if (!process.env[mysqlKey] && process.env[dbKey]) process.env[mysqlKey] = process.env[dbKey];
+}
+
 // en production, les liens (Stripe, sitemap, HTTPS) ne doivent jamais dépendre de l'en-tête Host
 if (process.env.NODE_ENV === "production" && !process.env.SITE_URL) {
 	throw new Error("SITE_URL manquant (ex. https://votre-domaine.fr)");
