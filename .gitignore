@@ -4,3 +4,8 @@ mysql-data/
 
 # dependencies
 node_modules/
+# environment variables (copy the *.example files)
+.env
+.env.*
+!.env.example
+!.env.*.example
