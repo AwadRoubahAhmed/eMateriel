@@ -9,7 +9,7 @@ type FooterColumnProps = {
 const FooterColumn = ({ title, children }: FooterColumnProps) => {
 	return (
 		<div className={styles.footerColumn}>
-			<h3 className={styles.titleItem}>{title}</h3>
+			<h2 className={styles.titleItem}>{title}</h2>
 			{children}
 		</div>
 	);
