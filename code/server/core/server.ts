@@ -43,6 +43,10 @@ class Server {
 						}
 					: false,
 				crossOriginEmbedderPolicy: false,
+				// Pas de Cross-Origin-Opener-Policy : il empêche Lighthouse / PageSpeed de mesurer les
+				// performances (erreur NO_NAVSTART). Le site n'ouvre aucune fenêtre popup et Stripe
+				// s'ouvre par une navigation normale, donc la protection retirée est minime.
+				crossOriginOpenerPolicy: false,
 			}),
 		);
 
