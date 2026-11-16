@@ -69,6 +69,8 @@ if (production) {
 	);
 	app.use(async (req, res, next) => {
 		try {
+			// pages jamais mises en cache : après une mise à jour, le navigateur prend la nouvelle version
+			res.set("Cache-Control", "no-cache");
 			await sendFetchResponse(await handler(toFetchRequest(req)), res);
 		} catch (error) {
 			next(error);

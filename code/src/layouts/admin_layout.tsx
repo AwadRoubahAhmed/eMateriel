@@ -5,6 +5,8 @@ import RequireAuth from "../components/auth/RequireAuth";
 import Navbar from "../components/navbar/Navbar";
 import styles from "./admin_layout.module.css";
 
+export { default as ErrorBoundary } from "../pages/error/RouteError";
+
 const LINKS = [
 	{ to: "/admin", label: "Tableau de bord", end: true },
 	{ to: "/admin/orders", label: "Commandes" },
